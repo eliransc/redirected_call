@@ -208,5 +208,6 @@ def parse_arguments(argv):
 
 if __name__ == '__main__':
     args = parse_arguments(sys.argv[1:])
+    print('git check')
     main(args)
 

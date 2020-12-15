@@ -50,7 +50,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         if np.remainder(name[station], 10000) == 0:
             print('The current time is: ', env.now)
 
-            with open('pkl/avg_waiting', 'rb') as f:
+            with open('../pkl/avg_waiting', 'rb') as f:
                 avg_waiting = pkl.load(f)
             print(avg_waiting)
 
@@ -75,7 +75,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
             now = datetime.now()
 
             current_time = now.strftime("%H_%M_%S")
-            with open('pkl/df_summary_result_sim_different_sizes_queues_' + str(current_time) + '.pkl', 'wb') as f:
+            with open('../pkl/df_summary_result_sim_different_sizes_queues_' + str(current_time) + '.pkl', 'wb') as f:
                 pkl.dump(df_summary_result, f)
 
     with server[station].request() as req:
@@ -88,12 +88,12 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
 
         yield env.timeout(ser_time)
 
-        with open('pkl/avg_waiting', 'rb') as f:
+        with open('../pkl/avg_waiting', 'rb') as f:
             avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
         avg_waiting[station] = (avg_waiting[station] * name[station] + waiting_time) / (name[station] + 1)
-        with open('pkl/avg_waiting', 'wb') as f:
+        with open('../pkl/avg_waiting', 'wb') as f:
             pkl.dump(avg_waiting, f)
         # if customer is mismatched then she is redirected to the her designated queue
         if class_ != station:
@@ -148,7 +148,7 @@ def main(args):
         start_time = time.time()
 
 
-        with open('pkl/avg_waiting', 'wb') as f:
+        with open('../pkl/avg_waiting', 'wb') as f:
             pkl.dump(list(np.zeros(args.size)), f)
 
         env = simpy.Environment()
@@ -179,7 +179,7 @@ def main(args):
                                       probabilities, args.ser_matched_rate, args.ser_mis_matched_rate))
         env.run(until=(args.end_time))
 
-        with open('pkl/avg_waiting', 'rb') as f:
+        with open('../pkl/avg_waiting', 'rb') as f:
             avg_waiting = pkl.load(f)
         print(avg_waiting)
 
@@ -204,7 +204,7 @@ def main(args):
 
         print("--- %s seconds the %d th iteration ---" % (time.time() - start_time, 1))
 
-        with open('pkl/df_summary_result_sim_different_sizes_queues_'+str(current_time)+'.pkl', 'wb') as f:
+        with open('../pkl/df_summary_result_sim_different_sizes_queues_'+str(current_time)+'.pkl', 'wb') as f:
             pkl.dump(df_summary_result, f)
 
     print(df_summary_result)

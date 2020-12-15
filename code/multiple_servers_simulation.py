@@ -186,6 +186,7 @@ def main(args):
         total_avg_system = 0
         for station_ind in range(args.size):
             df_summary_result.loc[ind, 'Arrival_'+str(station_ind)] = str(args.r[station_ind])
+            df_summary_result.loc[ind, 'Service_rate' + str(station_ind)] = str(args.mu[station_ind])
             df_summary_result.loc[ind, 'avg_waiting_'+str(station_ind)] = avg_waiting[station_ind]
             df_summary_result.loc[ind, 'avg_sys_'+str(station_ind)] = avg_waiting[station_ind] *\
                                                                       (np.sum(args.r[station_ind,:]) +

@@ -110,11 +110,11 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
     effective_rates = np.zeros(size)
     avg_service = np.zeros(size)
-    # for ind in range(size):
-    #     effective_rates[ind] = np.sum(r[ind,:]) + np.sum(r[:, ind]) - r[ind, ind]
-    #     avg_service[ind] = (r[ind, :]/effective_rates[ind])*(1/ser_matched_rate)\
-    #                        +(1-(r[ind,ind])/effective_rates[ind])*(1/ser_mis_matched_rate)
-    # assert np.max(effective_rates*avg_service) < 1, 'Not a  stable system'
+    for ind in range(size):
+        effective_rates[ind] = np.sum(r[ind,:]) + np.sum(r[:, ind]) - r[ind, ind]
+        avg_service[ind] = (np.sum(r[:, ind])/effective_rates[ind])*(1/ser_matched_rate)\
+                           +(1-(np.sum(r[:, ind]))/effective_rates[ind])*(1/ser_mis_matched_rate)
+    assert np.max(effective_rates*avg_service) < 1, 'Not a  stable system'
 
     elements = list(np.arange(r.size))
 
@@ -147,7 +147,6 @@ def main(args):
 
         start_time = time.time()
 
-
         with open('../pkl/avg_waiting', 'wb') as f:
             pkl.dump(list(np.zeros(args.size)), f)
 
@@ -160,20 +159,10 @@ def main(args):
         args.r = np.identity(args.size)
         args.r = np.where(args.r == 1, args.p_correct, p_incorrect)
 
-        if True:
-            # args.r = np.array([[1.0, 0.0], [1.5, 1.0]])
-            # args.mu = np.array([[3.5, 10.], [2.0, 6.]])
-
-            args.r = np.array([[1.2, 0.0], [0.7, 0.9]])
-            args.mu = np.array([[2.5, 10.], [30., 2.5]])
-
         probabilities = (args.r / np.sum(args.r)).flatten()
 
-
-        # args.mu = np.identity(args.size)
-        # args.mu = np.where(args.mu == 1, args.ser_matched_rate, args.ser_mis_matched_rate)
-
-
+        args.mu = np.identity(args.size)
+        args.mu = np.where(args.mu == 1, args.ser_matched_rate, args.ser_mis_matched_rate)
 
         env.process(customer_arrivals(env, server, args.r, args.mu, args.size,
                                       probabilities, args.ser_matched_rate, args.ser_mis_matched_rate))
@@ -217,7 +206,7 @@ def parse_arguments(argv):
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
     parser.add_argument('--end_time', type=float, help='The end of the simulation', default=500000)
-    parser.add_argument('--size', type=int, help='the number of stations in the queue', default=2)
+    parser.add_argument('--size', type=int, help='the number of stations in the queue', default=3)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=4)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=1.6)

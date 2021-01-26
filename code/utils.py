@@ -219,8 +219,12 @@ def get_expect_gph_system(R, p1_arr, xm_max = 5000):
     return   expected[0,0]
 
 def compute_G_G_1(r, mu):
+    # Creating T's matirces
+
+
     parameters = (r[1, 0], r[1, 1], mu[1, 0], mu[1, 1])
     moments = get_first_n_moments(parameters)
+
 
     alph2, T2 = PH3From5Moments(moments[0])
     alph1 = 1.

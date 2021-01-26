@@ -155,14 +155,32 @@ def main(args):
         server = []
         for server_ind in range(args.size):
             server.append(simpy.Resource(env, capacity=1))
-        p_incorrect = (1 - args.p_correct) / (args.size - 1)
-        args.r = np.identity(args.size)
-        args.r = np.where(args.r == 1, args.p_correct, p_incorrect)
+        # p_incorrect = (1 - args.p_correct) / (args.size - 1)
+        # args.r = np.identity(args.size)
+        # args.r = np.where(args.r == 1, args.p_correct, p_incorrect)
+        args.r = np.zeros([args.size, args.size])
+        args.mu = np.zeros([args.size, args.size])
+
+        match_arrival = 0.4
+        mis_arrival = 0.12
+
+
+
+        row, col = np.diag_indices(args.r.shape[0])
+        args.r[row, col] = match_arrival
+        args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
+
+        row, col = np.diag_indices(args.mu.shape[0])
+        args.mu[row, col] = args.ser_matched_rate
+        args.mu = np.where(args.mu == args.ser_matched_rate, args.ser_matched_rate, args.ser_mis_matched_rate)
+
 
         probabilities = (args.r / np.sum(args.r)).flatten()
+        #
+        # args.mu = np.identity(args.size)
+        # args.mu = np.where(args.mu == 1, args.ser_matched_rate, args.ser_mis_matched_rate)
 
-        args.mu = np.identity(args.size)
-        args.mu = np.where(args.mu == 1, args.ser_matched_rate, args.ser_mis_matched_rate)
+
 
         env.process(customer_arrivals(env, server, args.r, args.mu, args.size,
                                       probabilities, args.ser_matched_rate, args.ser_mis_matched_rate))
@@ -182,13 +200,10 @@ def main(args):
                                                                        np.sum(args.r[:, station_ind])
                                                                        -args.r[station_ind, station_ind])
             total_avg_system +=  df_summary_result.loc[ind, 'avg_sys_'+str(station_ind)]
-            p0 = np.sum(args.r[:,station_ind])/(np.sum(args.r[:,station_ind])+np.sum(args.r[station_ind,:])-args.r[station_ind,station_ind])
-            m = np.array([args.ser_matched_rate, args.ser_mis_matched_rate])
-            lamb = np.sum(args.r[:,station_ind])+np.sum(args.r[station_ind,:])-args.r[station_ind,station_ind]
             df_summary_result.loc[ind, 'avg_sys_mg1_'+str(station_ind)], rho = avg_sys(args.r, args.mu, station_ind)
             df_summary_result.loc[ind, 'avg_sys_mm1_' + str(station_ind)] = rho/(1-rho)
-            if station_ind == 0:
-                df_summary_result.loc[ind, 'avg_sys_gg1_' + str(station_ind)] = compute_G_G_1(args.r, args.mu)
+            # if station_ind == 0:
+            #     df_summary_result.loc[ind, 'avg_sys_gg1_' + str(station_ind)] = compute_G_G_1(args.r, args.mu)
 
         df_summary_result.loc[ind, 'avg_sys_total'] = total_avg_system
 
@@ -203,13 +218,13 @@ def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
-    parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
+    parser.add_argument('--number_of_classes', type=int, help='number of classes', default=10)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=500000)
-    parser.add_argument('--size', type=int, help='the number of stations in the queue', default=3)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=5)
+    parser.add_argument('--size', type=int, help='the number of stations in the system', default=10)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
-    parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=4)
-    parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=1.6)
+    parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=5.2)
+    parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=9.0)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
 
     args = parser.parse_args(argv)

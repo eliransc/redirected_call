@@ -24,6 +24,22 @@ def get_workers_of_today(num_servers, p):
 def service_b(env, server_a, server_b, mu_a, mu_b, arrival_time, name,sigma_a, sigma_b, args, sim_num, num_caseta):
 
     with server_b.request() as req:
+
+        ################ update server a statistics ###################
+        with open('../pkl/server_b_df'+str(num_caseta)+'.pkl', 'rb') as f:
+            server_b_df = pkl.load(f)
+
+        ind = server_b_df.shape[0]
+        server_b_df.loc[ind, 'in_queue'] = len(server_b.queue)
+        server_b_df.loc[ind, 'in_service'] = len(server_b.users)
+        server_b_df.loc[ind, 'time'] = env.now
+        server_b_df.loc[ind, 'daily_capacity'] = server_b.capacity
+
+        with open('../pkl/server_b_df' + str(num_caseta) + '.pkl', 'wb') as f:
+            pkl.dump(server_b_df, f)
+        ################ update server b statistics ###################
+
+
         yield req
 
         with open('../pkl/server_b_available.pkl', 'rb') as f:
@@ -42,6 +58,17 @@ def service_b(env, server_a, server_b, mu_a, mu_b, arrival_time, name,sigma_a, s
         # service time
         ser_time = np.max(np.random.normal(mu_b[pick_server], sigma_b, 1), 0)
 
+        with open('../pkl/server_surplus.pkl', 'rb') as f:
+            surplus_df = pkl.load(f)
+
+        curr_surp = float(surplus_df.loc[surplus_df['name'] == 'b' + str(pick_server), 'surplus'])
+
+        if curr_surp > 0:
+            surplus_df.loc[surplus_df['name'] == 'b' + str(pick_server), 'surplus'] = 0
+            ser_time = curr_surp
+
+        with open('../pkl/server_surplus.pkl', 'wb') as f:
+            pkl.dump(surplus_df, f)
 
         if env.now+ser_time < args.end_time:
 
@@ -63,6 +90,22 @@ def service_b(env, server_a, server_b, mu_a, mu_b, arrival_time, name,sigma_a, s
             ################## num of ready stage 0 ##########################################
 
             yield env.timeout(ser_time)
+
+            ############### update server_b statistics #############################
+            with open('../pkl/server_b_df' + str(num_caseta) + '.pkl', 'rb') as f:
+                server_b_df = pkl.load(f)
+
+            ind = server_b_df.shape[0]
+
+            server_b_df.loc[ind, 'in_queue'] = len(server_b.queue)
+            server_b_df.loc[ind, 'in_service'] = len(server_b.users)
+            server_b_df.loc[ind, 'time'] = env.now
+            server_b_df.loc[ind, 'daily_capacity'] = server_b.capacity
+
+            with open('../pkl/server_b_df' + str(num_caseta) + '.pkl', 'wb') as f:
+                pkl.dump(server_b_df, f)
+            ########################################################################
+
 
             ################## num of ready stage 0 ##########################################
 
@@ -103,6 +146,14 @@ def service_b(env, server_a, server_b, mu_a, mu_b, arrival_time, name,sigma_a, s
                                   num_caseta))
 
         else:
+
+            with open('../pkl/server_surplus.pkl', 'rb') as f:
+                surplus_df = pkl.load(f)
+            surplus_df.loc[surplus_df['name'] == 'b' + str(pick_server), 'surplus'] += ser_time+env.now-args.end_time
+
+            with open('../pkl/server_surplus.pkl', 'wb') as f:
+                pkl.dump(surplus_df, f)
+
             yield env.timeout(args.end_time-env.now)
 
 
@@ -113,7 +164,7 @@ def service_a(env, server_a, server_b, mu_a, mu_b, arrival_time, name, sigma_a, 
 
     with server_a.request() as req:
 
-
+        ################ update server a statistics ###################
         with open('../pkl/server_a_df'+str(num_caseta)+'.pkl', 'rb') as f:
             server_a_df = pkl.load(f)
 
@@ -122,9 +173,11 @@ def service_a(env, server_a, server_b, mu_a, mu_b, arrival_time, name, sigma_a, 
         server_a_df.loc[ind, 'in_queue'] = len(server_a.queue)
         server_a_df.loc[ind, 'in_service'] = len(server_a.users)
         server_a_df.loc[ind, 'time'] = env.now
+        server_a_df.loc[ind, 'daily_capacity'] = server_a.capacity
 
         with open('../pkl/server_a_df' + str(num_caseta) + '.pkl', 'wb') as f:
             pkl.dump(server_a_df, f)
+        ################ update server a statistics ###################
 
         yield req
 
@@ -145,11 +198,11 @@ def service_a(env, server_a, server_b, mu_a, mu_b, arrival_time, name, sigma_a, 
         with open('../pkl/server_surplus.pkl', 'rb') as f:
             surplus_df = pkl.load(f)
 
-
         curr_surp = float(surplus_df.loc[surplus_df['name'] == 'a' + str(pick_server), 'surplus'])
-        diff = curr_surp-ser_time
-        ser_time = max(0,-diff)
-        surplus_df.loc[surplus_df['name'] == 'a' + str(pick_server), 'surplus'] = max(diff, 0)
+
+        if curr_surp > 0:
+            surplus_df.loc[surplus_df['name'] == 'a' + str(pick_server), 'surplus'] = 0
+            ser_time = curr_surp
 
         with open('../pkl/server_surplus.pkl', 'wb') as f:
             pkl.dump(surplus_df, f)
@@ -167,6 +220,7 @@ def service_a(env, server_a, server_b, mu_a, mu_b, arrival_time, name, sigma_a, 
             server_a_df.loc[ind, 'in_queue'] = len(server_a.queue)
             server_a_df.loc[ind, 'in_service'] = len(server_a.users)
             server_a_df.loc[ind, 'time'] = env.now
+            server_a_df.loc[ind, 'daily_capacity'] = server_a.capacity
 
             with open('../pkl/server_a_df' + str(num_caseta) + '.pkl', 'wb') as f:
                 pkl.dump(server_a_df, f)
@@ -252,7 +306,7 @@ def customer_arrivals(env, server_a, server_b, mu_a, mu_b, total_caseta, end_tim
 def main(args):
 
     throughput = []
-    for num_caseta in tqdm([50]):
+    for num_caseta in tqdm([33]):
 
         surplus_df = pd.DataFrame([])
 
@@ -276,10 +330,19 @@ def main(args):
         server_a_df.loc[0, 'in_queue'] = 0
         server_a_df.loc[0, 'in_service'] = 0
         server_a_df.loc[0, 'time'] = 0
+        server_a_df.loc[0, 'daily_capacity'] = 0
 
         with open('../pkl/server_a_df'+str(num_caseta)+'.pkl', 'wb') as f:
             pkl.dump(server_a_df, f)
 
+        server_b_df = pd.DataFrame([])
+        server_b_df.loc[0, 'in_queue'] = 0
+        server_b_df.loc[0, 'in_service'] = 0
+        server_b_df.loc[0, 'time'] = 0
+        server_b_df.loc[0, 'daily_capacity'] = 0
+
+        with open('../pkl/server_b_df' + str(num_caseta) + '.pkl', 'wb') as f:
+            pkl.dump(server_b_df, f)
 
         with open('../pkl/number_of_ready_stage_0_df'+str(num_caseta)+'.pkl', 'wb') as f:
             pkl.dump(number_of_ready_stage_0_df, f)
@@ -339,7 +402,7 @@ def parse_arguments(argv):
     parser.add_argument('--end_time', type=int, help='end time in the sim', default=8)
     parser.add_argument('--mu_a', type=np.array, help='service rate', default=np.array([1.79, 1.59, 1.33, 1.34, 1.26]))
     parser.add_argument('--mu_b', type=np.array, help='service rate', default=np.array([3.73, 3.27, 2.86, 2.79, 2.74, 2.56,
-                                                                                        2.51,2.49,2.48,2.55,2.49]))
+                                                                                    2.51,2.49,2.48,2.55,2.49]))
     parser.add_argument('--sigma_a', type=float, help='service rate', default=0.1)
     parser.add_argument('--sigma_b', type=float, help='service rate', default=0.2)
     parser.add_argument('--pa', type=float, help='prob of attending for a', default=0.85)

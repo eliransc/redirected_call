@@ -161,8 +161,8 @@ def main(args):
         args.r = np.zeros([args.size, args.size])
         args.mu = np.zeros([args.size, args.size])
 
-        match_arrival = 0.4
-        mis_arrival = 0.12
+        match_arrival = 0.6
+        mis_arrival = 0.15
 
 
 
@@ -218,13 +218,13 @@ def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
-    parser.add_argument('--number_of_classes', type=int, help='number of classes', default=10)
+    parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=5)
-    parser.add_argument('--size', type=int, help='the number of stations in the system', default=10)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=200000)
+    parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
-    parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=5.2)
-    parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=9.0)
+    parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
+    parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
 
     args = parser.parse_args(argv)

@@ -13,9 +13,7 @@ def service(env, name, server, mu, arrival_time):
         yield req
 
         # service time
-        ser_time = np.random.exponential(1 / mu)
-
-        yield env.timeout(ser_time)
+        ser_time = np.random.gamma(99, 0.10)
 
         if name > 1:
             with open('../pkl/avg_waiting.pkl', 'rb') as f:
@@ -30,7 +28,11 @@ def service(env, name, server, mu, arrival_time):
 
         with open('../pkl/avg_waiting.pkl', 'wb') as f:
             pkl.dump(avg_waiting, f)
-        if env.now > 250000-10:
+
+        yield env.timeout(ser_time)
+
+
+        if env.now > 40000:
             print(avg_waiting)
 
 def customer_arrivals(env, server, r, mu):
@@ -40,7 +42,7 @@ def customer_arrivals(env, server, r, mu):
 
         # get the external stream identity
 
-        yield env.timeout(np.random.exponential(1 / r))
+        yield env.timeout(np.random.gamma(100, 0.10))
 
         arrival_time = env.now
 

@@ -177,23 +177,23 @@ def customer_arrivals(env, server, r, mu, size, pkl_name_inter_depart, pkl_name_
 
 def main(args):
 
-    pkl_name_inter_depart = '../inter_pkl/inter_deparature_distribution.pkl'
+    pkl_name_inter_depart = '../inter_pkl/inter_deparature_distribution_09.pkl'
 
     df = pd.DataFrame(columns = ['Class', 'Time', 'inter_departure', 'Waiting_time' ])
     with open(pkl_name_inter_depart, 'wb') as f:
         pkl.dump(df, f)
 
-    pkl_name_inter_depart_mis = '../inter_pkl/inter_deparature_distribution_mis_05_service_1.pkl'
+    pkl_name_inter_depart_mis = '../inter_pkl/inter_deparature_distribution_mis_05_service_1_09.pkl'
     df = pd.DataFrame(columns=['Class', 'Time', 'inter_departure', 'Waiting_time', 'leaves_behind'])
     with open(pkl_name_inter_depart_mis, 'wb') as f:
         pkl.dump(df, f)
 
-    pkl_queue_arrival = '../inter_pkl/arrival_status.pkl'
+    pkl_queue_arrival = '../inter_pkl/arrival_status_09.pkl'
     df_queue_arrival = pd.DataFrame(columns=['name', 'time', 'in_service', 'queue_length', 'class'])
     with open(pkl_queue_arrival, 'wb') as f:
         pkl.dump(df_queue_arrival, f)
 
-    pkl_enter_service_status = '../inter_pkl/enter_service_status.pkl'
+    pkl_enter_service_status = '../inter_pkl/enter_service_status_09.pkl'
     df_pkl_enter_service_status = pd.DataFrame(columns=['name', 'time', 'in_service', 'queue_length', 'class'])
     with open(pkl_enter_service_status, 'wb') as f:
         pkl.dump(df_pkl_enter_service_status, f)
@@ -232,10 +232,10 @@ def main(args):
 def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([0.5,0.5]))
+    parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([0.1, 0.9]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
-    parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([1.0, 5000000]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=20000)
+    parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([0.2, 5000000]))
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=70000)
     parser.add_argument('--size', type=int, help='the number of stations in the queue', default=1)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.5)

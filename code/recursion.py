@@ -112,8 +112,6 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
                                                     pkl_name_inter_depart)
 
 
-
-
 def main():
 
     num_arrivals = 3

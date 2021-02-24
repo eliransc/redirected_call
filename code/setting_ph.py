@@ -1,15 +1,45 @@
 import numpy as np
 import pickle as pkl
 from tqdm import tqdm
+import pandas as pd
+import sympy
+from sympy import *
+
+def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0):
+
+    probs = []
+    for ind in range(df.shape[0]):
+        curr_prob = 1
+        for curr_event in total_ph_lists[ind]:
+
+            if type(curr_event) != str:
+#                 print(curr_event)
+                if curr_event == 0:
+                    curr_prob = curr_prob*1
+                elif curr_event > 0:
+                    curr_prob = curr_prob*((lam_0+lam_1)/(lam_0+lam_1+mu_0))**curr_event
+                else:
+                    curr_prob = curr_prob * (mu_0 / (lam_0 + lam_1 + mu_0)) ** (-curr_event)
+            elif curr_event != 'inter':
+
+                vals = curr_event.split(',')
+                lb = float(vals[0])
+                curr_prob = curr_prob*((lam_0+lam_1) / ((lam_0 + lam_1 + mu_0)) ** lb)*(mu_0 / (lam_0 + lam_1 + mu_0))
+
+        probs.append(curr_prob)
+
+    return probs
 
 
 def main():
+    lam0, lam1, mu_0 = symbols('lambda_0 lambda_1 mu_0')
     pkl_name_inter_depart = '../pkl/combs.pkl'
     total_ph_lists = []
     with open(pkl_name_inter_depart, 'rb') as f:
         count, combp = pkl.load(f)
     print(combp)
     v = 2
+    df = pd.DataFrame(combp)
     for curr_ind in tqdm(range(combp.shape[0])):
         comb = combp[curr_ind,:]
         ph = []
@@ -32,14 +62,22 @@ def main():
                         ph.append(curr_str)
 
             else:
-                if comb[ph_ind] == 1:
+                if comb[ph_ind] == int(1):
                     ph.append('inter')
 
         total_ph_lists.append(ph)
 
+    df_list_path  = '../pkl/df_list.pkl'
+    with open(df_list_path, 'wb') as f:
+        pkl.dump((df, total_ph_lists), f)
+
+
+
     for lis in total_ph_lists:
 
         print(lis)
+    steady_state = np.ones(v+3)
+    compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu_0)
 
 
 if __name__ == '__main__':

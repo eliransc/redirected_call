@@ -34,19 +34,83 @@ def give_possible_options(combs, num_arrivals, num_services, arrivals, services,
     return combs
 
 
-def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum):
+def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum, pkl_name_inter_depart):
 
     if services == 1:
 
-        pass
+        ## computing the values to add to cuu_comb
+        with open(pkl_name_inter_depart, 'rb') as f:
+            count, combp = pkl.load(f)
+
+        if arrivals == 1:
+            update_crr_comb = np.array([1, 0])
+
+            size_comb = np.append(curr_comb, update_crr_comb).shape[0]
+            combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
+            count += 1
+            # print(np.append(curr_comb, update_crr_comb))
+
+            update_crr_comb = np.array([0, 1])
+            combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
+            count += 1
+            # print(np.append(curr_comb, update_crr_comb))
+
+
+        else:
+            update_crr_comb = np.array([0, 0])
+            size_comb = np.append(curr_comb, update_crr_comb).shape[0]
+            if combp.shape[0] == 0:
+                combp = np.append(curr_comb, update_crr_comb).reshape(1, size_comb)
+            else:
+                combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
+            count += 1
+            # print(np.append(curr_comb, update_crr_comb))
+
+        with open(pkl_name_inter_depart, 'wb') as f:
+            pkl.dump((count, combp), f)
+
+        combnum += 1
 
     else:
 
-        for ind in range(arrivals, -1, -1):
+        if (services != num_arrivals) & (arrivals >= services):
+            lb = 0
+        else:
+            lb = -1
+        for ind in range(arrivals, lb, -1):
 
             if services == num_arrivals:
 
                 curr_comb = np.array([])
+                if ind == 0:
+                    in_service = ind
+                    inter_arrive = 1
+                else:
+                    in_service = ind
+                    inter_arrive = 0
+
+            ## computing the values to add to cuu_comb
+            else:
+
+                in_service = ind
+                inter_arrive = 0
+
+            update_crr_comb = np.array([in_service, inter_arrive])
+
+            possibilites_after_initial_arrivals(num_arrivals, arrivals - (in_service + inter_arrive), services-1,
+                                                np.append(curr_comb, update_crr_comb), combnum, pkl_name_inter_depart)
+
+            # in case we need to decide wheather arrivals occurs at service or not
+            if (num_arrivals > services) & (ind == 1) & (arrivals == services):
+                in_service = 0
+                inter_arrive = 1
+
+                update_crr_comb = np.array([in_service, inter_arrive])
+
+                possibilites_after_initial_arrivals(num_arrivals, arrivals - (in_service + inter_arrive), services - 1,
+                                                    np.append(curr_comb, update_crr_comb), combnum,
+                                                    pkl_name_inter_depart)
+
 
 
 
@@ -58,7 +122,6 @@ def main():
 
     pkl_name_inter_depart = '../pkl/combs.pkl'
 
-
     combs = np.array([])
     count = 0
     with open(pkl_name_inter_depart, 'wb') as f:
@@ -66,7 +129,13 @@ def main():
 
     combnum = 0
     curr_comb = np.array([])
-    possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum)
+    possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum, pkl_name_inter_depart)
+
+    with open(pkl_name_inter_depart, 'rb') as f:
+        count, combp = pkl.load(f)
+
+    print(combp)
+    print(count)
 
     if False:
 

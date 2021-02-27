@@ -4,8 +4,9 @@ from tqdm import tqdm
 import pandas as pd
 import sympy
 from sympy import *
+from utils_ph import *
 
-def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0):
+def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
 
     probs = []
     for ind in range(df.shape[0]):
@@ -13,7 +14,6 @@ def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0):
         for curr_event in total_ph_lists[ind]:
 
             if type(curr_event) != str:
-#                 print(curr_event)
                 if curr_event == 0:
                     curr_prob = curr_prob*1
                 elif curr_event > 0:
@@ -26,12 +26,24 @@ def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0):
                 lb = float(vals[0])
                 curr_prob = curr_prob*((lam_0+lam_1) / ((lam_0 + lam_1 + mu_0)) ** lb)*(mu_0 / (lam_0 + lam_1 + mu_0))
 
+        if df.loc[ind,0] == v+1:
+            curr_prob = curr_prob*steady_state[-1]
+        else:
+            curr_prob = curr_prob*(steady_state[int(df.loc[ind, 0])+1])
+
         probs.append(curr_prob)
 
     return probs
 
 
 def main():
+    lam_0 = 0.1
+    lam_1 = 0.9
+    mu_0 = 0.2
+    mu_1 = 5000000.
+
+    u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
+
     lam0, lam1, mu_0 = symbols('lambda_0 lambda_1 mu_0')
     pkl_name_inter_depart = '../pkl/combs.pkl'
     total_ph_lists = []
@@ -76,8 +88,10 @@ def main():
     for lis in total_ph_lists:
 
         print(lis)
-    steady_state = np.ones(v+3)
-    compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu_0)
+    steady_state = get_steady_for_given_v(u0, u10, u11, R, v)
+    prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu_0, v)
+
+    print('wait')
 
 
 if __name__ == '__main__':

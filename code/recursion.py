@@ -1,6 +1,7 @@
 import numpy as np
 from math import comb
 import pickle as pkl
+from tqdm import tqdm
 
 def give_possible_options(combs, num_arrivals, num_services, arrivals, services, combnum, curr_comb, pkl_name_inter_depart):
 
@@ -114,26 +115,27 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
 
 def main():
 
-    num_arrivals = 3
-    arrivals = num_arrivals
-    services = num_arrivals
+    for num_arrivals in tqdm(range(2, 8)):
 
-    pkl_name_inter_depart = '../pkl/combs.pkl'
+        arrivals = num_arrivals
+        services = num_arrivals
 
-    combs = np.array([])
-    count = 0
-    with open(pkl_name_inter_depart, 'wb') as f:
-        pkl.dump((count, combs), f)
+        pkl_name_inter_depart = '../pkl/combs'+str(num_arrivals-1)+'.pkl'
 
-    combnum = 0
-    curr_comb = np.array([])
-    possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum, pkl_name_inter_depart)
+        combs = np.array([])
+        count = 0
+        with open(pkl_name_inter_depart, 'wb') as f:
+            pkl.dump((count, combs), f)
 
-    with open(pkl_name_inter_depart, 'rb') as f:
-        count, combp = pkl.load(f)
+        combnum = 0
+        curr_comb = np.array([])
+        possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum, pkl_name_inter_depart)
 
-    print(combp)
-    print(count)
+        # with open(pkl_name_inter_depart, 'rb') as f:
+        #     count, combp = pkl.load(f)
+
+        # print(combp)
+        # print(count)
 
     if False:
 

@@ -297,3 +297,90 @@ def get_steady_for_given_v(u0, u10, u11, R, v):
     steady = np.append(steady, 1-np.sum(steady))
 
     return steady
+
+def create_ph_matrix_for_each_case(event_list, lam_0, lam_1, mu_0, mu_1):
+
+    size, size_arr = get_matrix_size(event_list)
+
+    s = zeros(size, size)
+    a = zeros(size)
+    a[0] = 1
+
+    for event_ind,  event in enumerate(event_list):
+
+        if type(event) == str:
+
+            if event == 'inter':
+                for ind in range(size_arr[event_ind]):
+                    sum_until_here = np.sum(size_arr[:event_ind])
+                    s[sum_until_here+ind,sum_until_here+ind] = -(lam_0+lam_1)
+                    if sum_until_here+ind<size-1:
+                        s[sum_until_here + ind, sum_until_here + ind+1] = lam_0 + lam_1
+            else:
+                vals = event.split(',')
+                lb = float(vals[0])
+                ub = float(vals[1])
+                for ind in range(size_arr[event_ind]):
+                    sum_until_here = np.sum(size_arr[:event_ind])
+                    s[sum_until_here + ind, sum_until_here + ind] = -(lam_0+lam_1+mu_0)
+                    if sum_until_here+ind<size-1:
+                        s[sum_until_here + ind, sum_until_here + ind+1] = lam_0+lam_1+mu_0
+        else:
+            if event == 0:
+                for ind in range(size_arr[event_ind]):
+                    sum_until_here = np.sum(size_arr[:event_ind])
+                    s[sum_until_here + ind, sum_until_here + ind] = -mu_0
+                    if sum_until_here + ind < size - 1:
+                        s[sum_until_here + ind, sum_until_here + ind + 1] = mu_0
+            elif event < 0:
+                for ind in range(size_arr[event_ind]):
+                    sum_until_here = np.sum(size_arr[:event_ind])
+                    s[sum_until_here + ind, sum_until_here + ind] = -(mu_0+lam_0+lam_1)
+                    if sum_until_here + ind < size - 1:
+                        s[sum_until_here + ind, sum_until_here + ind + 1] = mu_0+lam_0+lam_1
+            else: # i.e., event > 0
+                for ind in range(size_arr[event_ind]):
+                    sum_until_here = np.sum(size_arr[:event_ind])
+                    if ind < size_arr[event_ind]-1:
+                        s[sum_until_here + ind, sum_until_here + ind] = -(mu_0 + lam_0 + lam_1)
+                        if sum_until_here + ind < size - 1:
+                            s[sum_until_here + ind, sum_until_here + ind + 1] = mu_0 + lam_0 + lam_1
+                    else:
+                        s[sum_until_here + ind, sum_until_here + ind] = -mu_0
+                        if sum_until_here + ind < size - 1:
+                            s[sum_until_here + ind, sum_until_here + ind + 1] = mu_0
+
+
+    return a, s
+
+
+def get_matrix_size(event_list):
+
+    total_size = 0
+    sizes_list = []
+    for event in event_list:
+        if type(event) == str:
+            if event == 'inter':
+                total_size +=1
+                sizes_list.append(1)
+            else:
+                vals = event.split(',')
+                ub =  float(vals[1])
+                total_size += ub
+                sizes_list.append(int(ub))
+        else:
+            if event == 0:
+                total_size += 1
+                sizes_list.append(1)
+            elif event < 0:
+                total_size += int(-event)
+                sizes_list.append(int(-event))
+            else:
+                total_size += event + 1
+                sizes_list.append(int(event + 1))
+
+    return int(total_size), np.array(sizes_list)
+
+
+
+

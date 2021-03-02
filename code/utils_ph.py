@@ -290,7 +290,7 @@ def get_steady_for_given_v(u0, u10, u11, R, v):
     steady = [u0, u10+u11]
 
     for steady_prob in range(2, v+2):
-        steady.append(np.sum(np.dot(np.array([u10, u11]), matrix_power(R,steady_prob-1))))
+        steady.append(np.sum(np.dot(np.array([u10, u11]), matrix_power(R, steady_prob-1))))
 
     steady = np.array(steady)
 

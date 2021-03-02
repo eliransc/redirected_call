@@ -10,39 +10,43 @@ from utils_ph import create_ph_matrix_for_each_case, get_steady_for_given_v
 
 def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
 
-    probs = []
-    for ind in range(df.shape[0]):
+    probs = [] # start a list of all the probabilities
+    for ind in range(df.shape[0]): # going over each cave for the current v
         curr_prob = 1
-        for curr_event in total_ph_lists[ind]:
+        for curr_event in total_ph_lists[ind]:  # going over the current event
 
-            if type(curr_event) != str:
-                if curr_event == 0:
+            if type(curr_event) != str:  # if the event is not a string
+                if curr_event == 0:  # if the service is not conditioned no change in the probability
                     curr_prob = curr_prob*1
-                elif curr_event > 0:
+                elif curr_event > 0:  # if there are arrivals during the service
                     curr_prob = curr_prob*((lam_0+lam_1)/(lam_0+lam_1+mu_0))**curr_event
                 else:
-                    curr_prob = curr_prob * (mu_0 / (lam_0 + lam_1 + mu_0)) ** (-curr_event)
-            elif curr_event != 'inter':
-
+                    curr_prob = curr_prob * (mu_0 / (lam_0 + lam_1 + mu_0)) ** (-curr_event)  # the prob that the service
+                    # is smaller than the inter_Arrival
+            elif curr_event != 'inter': # there are two str events: inter and between service between lb and lb+1 arrivals
                 vals = curr_event.split(',')
-                lb = float(vals[0])
+                lb = float(vals[0]) # it is basically a geometic distribution with mu_0/(lam_0 + lam_1 + mu_0)
+                # and we wish to know the prob = lb+1
                 curr_prob = curr_prob*((lam_0+lam_1) / ((lam_0 + lam_1 + mu_0)) ** lb)*(mu_0 / (lam_0 + lam_1 + mu_0))
 
-        if df.loc[ind,0] == v+1:
+        # each event is conditioned on a steady-state
+        # the steady-state prob is determined by the number of customers left behind the first type 1 customer
+        if df.loc[ind,0] == v+1:  #  this is a special case beucase the steady-state include P(U>=v+1)
             curr_prob = curr_prob*steady_state[-1]
-        elif df.loc[ind,0] == 0:
+        elif df.loc[ind,0] == 0:  # this can happen either if one or zero customers were left behind
             curr_prob = curr_prob * (steady_state[0]+steady_state[1])
         else:
-            curr_prob = curr_prob*(steady_state[int(df.loc[ind, 0])+1])
+            curr_prob = curr_prob*(steady_state[int(df.loc[ind, 0])+1])  # this is general case. The prob P(U = u+1)
+            # is considered if u customers left behind
 
-        probs.append(curr_prob)
+        probs.append(curr_prob)  # append the current prob
 
     return probs
 
 def geometric_pdf(p,n):
     return p*((1-p)**(n))
 
-def get_cdf_for_v(v, lam_0, lam_1, mu_0, mu_1, lam0, lam1, mu0, mu1, u0, u10, u11, R, x):
+def get_ph_for_v(v,lam0, lam1, mu0, mu1):
     # get the combination matrix
     pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
     total_ph_lists = []
@@ -96,8 +100,9 @@ def get_cdf_for_v(v, lam_0, lam_1, mu_0, mu_1, lam0, lam1, mu0, mu1, u0, u10, u1
         a_list.append(a)
         s_list.append(s)
 
-    steady_state = get_steady_for_given_v(u0, u10, u11, R, v)
-    prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu0, v)
+    return a_list, s_list, total_ph_lists
+
+def get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case):
 
     curr_cdf = 0
 
@@ -145,13 +150,26 @@ def main():
     emricial = []
     tot = dff1_only_ones.shape[0]
     theoretical = []
-    x_vals = np.linspace(0.001, 20, 20)
+    x_vals = np.linspace(0.001, 20, 10)
     for x in tqdm(x_vals):
         total_pdf = (geometric_pdf(p,0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
-        for v in range(1, 6):
-            curr_cdf = get_cdf_for_v(v, lam_0, lam_1, mu_0, mu_1, lam0, lam1, mu0, mu1, u0, u10, u11, R, x)
+        for v in range(1, 4):
+
+            a_list, s_list, total_ph_lists  = get_ph_for_v(v,lam0, lam1, mu0, mu1)
+
+            pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
+            with open(pkl_name_inter_depart, 'rb') as f:
+                count, combp = pkl.load(f)
+
+            # convert combination to pd dataframe
+            df = pd.DataFrame(combp)
+
+            steady_state = get_steady_for_given_v(u0, u10, u11, R, v)  # getting steady-state probs
+            prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu0, v)  # get the probability for each case
+
+            curr_cdf = get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case)  # get cdf
             # print(curr_cdf)
-            total_pdf += curr_cdf*geometric_pdf(p,v)
+            total_pdf += curr_cdf*geometric_pdf(p, v)
         # print(total_pdf)
         theoretical.append(total_pdf)
         emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)

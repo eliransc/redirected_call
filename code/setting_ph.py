@@ -6,6 +6,7 @@ import sympy
 from sympy import *
 from utils_ph import *
 import matplotlib.pyplot as plt
+from utils_ph import create_ph_matrix_for_each_case, get_steady_for_given_v
 
 def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
 
@@ -42,44 +43,51 @@ def geometric_pdf(p,n):
     return p*((1-p)**(n))
 
 def get_cdf_for_v(v, lam_0, lam_1, mu_0, mu_1, lam0, lam1, mu0, mu1, u0, u10, u11, R, x):
+    # get the combination matrix
     pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
     total_ph_lists = []
     with open(pkl_name_inter_depart, 'rb') as f:
         count, combp = pkl.load(f)
 
-
+    # convert combination to pd dataframe
     df = pd.DataFrame(combp)
-    for curr_ind in range(combp.shape[0]):
-        comb = combp[curr_ind, :]
-        ph = []
+    for curr_ind in range(combp.shape[0]):  # go over each combination
+        comb = combp[curr_ind, :]  # assign the current comb to 'comb'
+        ph = []  # initiate a list of ph that convert the combination to its stochastic combination
 
-        if comb[1] == 1:
+        # constructing the ph combination
+        if comb[1] == 1:  # this is an unusual case, if position 1 equals one then we start with an inter arrival
             ph.append('inter')
-        for ph_ind in range(2, comb.shape[0]):
-            if ph_ind % 2 == 0:
-                if np.sum(comb[ph_ind:]) == 0:
+        for ph_ind in range(2, comb.shape[0]):  # go over the rest of the combinations
+            if ph_ind % 2 == 0:  # if an even number
+                if np.sum(comb[ph_ind:]) == 0:  # if there are no arrivals in the service and
+                    # no more future arrival then regular service
                     ph.append(0)
                 else:
-                    # if ph_ind < comb.shape[0]-1:
-                    if (comb[ph_ind] > 0) & (np.sum(comb[ph_ind + 1:]) == 0):
+                    if (comb[ph_ind] > 0) & (np.sum(comb[ph_ind + 1:]) == 0):  # if there are arrivals but no future arrivals
+                        # then it is X|X> sum of y: from 1  to comb[ph_ind]
                         ph.append(comb[ph_ind])
-                    elif (comb[ph_ind] == 0) & (np.sum(comb[ph_ind + 1:]) > 0):
+                    elif (comb[ph_ind] == 0) & (np.sum(comb[ph_ind + 1:]) > 0): # if there are no arrivals in this service
+                        # but there are future arrivals then X|X<Y
                         ph.append(-1)
-                    else:
+                    else:  # this case reflects the case where there is a specific number of arrivals
                         curr_str = str(comb[ph_ind])
                         curr_str = curr_str + ',' + str(comb[ph_ind] + 1)
                         ph.append(curr_str)
 
-            else:
+            else:  # if it uneven position and the value is one it means we have an inter arrival
                 if comb[ph_ind] == int(1):
                     ph.append('inter')
 
-        total_ph_lists.append(ph)
+        total_ph_lists.append(ph)  # adding the current list to the list of the rest of the cases
 
+    # dumping the list
     df_list_path = '../pkl/df_list.pkl'
     with open(df_list_path, 'wb') as f:
         pkl.dump((df, total_ph_lists), f)
 
+
+    # convert each list to its ph representation
     a_list = []
     s_list = []
     for lis in total_ph_lists:
@@ -121,8 +129,6 @@ def main():
     for ind in range(dff1_only_ones.shape[0] - 1):
         dff1_only_ones.loc[ind + 1, 'inter_1'] = dff1_only_ones.loc[ind + 1, 'Time'] - dff1_only_ones.loc[ind, 'Time']
 
-
-
     lam_0 = 0.2
     lam_1 = 0.8
     mu_0 = 0.3
@@ -149,9 +155,6 @@ def main():
         # print(total_pdf)
         theoretical.append(total_pdf)
         emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
-
-
-
 
     linewidth = 5
     plt.figure()

@@ -43,37 +43,37 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
         with open(pkl_name_inter_depart, 'rb') as f:
             count, combp = pkl.load(f)
 
-        if arrivals == 1:
+        if arrivals == 1: # if there is only one customer to arrive then it can either during or after service
             update_crr_comb = np.array([1, 0])
 
             size_comb = np.append(curr_comb, update_crr_comb).shape[0]
             combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
             count += 1
-            # print(np.append(curr_comb, update_crr_comb))
+            print(np.append(curr_comb, update_crr_comb))
 
             update_crr_comb = np.array([0, 1])
             combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
             count += 1
-            # print(np.append(curr_comb, update_crr_comb))
+            print(np.append(curr_comb, update_crr_comb))
 
 
-        else:
+        else: # all customers arrived already
             update_crr_comb = np.array([0, 0])
             size_comb = np.append(curr_comb, update_crr_comb).shape[0]
-            if combp.shape[0] == 0:
-                combp = np.append(curr_comb, update_crr_comb).reshape(1, size_comb)
+            if combp.shape[0] == 0: # If this is the first time we add to te combination matrix
+                combp = np.append(curr_comb, update_crr_comb).reshape(1, size_comb) # first combination
             else:
-                combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
+                combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0) # adding a further combination
             count += 1
-            # print(np.append(curr_comb, update_crr_comb))
+            print(np.append(curr_comb, update_crr_comb))
 
-        with open(pkl_name_inter_depart, 'wb') as f:
+        with open(pkl_name_inter_depart, 'wb') as f: # dump to pkl
             pkl.dump((count, combp), f)
 
         combnum += 1
 
     else:
-
+        # if the
         if (services != num_arrivals) & (arrivals >= services):
             lb = 0
         else:
@@ -101,8 +101,9 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
             possibilites_after_initial_arrivals(num_arrivals, arrivals - (in_service + inter_arrive), services-1,
                                                 np.append(curr_comb, update_crr_comb), combnum, pkl_name_inter_depart)
 
-            # in case we need to decide wheather arrivals occurs at service or not
-            if (num_arrivals > services) & (ind == 1) & (arrivals == services):
+            # in case we need to decide whether arrivals occurs at service or not
+            # if only one customer is left to arrive, it is also possible that she will arrive after service is done
+            if (num_arrivals > services) & (ind == 1) & (arrivals == services): # cond(1): cannot happen in the first service cond(2): only if one customer should arrive cond(3): only if remianing arrival equals remianing services
                 in_service = 0
                 inter_arrive = 1
 
@@ -112,10 +113,9 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
                                                     np.append(curr_comb, update_crr_comb), combnum,
                                                     pkl_name_inter_depart)
 
-
 def main():
 
-    for num_arrivals in tqdm(range(2, 8)):
+    for num_arrivals in tqdm(range(2, 6)):
 
         arrivals = num_arrivals
         services = num_arrivals

@@ -49,12 +49,12 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
             size_comb = np.append(curr_comb, update_crr_comb).shape[0]
             combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
             count += 1
-            print(np.append(curr_comb, update_crr_comb))
+            # print(np.append(curr_comb, update_crr_comb))
 
             update_crr_comb = np.array([0, 1])
             combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0)
             count += 1
-            print(np.append(curr_comb, update_crr_comb))
+            # print(np.append(curr_comb, update_crr_comb))
 
 
         else: # all customers arrived already
@@ -65,7 +65,7 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
             else:
                 combp = np.append(combp, np.append(curr_comb, update_crr_comb).reshape(1, size_comb), axis=0) # adding a further combination
             count += 1
-            print(np.append(curr_comb, update_crr_comb))
+            # print(np.append(curr_comb, update_crr_comb))
 
         with open(pkl_name_inter_depart, 'wb') as f: # dump to pkl
             pkl.dump((count, combp), f)
@@ -115,7 +115,7 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
 
 def main():
 
-    for num_arrivals in tqdm(range(2, 6)):
+    for num_arrivals in tqdm(range(2, 10)):
 
         arrivals = num_arrivals
         services = num_arrivals

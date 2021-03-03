@@ -303,7 +303,7 @@ def create_ph_matrix_for_each_case(event_list, lam_0, lam_1, mu_0, mu_1):
     size, size_arr = get_matrix_size(event_list)
 
     s = zeros(size, size)
-    a = zeros(size)
+    a = zeros(1, size)
     a[0] = 1
 
     for event_ind,  event in enumerate(event_list):

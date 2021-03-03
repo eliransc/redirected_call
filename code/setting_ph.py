@@ -7,6 +7,10 @@ from sympy import *
 from utils_ph import *
 import matplotlib.pyplot as plt
 from utils_ph import create_ph_matrix_for_each_case, get_steady_for_given_v
+import time
+from numpy.linalg import matrix_power
+import math
+
 
 def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
 
@@ -45,6 +49,9 @@ def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
 
 def geometric_pdf(p,n):
     return p*((1-p)**(n))
+
+def geometric_tail(p,n):
+    return (1-p)**n
 
 def get_ph_for_v(v,lam0, lam1, mu0, mu1):
     # get the combination matrix
@@ -104,7 +111,41 @@ def get_ph_for_v(v,lam0, lam1, mu0, mu1):
 
 def get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case):
 
-    curr_cdf = 0
+    curr_cdf = 0  # initiate with zero cdf
+
+    for case_ind in range(len(a_list)):  #
+        if type(prob_for_each_case[case_ind]) == sympy.core.mul.Mul:  # if we need to assign sympy variables
+            curr_prob = prob_for_each_case[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})
+        else:
+            curr_prob = prob_for_each_case[case_ind]  # only the first case
+
+        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1: # if it is a scalar
+            cdf = 1 - exp(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0] * x)  # computing the current cdf
+        else:
+            cdf = 1 - np.sum(
+                a_list[case_ind] * expm(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})) * x))  # computing the current cdf
+        curr_cdf += cdf * curr_prob  # updating the current pdf
+
+    return curr_cdf
+
+
+def get_pdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case):
+    '''
+
+    :param a_list: the alpha (initial prob) for each case
+    :param s_list: the generator matrix for each case
+    :param lam0: type zero arrival rate - sympy
+    :param lam1: type one arrival rate - sympy
+    :param mu0: type zero arrival rate - sympy
+    :param lam_0: type zero arrival rate - value
+    :param lam_1: type one arrival rate - value
+    :param mu_0: type zero arrival rate - value
+    :param x: the current value of the pdf
+    :param prob_for_each_case: a list of the prob for each case
+    :return: the pdf value in x
+    '''
+
+    curr_pdf = 0
 
     for case_ind in range(len(a_list)):
         if type(prob_for_each_case[case_ind]) == sympy.core.mul.Mul:
@@ -112,16 +153,63 @@ def get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_eac
         else:
             curr_prob = prob_for_each_case[case_ind]
 
-        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1:
-            cdf = 1 - exp(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0] * x)
-        else:
-            cdf = 1 - np.sum(
-                a_list[case_ind] * expm(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})) * x))
-        curr_cdf += cdf * curr_prob
+        s_size = np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0]
+        curr_s0 = - np.dot(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0], np.ones((s_size, 1)))
 
-    return curr_cdf
+        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1:  # if scalar
+            pdf = exp(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0] * x)*curr_s0
+
+            pdf = pdf[0][0] # making it scalar
+        else:
+            pdf = a_list[case_ind] * expm(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})) * x)*curr_s0
+            pdf = pdf[0]
+
+        curr_pdf += pdf * curr_prob
+
+    return curr_pdf
+
+
+def get_moment(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0,  prob_for_each_case, moment = 1):
+    '''
+
+    :param a_list: the alpha (initial prob) for each case
+    :param s_list: the generator matrix for each case
+    :param lam0: type zero arrival rate - sympy
+    :param lam1: type one arrival rate - sympy
+    :param mu0: type zero arrival rate - sympy
+    :param lam_0: type zero arrival rate - value
+    :param lam_1: type one arrival rate - value
+    :param mu_0: type zero arrival rate - value
+    :param prob_for_each_case: a list of the prob for each case
+    :return: moment of inter-departure times
+    '''
+
+    curr_mom = 0
+
+    for case_ind in range(len(a_list)):
+        if type(prob_for_each_case[case_ind]) == sympy.core.mul.Mul:
+            curr_prob = prob_for_each_case[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})
+        else:
+            curr_prob = prob_for_each_case[case_ind]
+
+        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1:  # if scalar
+            mom = ((-1)**moment) * math.factorial(moment)*np.dot(a_list[case_ind],(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0])**(-moment))
+
+            mom = mom[0][0]  # making it scalar
+        else:
+            mom = ((-1)**moment) * math.factorial(moment)*np.sum(a_list[case_ind] *
+                         matrix_power((np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})))
+                                      .astype(float), -moment))
+
+
+        curr_mom += mom * curr_prob
+
+    return curr_mom
+
 
 def main():
+
+
 
     with open(
             r'C:\Users\elira\PycharmProjects\redirected_git\redirected_call\inter_pkl\inter_deparature_distribution_service_03_08.pkl',
@@ -147,43 +235,104 @@ def main():
 
     p = lam_1 / (lam_1 + lam_0)
 
+    a_lists = []
+    s_lists = []
+    prob_for_each_case_s = []
+    start_time = time.time()
+    v_low = 8
+    v_high = 9
+
+    prob_atom = (geometric_pdf(p,0))*(1-probs[0]-probs[1])
+    print(prob_atom)
+
+    mom = geometric_pdf(p,0)*(probs[0]+probs[1])/(lam_0+lam_1)
+
+    for v in range(v_low, v_high):
+        a_list, s_list, total_ph_lists = get_ph_for_v(v, lam0, lam1, mu0, mu1)
+
+        pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
+        with open(pkl_name_inter_depart, 'rb') as f:
+            count, combp = pkl.load(f)
+
+        # convert combination to pd dataframe
+        df = pd.DataFrame(combp)
+
+        steady_state = get_steady_for_given_v(u0, u10, u11, R, v)  # getting steady-state probs
+        prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu0, v)  # get the probability for each case
+
+        a_lists.append(a_list)
+        s_lists.append(s_list)
+        prob_for_each_case_s.append(prob_for_each_case)
+
+        mom += get_moment(a_lists[v - v_low], s_lists[v - v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0,
+                         prob_for_each_case_s[v - v_low],2)*geometric_pdf(p, v)
+        print(mom)
+
     emricial = []
     tot = dff1_only_ones.shape[0]
     theoretical = []
-    x_vals = np.linspace(0.001, 20, 10)
+    x_vals = np.linspace(0.01, 20, 10)
+
+
+    print(mom)
+    ## pdf evaluation
     for x in tqdm(x_vals):
-        total_pdf = (geometric_pdf(p,0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
-        for v in range(1, 4):
 
-            a_list, s_list, total_ph_lists  = get_ph_for_v(v,lam0, lam1, mu0, mu1)
+        total_pdf = 0
 
-            pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
-            with open(pkl_name_inter_depart, 'rb') as f:
-                count, combp = pkl.load(f)
+        for v in range(v_low, v_high):
 
-            # convert combination to pd dataframe
-            df = pd.DataFrame(combp)
+            curr_pdf = get_pdf(a_lists[v-v_low], s_lists[v-v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get pdf
+            # print(curr_pdf)
+            if v == v_high:
+                total_pdf += curr_pdf*geometric_tail(p, v)
+            else:
+                total_pdf += curr_pdf * geometric_pdf(p, v)
+            # print('$$$$$$')
+            # print(curr_pdf)
 
-            steady_state = get_steady_for_given_v(u0, u10, u11, R, v)  # getting steady-state probs
-            prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu0, v)  # get the probability for each case
-
-            curr_cdf = get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case)  # get cdf
-            # print(curr_cdf)
-            total_pdf += curr_cdf*geometric_pdf(p, v)
-        # print(total_pdf)
         theoretical.append(total_pdf)
-        emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
 
-    linewidth = 5
+    linewidth = 3
     plt.figure()
-    plt.plot(x_vals, np.array(emricial), alpha=0.7, linewidth=linewidth, label='Empirical', linestyle='dashed')
+    plt.hist(dff1_only_ones['inter_1'], alpha=0.7, linewidth=linewidth, label='Empirical', density = True, bins = 200)
     plt.plot(x_vals, np.array(theoretical), alpha=0.7, linewidth=linewidth, label='Theoretical')
     plt.xlabel('X')
-    plt.ylabel('CDF')
+    plt.ylabel('PDF')
     plt.legend()
     plt.show()
 
     print('here')
+
+    # start_time = time.time()
+
+    if False:
+    # cdf evaluation
+        for x in tqdm(x_vals):
+
+            total_cdf = (geometric_pdf(p,0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
+
+            for v in range(v_low, v_high):
+
+                curr_cdf = get_cdf(a_lists[v-v_low], s_lists[v-v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get cdf
+                # print(curr_cdf)
+                total_cdf += curr_cdf*geometric_pdf(p, v)
+            # print(total_pdf)
+            theoretical.append(total_cdf)
+            emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
+
+        print("--- %s seconds the %d th iteration ---" % (time.time() - start_time, 1))
+
+        linewidth = 5
+        plt.figure()
+        plt.plot(x_vals, np.array(emricial), alpha=0.7, linewidth=linewidth, label='Empirical', linestyle='dashed')
+        plt.plot(x_vals, np.array(theoretical), alpha=0.7, linewidth=linewidth, label='Theoretical')
+        plt.xlabel('X')
+        plt.ylabel('CDF')
+        plt.legend()
+        plt.show()
+
+        print('here')
 
 if __name__ == '__main__':
 

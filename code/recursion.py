@@ -115,7 +115,7 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
 
 def main():
 
-    for num_arrivals in tqdm(range(2, 10)):
+    for num_arrivals in tqdm(range(11, 12)):
 
         arrivals = num_arrivals
         services = num_arrivals

@@ -57,6 +57,7 @@ def get_ph_structure_for_v(v):
 
     start_time = time.time()
     # get the combination matrix
+    print(v)
     pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
     total_ph_lists = []
     with open(pkl_name_inter_depart, 'rb') as f:
@@ -99,6 +100,7 @@ def get_ph_structure_for_v(v):
     with open(df_list_path, 'wb') as f:
         pkl.dump((df, total_ph_lists), f)
 
+
     print("--- %s seconds for ph event construction with v=%d ---" % (time.time() - start_time, v))
 
 def get_ph_representation(v, lam0, lam1, mu0, mu1):
@@ -119,23 +121,31 @@ def get_ph_representation(v, lam0, lam1, mu0, mu1):
     print("--- %s seconds for ph represenation construction with v=%d ---" % (time.time() - start_time, v))
     return a_list, s_list, total_ph_lists
 
-def get_cdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case):
+def get_cdf(a_list, s_list, lam_0, lam_1, mu_0, x, prob_for_each_case, eps = 0.00001):
 
     curr_cdf = 0  # initiate with zero cdf
-
+    not_included = 0
+    cases_tracking = []
     for case_ind in range(len(a_list)):  #
-        if type(prob_for_each_case[case_ind]) == sympy.core.mul.Mul:  # if we need to assign sympy variables
-            curr_prob = prob_for_each_case[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})
-        else:
-            curr_prob = prob_for_each_case[case_ind]  # only the first case
 
-        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1: # if it is a scalar
-            cdf = 1 - exp(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0] * x)  # computing the current cdf
-        else:
-            cdf = 1 - np.sum(
-                a_list[case_ind] * expm(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})) * x))  # computing the current cdf
-        curr_cdf += cdf * curr_prob  # updating the current pdf
 
+        curr_prob = prob_for_each_case[case_ind]
+        if curr_prob > eps:
+            cdf = 1-np.sum(np.dot(a_list[case_ind], expm(s_list[case_ind]*x)))
+            curr_cdf += cdf * curr_prob  # updating the current pdf
+        else:
+            not_included += curr_prob
+            cases_tracking.append(case_ind)
+
+    num_not_included = len(cases_tracking)
+    if num_not_included > 0:
+        middle_ind = int(num_not_included/2)
+
+        first = (not_included/3)*(1-np.sum(np.dot(a_list[cases_tracking[0]], expm(s_list[cases_tracking[0]]*x))))
+        middle = (not_included/3)*(1-np.sum(np.dot(a_list[cases_tracking[middle_ind]], expm(s_list[cases_tracking[middle_ind]]*x))))
+        last = (not_included / 3) * (1 - np.sum(np.dot(a_list[cases_tracking[-1]], expm(s_list[cases_tracking[-1]] * x))))
+        curr_cdf = curr_cdf + first+ middle + last
+        # print(not_included)
     return curr_cdf
 
 
@@ -179,14 +189,10 @@ def get_pdf(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_eac
     return curr_pdf
 
 
-def get_moment(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0,  prob_for_each_case, moment = 1):
+def get_moment(a_list, s_list,  prob_for_each_case, moment = 1, eps = 0.0001):
     '''
-
     :param a_list: the alpha (initial prob) for each case
     :param s_list: the generator matrix for each case
-    :param lam0: type zero arrival rate - sympy
-    :param lam1: type one arrival rate - sympy
-    :param mu0: type zero arrival rate - sympy
     :param lam_0: type zero arrival rate - value
     :param lam_1: type one arrival rate - value
     :param mu_0: type zero arrival rate - value
@@ -195,34 +201,38 @@ def get_moment(a_list, s_list, lam0, lam1, mu0, lam_0, lam_1, mu_0,  prob_for_ea
     '''
 
     curr_mom = 0
+    not_included = 0
+    cases_tracking = []
 
     for case_ind in range(len(a_list)):
-        if type(prob_for_each_case[case_ind]) == sympy.core.mul.Mul:
-            curr_prob = prob_for_each_case[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})
+
+        curr_prob = prob_for_each_case[case_ind]
+
+        if curr_prob > eps:
+
+            mom = ((-1)**moment) * math.factorial(moment)*np.sum(np.dot(a_list[case_ind] , matrix_power((s_list[case_ind]), -moment)))
+
+            curr_mom += mom * curr_prob
         else:
-            curr_prob = prob_for_each_case[case_ind]
+            not_included += curr_prob
+            cases_tracking.append(case_ind)
 
-        if np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})).shape[0] == 1:  # if scalar
-            mom = ((-1)**moment) * math.factorial(moment)*np.dot(a_list[case_ind],(np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0}))[0][0])**(-moment))
+    num_not_included = len(cases_tracking)
+    if num_not_included > 0:
+        middle_ind = int(num_not_included/2)
 
-            mom = mom[0][0]  # making it scalar
-        else:
-            mom = ((-1)**moment) * math.factorial(moment)*np.sum(a_list[case_ind] *
-                         matrix_power((np.array(s_list[case_ind].subs({lam0: lam_0, lam1: lam_1, mu0: mu_0})))
-                                      .astype(float), -moment))
-
-
-        curr_mom += mom * curr_prob
+        first = (not_included/3)*((-1)**moment) * math.factorial(moment)*np.sum(np.dot(a_list[0] , matrix_power((s_list[0]), -moment)))
+        middle = (not_included/3)*((-1)**moment) * math.factorial(moment)*np.sum(np.dot(a_list[middle_ind] , matrix_power((s_list[middle_ind]), -moment)))
+        last = (not_included / 3) * ((-1)**moment) * math.factorial(moment)*np.sum(np.dot(a_list[-1] , matrix_power((s_list[-1]), -moment)))
+        curr_mom = curr_mom + first+ middle + last
 
     return curr_mom
 
 
 def main():
 
-
-
     with open(
-            r'C:\Users\elira\PycharmProjects\redirected_git\redirected_call\inter_pkl\inter_deparature_distribution_service_03_08.pkl',
+            r'C:\Users\elira\PycharmProjects\redirected_git\redirected_call\inter_pkl\inter_deparature_distribution_service_07_lam1_05.pkl',
             'rb') as f:
         dff1 = pkl.load(f)
 
@@ -232,38 +242,33 @@ def main():
     for ind in range(dff1_only_ones.shape[0] - 1):
         dff1_only_ones.loc[ind + 1, 'inter_1'] = dff1_only_ones.loc[ind + 1, 'Time'] - dff1_only_ones.loc[ind, 'Time']
 
-    lam_0 = 0.2
-    lam_1 = 0.8
-    mu_0 = 0.3
+    lam_0 = 0.5
+    lam_1 = 0.5
+    mu_0 = 0.7
     mu_1 = 5000000.
     u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
-
-    lam0, lam1, mu0, mu1 = symbols('lambda_0 lambda_1 mu_0 mu_1')
-
 
     probs = get_steady_for_given_v(u0, u10, u11, R, 2)
 
     p = lam_1 / (lam_1 + lam_0)
 
-
     start_time = time.time()
     v_low = 1
-    v_high = 9
+    v_high = 11
 
-    prob_atom = (geometric_pdf(p,0))*(1-probs[0]-probs[1])
+    prob_atom = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])
     print(prob_atom)
 
-    mom = geometric_pdf(p,0)*(probs[0]+probs[1])/(lam_0+lam_1)
 
     if False:
         a_lists = []
         s_lists = []
         prob_for_each_case_s = []
         for v in range(v_low, v_high):
-            if False:  # only if required to computes the lists
+            if True:  # only if required to computes the lists
                 get_ph_structure_for_v(v)
 
-            a_list, s_list, total_ph_lists = get_ph_representation(v, lam0, lam1, mu0, mu1)
+            a_list, s_list, total_ph_lists = get_ph_representation(v, lam_0, lam_1, mu_0, mu_1)
 
             pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
             with open(pkl_name_inter_depart, 'rb') as f:
@@ -273,7 +278,7 @@ def main():
             df = pd.DataFrame(combp)
             start_time = time.time()
             steady_state = get_steady_for_given_v(u0, u10, u11, R, v)  # getting steady-state probs
-            prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam0, lam1, mu0, v)  # get the probability for each case
+            prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v)  # get the probability for each case
             print("--- %s seconds for probability computation v=%d ---" % (time.time() - start_time, v))
 
             a_lists.append(a_list)
@@ -286,11 +291,22 @@ def main():
         with open(pkl_name_ph_representation, 'wb') as f:
             pkl.dump((a_lists, s_lists, prob_for_each_case_s), f)
 
+    pkl_name_ph_representation = '../pkl/ph_rep.pkl'
+    with open(pkl_name_ph_representation, 'rb') as f:
+        a_lists, s_lists, prob_for_each_case_s = pkl.load(f)
+
     if False:
+        moment = 3
+        mom = geometric_pdf(p, 0) * (probs[0] + probs[1]) * (math.factorial(moment)/(lam_0 + lam_1)**moment)
         for v in range(v_low, v_high):
             start_time = time.time()
-            mom += get_moment(a_lists[v - v_low], s_lists[v - v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0,
-                             prob_for_each_case_s[v - v_low],2)*geometric_pdf(p, v)
+            curr_mom = get_moment(a_lists[v - v_low], s_lists[v - v_low], prob_for_each_case_s[v - v_low], moment)
+
+            if v == v_high:
+
+                mom += curr_mom * geometric_tail(p, v)
+            else:
+                mom += curr_mom * geometric_pdf(p, v)
 
             print("--- %s seconds for moment evaluation v=%d ---" % (time.time() - start_time, v))
             print(mom)
@@ -298,10 +314,9 @@ def main():
     emricial = []
     tot = dff1_only_ones.shape[0]
     theoretical = []
-    x_vals = np.linspace(0.01, 20, 10)
+    x_vals = np.linspace(0.01, 20, 100)
 
 
-    print(mom)
     ## pdf evaluation
     if False:
         for x in tqdm(x_vals):
@@ -335,35 +350,39 @@ def main():
     # start_time = time.time()
 
     if True:
+        # cdf evaluation
 
-        pkl_name_ph_representation = '../pkl/ph_rep.pkl'
-        with open(pkl_name_ph_representation, 'rb') as f:
-            a_lists, s_lists, prob_for_each_case_s = pkl.load(f)
+        # The approximiation method
+        with open('../pkl/ph_rep_approx_05.pkl', 'rb') as f:
+            alpha, curr_T = pkl.load(f)
 
-    # cdf evaluation
+        approx_cdf = []
+
         for x in tqdm(x_vals):
+            approx_cdf.append(1 - np.sum(np.dot(alpha, expm(curr_T * x))))
 
-            total_cdf = (geometric_pdf(p,0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
+            total_cdf = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
 
-
+            start_time = time.time()
             for v in range(v_low, v_high):
 
 
-                start_time = time.time()
-                curr_cdf = get_cdf(a_lists[v-v_low], s_lists[v-v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get cdf
+                curr_cdf = get_cdf(a_lists[v-v_low], s_lists[v-v_low], lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get cdf
                 # print(curr_cdf)
                 total_cdf += curr_cdf*geometric_pdf(p, v)
-                print("--- %s seconds for moment evaluation v=%d ---" % (time.time() - start_time, v))
-            # print(total_pdf)
+            # print("--- %s seconds for cdf x=%s ---" % (time.time() - start_time, x))
+
             theoretical.append(total_cdf)
             emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
 
 
 
-        linewidth = 5
+        linewidth = 3.5
         plt.figure()
-        plt.plot(x_vals, np.array(emricial), alpha=0.7, linewidth=linewidth, label='Empirical', linestyle='dashed')
+        plt.plot(x_vals, np.array(emricial), alpha=0.8, linewidth=linewidth, label='Empirical', linestyle='dashed')
         plt.plot(x_vals, np.array(theoretical), alpha=0.7, linewidth=linewidth, label='Theoretical')
+        plt.plot(x_vals,1-np.exp(-x_vals*lam_1), alpha=0.7, linewidth=linewidth, label='Exponential')
+        plt.plot(x_vals, approx_cdf, alpha=0.7, linewidth=linewidth, label='Our approximation')
         plt.xlabel('X')
         plt.ylabel('CDF')
         plt.legend()

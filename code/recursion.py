@@ -115,7 +115,7 @@ def possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_c
 
 def main():
 
-    for num_arrivals in tqdm(range(11, 12)):
+    for num_arrivals in tqdm(range(2, 6)):
 
         arrivals = num_arrivals
         services = num_arrivals
@@ -131,11 +131,11 @@ def main():
         curr_comb = np.array([])
         possibilites_after_initial_arrivals(num_arrivals, arrivals, services, curr_comb, combnum, pkl_name_inter_depart)
 
-        # with open(pkl_name_inter_depart, 'rb') as f:
-        #     count, combp = pkl.load(f)
+        with open(pkl_name_inter_depart, 'rb') as f:
+            count, combp = pkl.load(f)
 
-        # print(combp)
-        # print(count)
+        print(combp)
+        print(count)
 
     if False:
 

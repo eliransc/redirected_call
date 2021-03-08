@@ -10,6 +10,7 @@ from utils_ph import create_ph_matrix_for_each_case, get_steady_for_given_v
 import time
 from numpy.linalg import matrix_power
 import math
+import os
 
 
 def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
@@ -242,6 +243,18 @@ def main():
     for ind in range(dff1_only_ones.shape[0] - 1):
         dff1_only_ones.loc[ind + 1, 'inter_1'] = dff1_only_ones.loc[ind + 1, 'Time'] - dff1_only_ones.loc[ind, 'Time']
 
+    main_path = '../pkl/'
+    pkl_name = 'ph_cases_short'
+
+    total_path = os.path.join(main_path, pkl_name)
+    with open(total_path, 'rb') as f:
+        ph_mat_v_list = pkl.load(f)
+
+    pkl_name = 'df_short'
+    total_path = os.path.join(main_path, pkl_name)
+    with open(total_path, 'rb') as f:
+        shrt_df = pkl.load(f)
+
     lam_0 = 0.5
     lam_1 = 0.5
     mu_0 = 0.7
@@ -254,100 +267,15 @@ def main():
 
     start_time = time.time()
     v_low = 1
-    v_high = 6
-
-    prob_atom = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])
-    print(prob_atom)
-
-
-    if True:
-        a_lists = []
-        s_lists = []
-        prob_for_each_case_s = []
-        for v in range(v_low, v_high):
-            if True:  # only if required to computes the lists
-                get_ph_structure_for_v(v)
-
-            a_list, s_list, total_ph_lists = get_ph_representation(v, lam_0, lam_1, mu_0, mu_1)
-
-            pkl_name_inter_depart = '../pkl/combs' + str(v) + '.pkl'
-            with open(pkl_name_inter_depart, 'rb') as f:
-                count, combp = pkl.load(f)
-
-            # convert combination to pd dataframe
-            df = pd.DataFrame(combp)
-            start_time = time.time()
-            steady_state = get_steady_for_given_v(u0, u10, u11, R, v)  # getting steady-state probs
-            prob_for_each_case = compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v)  # get the probability for each case
-            print("--- %s seconds for probability computation v=%d ---" % (time.time() - start_time, v))
-
-            a_lists.append(a_list)
-            s_lists.append(s_list)
-            prob_for_each_case_s.append(prob_for_each_case)
-
-        # dumping the pkl
-
-        pkl_name_ph_representation = '../pkl/ph_rep.pkl'
-        with open(pkl_name_ph_representation, 'wb') as f:
-            pkl.dump((a_lists, s_lists, prob_for_each_case_s), f)
-
-    pkl_name_ph_representation = '../pkl/ph_rep.pkl'
-    with open(pkl_name_ph_representation, 'rb') as f:
-        a_lists, s_lists, prob_for_each_case_s = pkl.load(f)
-
-    if False:
-        moment = 3
-        mom = geometric_pdf(p, 0) * (probs[0] + probs[1]) * (math.factorial(moment)/(lam_0 + lam_1)**moment)
-        for v in range(v_low, v_high):
-            start_time = time.time()
-            curr_mom = get_moment(a_lists[v - v_low], s_lists[v - v_low], prob_for_each_case_s[v - v_low], moment)
-
-            if v == v_high:
-
-                mom += curr_mom * geometric_tail(p, v)
-            else:
-                mom += curr_mom * geometric_pdf(p, v)
-
-            print("--- %s seconds for moment evaluation v=%d ---" % (time.time() - start_time, v))
-            print(mom)
+    v_high = 15
 
     emricial = []
     tot = dff1_only_ones.shape[0]
     theoretical = []
-    x_vals = np.linspace(0.01, 20, 100)
+    x_vals = np.linspace(20, 0.01, 20)
 
-
-    ## pdf evaluation
-    if False:
-        for x in tqdm(x_vals):
-
-            total_pdf = 0
-
-            for v in range(v_low, v_high):
-
-                curr_pdf = get_pdf(a_lists[v-v_low], s_lists[v-v_low], lam0, lam1, mu0, lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get pdf
-                # print(curr_pdf)
-                if v == v_high:
-                    total_pdf += curr_pdf*geometric_tail(p, v)
-                else:
-                    total_pdf += curr_pdf * geometric_pdf(p, v)
-                # print('$$$$$$')
-                # print(curr_pdf)
-
-            theoretical.append(total_pdf)
-
-        linewidth = 3
-        plt.figure()
-        plt.hist(dff1_only_ones['inter_1'], alpha=0.7, linewidth=linewidth, label='Empirical', density = True, bins = 200)
-        plt.plot(x_vals, np.array(theoretical), alpha=0.7, linewidth=linewidth, label='Theoretical')
-        plt.xlabel('X')
-        plt.ylabel('PDF')
-        plt.legend()
-        plt.show()
-
-        print('here')
-
-    # start_time = time.time()
+    prob_atom = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])
+    print(prob_atom)
 
     if True:
         # cdf evaluation
@@ -357,25 +285,41 @@ def main():
             alpha, curr_T = pkl.load(f)
 
         approx_cdf = []
-
+        time_tracker = []
         for x in tqdm(x_vals):
             approx_cdf.append(1 - np.sum(np.dot(alpha, expm(curr_T * x))))
 
-            total_cdf = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
+            total_cdf = prob_atom+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
 
             start_time = time.time()
+            second_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 2)
+            first_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 1)
             for v in range(v_low, v_high):
+                curr_cdf = 0
+
+                for ind_ph in range(shrt_df[v-1].shape[0]):
+                    alph = np.zeros(ph_mat_v_list[v-1][ind_ph].shape[0])
+                    alph[0] = 1
+
+                    curr_cdf += (1 - np.sum(np.dot(alph, expm(ph_mat_v_list[v-1][ind_ph] * x))) )* (
+                                shrt_df[v-1].loc[ind_ph, 'prob'])
+
+                    # second_moment += (2 * np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-2))) )* (
+                    #             shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
+                    #
+                    # first_moment += (-np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-1))) )* (
+                    #             shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
 
 
-                curr_cdf = get_cdf(a_lists[v-v_low], s_lists[v-v_low], lam_0, lam_1, mu_0, x, prob_for_each_case_s[v-v_low])  # get cdf
-                # print(curr_cdf)
+                    # print(curr_cdf)
                 total_cdf += curr_cdf*geometric_pdf(p, v)
+            time_tracker.append(time.time() - start_time)
             # print("--- %s seconds for cdf x=%s ---" % (time.time() - start_time, x))
 
             theoretical.append(total_cdf)
             emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
 
-
+        print(time_tracker)
 
         linewidth = 3.5
         plt.figure()
@@ -389,6 +333,8 @@ def main():
         plt.show()
 
         print('here')
+
+
 
 if __name__ == '__main__':
 

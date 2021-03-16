@@ -252,7 +252,7 @@ def get_Avg_system(R, u10, u11):
 
 
 def get_steady(lam_0, lam_1, mu_0, mu_1):
-    mu = np.array([mu_0, mu_1])
+
     T0 = np.array([-lam_0])
     T1 = np.array([-lam_1])
     Ts = [T0, T1]
@@ -283,7 +283,9 @@ def get_steady(lam_0, lam_1, mu_0, mu_1):
 
     return u0, u10, u11, R
 
-
+def geometric_pdf(lam0,lam1,n):
+    p = lam1/(lam1+lam0)
+    return p*((1-p)**(n))
 
 def get_steady_for_given_v(u0, u10, u11, R, v):
 

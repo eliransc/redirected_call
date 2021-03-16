@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 from utils_ph import create_ph_matrix_for_each_case, get_steady_for_given_v
 import time
 from numpy.linalg import matrix_power
-import math
 import os
+import scipy,  math
+
 
 
 def compute_probs(df, total_ph_lists, steady_state, lam_0, lam_1, mu_0, v):
@@ -277,7 +278,7 @@ def main():
     prob_atom = (geometric_pdf(p, 0))*(1-probs[0]-probs[1])
     print(prob_atom)
 
-    if True:
+    if False:
         # cdf evaluation
 
         # The approximiation method
@@ -292,8 +293,7 @@ def main():
             total_cdf = prob_atom+geometric_pdf(p,0)*(probs[0]+probs[1])*(1-np.exp(-(lam_0+lam_1)*x))
 
             start_time = time.time()
-            second_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 2)
-            first_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 1)
+
             for v in range(v_low, v_high):
                 curr_cdf = 0
 
@@ -304,17 +304,12 @@ def main():
                     curr_cdf += (1 - np.sum(np.dot(alph, expm(ph_mat_v_list[v-1][ind_ph] * x))) )* (
                                 shrt_df[v-1].loc[ind_ph, 'prob'])
 
-                    # second_moment += (2 * np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-2))) )* (
-                    #             shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
-                    #
-                    # first_moment += (-np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-1))) )* (
-                    #             shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
 
 
                     # print(curr_cdf)
                 total_cdf += curr_cdf*geometric_pdf(p, v)
             time_tracker.append(time.time() - start_time)
-            # print("--- %s seconds for cdf x=%s ---" % (time.time() - start_time, x))
+            print("--- %s seconds for cdf x=%s ---" % (time.time() - start_time, x))
 
             theoretical.append(total_cdf)
             emricial.append(dff1_only_ones.loc[dff1_only_ones['inter_1'] < x, :].shape[0]/tot)
@@ -333,6 +328,43 @@ def main():
         plt.show()
 
         print('here')
+
+    if True:
+
+
+
+
+
+        time_tracker = []
+
+
+        start_time = time.time()
+        fifth_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (scipy.math.factorial(5) / (lam_0 + lam_1) ** 5)
+        fourth_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 4)
+        third_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 3)
+        second_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 2)
+        first_moment = prob_atom * 0 + geometric_pdf(p, 0) * (probs[0] + probs[1]) * (1 / (lam_0 + lam_1) ** 1)
+        for v in range(v_low, v_high):
+
+            for ind_ph in range(shrt_df[v-1].shape[0]):
+                alph = np.zeros(ph_mat_v_list[v - 1][ind_ph].shape[0])
+                alph[0] = 1
+
+                fifth_moment += (- scipy.math.factorial(5) * np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-5))) )* (
+                            shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
+
+                second_moment += (2 * np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-2))) )* (
+                            shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
+
+                first_moment += (-np.sum(np.dot(alph, matrix_power(ph_mat_v_list[v-1][ind_ph],-1))) )* (
+                            shrt_df[v-1].loc[ind_ph, 'prob'])*geometric_pdf(p, v)
+
+
+        print(first_moment, second_moment,fifth_moment )
+
+        time_tracker.append(time.time() - start_time)
+        print("--- %s seconds for the  xth moment%s ---" % (time.time() - start_time, 5))
+
 
 
 

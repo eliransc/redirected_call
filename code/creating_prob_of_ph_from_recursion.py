@@ -20,7 +20,7 @@ def main():
         lam0_lam1_vals_list = []
         lam0_lam1_vals_list.append(np.array([0, 1, 0, 1, 0]))
 
-        for v in range(2, 11):
+        for v in range(2, 3):
 
             curr_new_lam0lam1 = np.array([])
             for ind, val in enumerate(options_list[v - 1]):

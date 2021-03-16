@@ -103,7 +103,7 @@ def main():
     df_acuum = pd.DataFrame(dat,  columns=['event', 'prob'])
 
 
-    for v in range(2, upper_bound):
+    for v in tqdm(range(2, upper_bound)):
 
         steady_arr = get_steady_for_given_v(u0, u10, u11, R, v)
 
@@ -129,21 +129,21 @@ def main():
             elif ind < len(options_list[v - 1]) - 1:
                 curr_assignment_mu = np.append(curr_new_mu[np.sum(options_list[v -1][:ind -1])
                                                         :np.sum(options_list[ v -1][:ind])],
-                                            mu_vals_list[v - 2][np.sum(options_list[v - 2][:ind ])
+                                            mu_vals_list[0][np.sum(options_list[v - 2][:ind ])
                                                                 :np.sum(options_list[v - 2][:ind + 1])])
                 curr_new_mu = np.append(curr_new_mu, curr_assignment_mu)
 
 
                 curr_assignment_lam0lam1 = np.append(curr_new_lam0lam1[np.sum(options_list[v - 1][:ind - 1])
                                                               :np.sum(options_list[v - 1][:ind])],
-                                            lam0_lam1_vals_list[v - 2][np.sum(options_list[v - 2][:ind])
+                                            lam0_lam1_vals_list[0][np.sum(options_list[v - 2][:ind])
                                                                        :np.sum(options_list[v - 2][:ind + 1])])
                 curr_new_lam0lam1 = np.append(curr_new_lam0lam1, curr_assignment_lam0lam1)
 
 
                 curr_assignment_mu_lam0lam1 = np.append(curr_new_mulam0lam1[np.sum(options_list[v - 1][:ind - 1])
                                                                 :np.sum(options_list[v - 1][:ind])],
-                                            mulam0_lam1_vals_list[v - 2][np.sum(options_list[v - 2][:ind])
+                                            mulam0_lam1_vals_list[0][np.sum(options_list[v - 2][:ind])
                                                                          :np.sum(options_list[v - 2][:ind + 1])])
                 curr_new_mulam0lam1 = np.append(curr_new_mulam0lam1, curr_assignment_mu_lam0lam1 + 1)
 
@@ -151,7 +151,7 @@ def main():
 
                 curr_assignment_mu_prob = np.append(curr_new_mu0_prob[np.sum(options_list[v - 1][:ind - 1])
                                                          :np.sum(options_list[v - 1][:ind])],
-                                            mu_vals_list_prob[v - 2][np.sum(options_list[v - 2][:ind])
+                                            mu_vals_list_prob[0][np.sum(options_list[v - 2][:ind])
                                                                      :np.sum(options_list[v - 2][:ind + 1])] + 1)
 
                 curr_new_mu0_prob = np.append(curr_new_mu0_prob, curr_assignment_mu_prob)
@@ -159,7 +159,7 @@ def main():
 
                 curr_assignment_lam0lam1_prob = np.append(curr_new_lam0lam1_prob[np.sum(options_list[v - 1][:ind - 1])
                                                               :np.sum(options_list[v - 1][:ind])] + 1,
-                                            lam0_lam1_vals_list_prob[v - 2][np.sum(options_list[v - 2][:ind])
+                                            lam0_lam1_vals_list_prob[0][np.sum(options_list[v - 2][:ind])
                                                                             :np.sum(options_list[v - 2][:ind + 1])])
                 curr_new_lam0lam1_prob = np.append(curr_new_lam0lam1_prob, curr_assignment_lam0lam1_prob)
 
@@ -250,11 +250,19 @@ def main():
             df_acuum = pd.DataFrame(dat, columns=['event', 'prob'])
 
 
+        # mu_vals_list.append(curr_new_mu)
+        mu_vals_list = []
         mu_vals_list.append(curr_new_mu)
+
+        lam0_lam1_vals_list = []
         lam0_lam1_vals_list.append(curr_new_lam0lam1)
+        mulam0_lam1_vals_list = []
         mulam0_lam1_vals_list.append(curr_new_mulam0lam1)
 
+        mu_vals_list_prob = []
         mu_vals_list_prob.append(curr_new_mu0_prob)
+
+        lam0_lam1_vals_list_prob = []
         lam0_lam1_vals_list_prob.append(curr_new_lam0lam1_prob)
 
 

@@ -103,8 +103,7 @@ def main():
     df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
 
     # merging cases and leaving only the case and its final marginal prob
-    df_acuum = merge_cases(df)
-    df_acuum['prob'] = df_acuum['prob'].astype(float)
+
     df_acuum1 = merge_cases(df)
     df_acuum1['prob'] = df_acuum1['prob'].astype(float)
 
@@ -116,13 +115,6 @@ def main():
         total_num_cases = 0  # tracking the number of cases in total, for debugging
         steady_arr = get_steady_for_given_v(u0, u10, u11, R, v) # steady state probs required
 
-        # initial vevtors for current v
-        curr_new_mu = np.array([])
-        curr_new_lam0lam1 = np.array([])
-        curr_new_mulam0lam1 = np.array([])
-
-        curr_new_mu0_prob = np.array([])
-        curr_new_lam0lam1_prob = np.array([])
 
 
         # looping over the values of c for each v
@@ -151,73 +143,6 @@ def main():
                 insert_to_pkl_v_plus_1('mu', 'prob', v, ind)
                 insert_to_pkl_v_plus_1('lam0lam1', 'prob', v, ind)
 
-            # if ind == 0: # computing recursion vector for ind = 0, that is c = v+1
-            #     curr_new_mu = np.append(curr_new_mu, v)
-            #     curr_new_lam0lam1 = np.append(curr_new_lam0lam1, 0)
-            #     curr_new_mulam0lam1 = np.append(curr_new_mulam0lam1, 0)
-            #
-            #     curr_new_mu0_prob = np.append(curr_new_mu0_prob, 0)
-            #     curr_new_lam0lam1_prob = np.append(curr_new_lam0lam1_prob, 0)
-            #     total_num_cases += 1
-            #
-            #
-            # elif ind < len(options_list[v - 1]) - 1:  # computing recursion vector for 1 <= c <= v+1
-            #     curr_assignment_mu = np.append(curr_new_mu[np.sum(options_list[v -1][:ind - 1])
-            #                                             :np.sum(options_list[v -1][:ind])],
-            #                                 mu_vals_list[np.sum(options_list[v - 2][:ind])
-            #                                                     :np.sum(options_list[v - 2][:ind + 1])])
-            #     curr_new_mu = np.append(curr_new_mu, curr_assignment_mu)
-            #
-            #
-            #     curr_assignment_lam0lam1 = np.append(curr_new_lam0lam1[np.sum(options_list[v - 1][:ind - 1])
-            #                                                   :np.sum(options_list[v - 1][:ind])],
-            #                                 lam0_lam1_vals_list[np.sum(options_list[v - 2][:ind])
-            #                                                            :np.sum(options_list[v - 2][:ind + 1])])
-            #     curr_new_lam0lam1 = np.append(curr_new_lam0lam1, curr_assignment_lam0lam1)
-            #
-            #
-            #     curr_assignment_mu_lam0lam1 = np.append(curr_new_mulam0lam1[np.sum(options_list[v - 1][:ind - 1])
-            #                                                     :np.sum(options_list[v - 1][:ind])],
-            #                                 mulam0_lam1_vals_list[np.sum(options_list[v - 2][:ind])
-            #                                                              :np.sum(options_list[v - 2][:ind + 1])])
-            #
-            #     curr_assignment_mu_lam0lam1 = curr_assignment_mu_lam0lam1 + 1
-            #     curr_new_mulam0lam1 = np.append(curr_new_mulam0lam1, curr_assignment_mu_lam0lam1)
-            #
-            #
-            #
-            #     curr_assignment_mu_prob = np.append(curr_new_mu0_prob[np.sum(options_list[v - 1][:ind - 1])
-            #                                              :np.sum(options_list[v - 1][:ind])],
-            #                                 mu_vals_list_prob[np.sum(options_list[v - 2][:ind])
-            #                                                          :np.sum(options_list[v - 2][:ind + 1])] + 1)
-            #
-            #     curr_new_mu0_prob = np.append(curr_new_mu0_prob, curr_assignment_mu_prob)
-            #
-            #
-            #     curr_assignment_lam0lam1_prob = np.append(curr_new_lam0lam1_prob[np.sum(options_list[v - 1][:ind - 1])
-            #                                                   :np.sum(options_list[v - 1][:ind])] + 1,
-            #                                 lam0_lam1_vals_list_prob[np.sum(options_list[v - 2][:ind])
-            #                                                                 :np.sum(options_list[v - 2][:ind + 1])])
-            #     curr_new_lam0lam1_prob = np.append(curr_new_lam0lam1_prob, curr_assignment_lam0lam1_prob)
-            #
-            #     total_num_cases += curr_assignment_lam0lam1_prob.shape[0]
-            #
-            # else:
-            #
-            #     curr_new_mu = np.append(curr_new_mu, curr_assignment_mu)
-            #
-            #     curr_assignment_lam0lam1 = curr_assignment_lam0lam1+1
-            #     curr_new_lam0lam1 = np.append(curr_new_lam0lam1, curr_assignment_lam0lam1)
-            #
-            #     curr_assignment_mu_lam0lam1 = curr_assignment_mu_lam0lam1
-            #     curr_new_mulam0lam1 = np.append(curr_new_mulam0lam1, curr_assignment_mu_lam0lam1)
-            #
-            #     curr_new_mu0_prob = np.append(curr_new_mu0_prob, curr_assignment_mu_prob)
-            #
-            #     curr_new_lam0lam1_prob = np.append(curr_new_lam0lam1_prob, curr_assignment_lam0lam1_prob)
-            #
-            #     total_num_cases += curr_assignment_lam0lam1_prob.shape[0]
-
 
             if ind == 0:  # we take all the curr recursion values and convert it into a df with event
                 # and marginal prob. also merge similar cases and sum their probabilities. Using pickles
@@ -234,25 +159,6 @@ def main():
 
                 df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
 
-
-            # if ind == 0: # we take all the curr recursion values and convert it into a df with event
-            #     # and marginal prob. also merge similar cases and sum their probabilities. Using vectors from above
-            #     data = np.concatenate((curr_new_mu.reshape(1, 1).astype(int),
-            #                            curr_new_lam0lam1.reshape(1, 1).astype(int)
-            #                            , curr_new_mulam0lam1.reshape(1, 1).astype(int),
-            #                            curr_new_mu0_prob.reshape(1, 1).astype(int),
-            #                            curr_new_lam0lam1_prob.reshape(1, 1).astype(int),
-            #                           np.array([steady_arr[-1]]).reshape(1, 1),
-            #                           np.array([geometric_pdf(lam_0, lam_1, v)]).reshape(1,1)),  axis=1)
-            #
-            #     df = pd.DataFrame(data, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
-            #                                      'steady_prob', 'v_prob'])
-            #     df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
-            #
-            #     df_curr = merge_cases(df)
-            #     df_curr['prob'] = df_curr['prob'].astype(float)
-
-
             else:
                 a = []
                 for rate_phase in rate_ph_list:
@@ -261,21 +167,13 @@ def main():
                         curr_arr = pkl.load(f)[0]
                     a.append(curr_arr.reshape(curr_arr.shape[0], 1).astype(int))
 
-
-                # a1 = curr_assignment_mu.reshape(curr_assignment_mu.shape[0], 1).astype(int)
-                # a2 = curr_assignment_lam0lam1.reshape(curr_assignment_lam0lam1.shape[0], 1).astype(int)
-                # a3 = curr_assignment_mu_lam0lam1.reshape(curr_assignment_mu_lam0lam1.shape[0], 1).astype(int)
-                # a4 = curr_assignment_mu_prob.reshape(curr_assignment_mu_prob.shape[0], 1).astype(int)
-                # a5 = curr_assignment_lam0lam1_prob.reshape(curr_assignment_mu_prob.shape[0], 1).astype(int)
-
                 if v + 2 - ind == 1:
                     a.append( np.sum(steady_arr[:2]) * np.ones((a[0].shape[0], 1)))
-                    # a6 = np.sum(steady_arr[:2]) * np.ones((curr_assignment_mu.shape[0], 1))
                 else:
                     a.append(steady_arr[v + 2 - ind]*np.ones((a[0].shape[0],1)))
-                    # a6 = steady_arr[v + 2 - ind]*np.ones((curr_assignment_mu.shape[0],1))
+
                 a.append(geometric_pdf(lam_0, lam_1, v)*np.ones((a[0].shape[0],1)))
-                # a7 = geometric_pdf(lam_0, lam_1, v)*np.ones((curr_assignment_mu.shape[0], 1))
+
 
                 total_shape = a[0].shape[0]
                 if total_shape > units:
@@ -283,13 +181,6 @@ def main():
                     num_units = int(np.floor(total_shape/units))
                     for ind_units in tqdm(range(num_units + 1)):
                         if ind_units < num_units:
-                            # data = np.concatenate((a1[ind_units * units: (ind_units + 1) * units],
-                            #                        a2[ind_units * units: (ind_units + 1) * units],
-                            #                        a3[ind_units * units: (ind_units + 1) * units],
-                            #                        a4[ind_units * units: (ind_units + 1) * units],
-                            #                        a5[ind_units * units: (ind_units + 1) * units],
-                            #                        a6[ind_units * units: (ind_units + 1) * units],
-                            #                        a7[ind_units * units: (ind_units + 1) * units]), axis = 1)
 
                             data1 = np.concatenate((a[0][ind_units * units: (ind_units + 1) * units],
                                                    a[1][ind_units * units: (ind_units + 1) * units],
@@ -299,13 +190,6 @@ def main():
                                                    a[5][ind_units * units: (ind_units + 1) * units],
                                                    a[6][ind_units * units: (ind_units + 1) * units]), axis=1)
                         else:
-                            # data = np.concatenate((a1[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a2[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a3[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a4[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a5[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a6[ind_units * units: ind_units * units + total_shape % units],
-                            #                        a7[ind_units * units: ind_units * units + total_shape % units]), axis=1)
 
                             data1 = np.concatenate((a[0][ind_units * units: ind_units * units + total_shape % units],
                                                    a[1][ind_units * units: ind_units * units + total_shape % units],
@@ -316,14 +200,6 @@ def main():
                                                    a[6][ind_units * units: ind_units * units + total_shape % units]),
                                                   axis=1)
 
-                        # df = pd.DataFrame(data, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
-                        #                                  'steady_prob', 'v_prob'])
-                        #
-                        # df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
-                        #
-                        #
-                        # df = merge_cases(df)
-                        # df['prob'] = df['prob'].astype(float)
 
                         df1 = pd.DataFrame(data1, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
                                                            'steady_prob', 'v_prob'])
@@ -334,18 +210,11 @@ def main():
                         df1['prob'] = df1['prob'].astype(float)
 
 
-                        # if ind_units == 0:
-                        #     df_total = df
-                        # else:
-                        #     df_total = pd.concat([df_total, df])
-
                         if ind_units == 0:
                             df_total1 = df1
                         else:
                             df_total1 = pd.concat([df_total1, df1])
 
-                    # df_curr = merge_cases(df_total)
-                    # df_curr['prob'] = df_curr['prob'].astype(float)
 
                     df_curr1 = merge_cases(df_total1)
                     df_curr1['prob'] = df_curr1['prob'].astype(float)
@@ -353,14 +222,6 @@ def main():
 
                 else:
 
-                    # data = np.concatenate((a1, a2, a3, a4, a5, a6, a7), axis=1)
-                    #
-                    # df = pd.DataFrame(data, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
-                    #                                      'steady_prob', 'v_prob'])
-                    # df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
-                    #
-                    # df_curr = merge_cases(df)
-                    # df_curr['prob'] = df_curr['prob'].astype(float)
 
                     data1 = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 
@@ -370,14 +231,6 @@ def main():
 
                     df_curr1 = merge_cases(df1)
                     df_curr1['prob'] = df_curr1['prob'].astype(float)
-
-            # df_curr['prob'] = df_curr['prob'].astype(float)
-            # df_acuum['prob'] = df_acuum['prob'].astype(float)
-            # df_acuum = pd.concat([df_curr, df_acuum])
-            # df_acuum['prob'] = df_acuum['prob'].astype(float)
-            #
-            # df_acuum = merge_cases(df_acuum)
-            # df_acuum['prob'] = df_acuum['prob'].astype(float)
 
             df_curr1['prob'] = df_curr1['prob'].astype(float)
             df_acuum1['prob'] = df_acuum1['prob'].astype(float)

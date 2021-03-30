@@ -24,7 +24,7 @@ def main():
     ## each v can be partitioned into different sets of c. here we compute the size of set
     num_options_1 = np.array([1, 2, 2])
     options_list = [num_options_1]
-    upper_bound = 9
+    upper_bound = 14
     for num_options_ind in range(upper_bound):
         curr_array = np.array([1])
         for ind in range(1, options_list[num_options_ind].shape[0]):
@@ -118,7 +118,7 @@ def main():
 
             elif ind < len(options_list[v - 1]) - 1:
                 curr_assignment_mu = np.append(curr_new_mu[np.sum(options_list[v -1][:ind -1])
-                                                        :np.sum(options_list[ v -1][:ind])],
+                                                        :np.sum(options_list[v -1][:ind])],
                                             mu_vals_list[np.sum(options_list[v - 2][:ind ])
                                                                 :np.sum(options_list[v - 2][:ind + 1])])
                 curr_new_mu = np.append(curr_new_mu, curr_assignment_mu)
@@ -256,9 +256,6 @@ def main():
                                                          'steady_prob', 'v_prob'])
                     df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
 
-                    if df.loc[(df['mu']==0)&(df['lam0lam1']==10)&(df['mu0lam0lam1']==10),:].shape[0]>0:
-                        print('stop here')
-
                     df_curr = merge_cases(df)
                     df_curr['prob'] = df_curr['prob'].astype(float)
 
@@ -274,9 +271,11 @@ def main():
             df_acuum = merge_cases(df_acuum)
             df_acuum['prob'] = df_acuum['prob'].astype(float)
 
-        print(total_num_cases)
+
         with open('../pkl/df_acuum.pkl', 'wb') as f:
             pkl.dump(df_acuum, f)
+
+        print(df_acuum.shape[0])
 
 
         mu_vals_list = curr_new_mu
@@ -289,7 +288,6 @@ def main():
         lam0_lam1_vals_list_prob = curr_new_lam0lam1_prob
 
 
-    print('stop')
 
 def add_prob_even_total_prob(df,lam_0,lam_1,mu_0):
     '''
@@ -372,21 +370,7 @@ def merge_cases(df):
     df_curr = pd.DataFrame(dat, columns=['event', 'prob'])
     return df_curr
 
-    # df_acuum = pd.concat([df_curr, df_acuum])
-    # df_acuum['prob'] = df_acuum['prob'].astype(float)
-    # df_grp = df_acuum.groupby(['event'])
-    # unique_vals = df_acuum['event'].unique()
-    # event_arr = np.array([])
-    # prob_arr = np.array([])
-    #
-    # for event in unique_vals:
-    #     event_arr = np.append(event_arr, event)
-    #     prob_arr = np.append(prob_arr, df_grp.get_group(event)['prob'].sum())
-    #
-    # dat = np.concatenate((event_arr.reshape(event_arr.shape[0], 1), prob_arr.reshape(event_arr.shape[0], 1)),
-    #                      axis=1)
-    #
-    # df_acuum = pd.DataFrame(dat, columns=['event', 'prob'])
+
 
 
 if __name__ == '__main__':

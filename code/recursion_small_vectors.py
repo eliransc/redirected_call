@@ -19,6 +19,7 @@ from numpy.linalg import matrix_power
 from tqdm import tqdm
 from utils_ph import *
 
+
 def main():
 
     ## each v can be partitioned into different sets of c. here we compute the size of set
@@ -167,6 +168,12 @@ def main():
                         a.append(geometric_pdf(lam_0, lam_1, v)*np.ones((a[0].shape[0], 1)))
 
                         total_shape = a[0].shape[0]
+
+                        if v>12:
+                            print('a lenght')
+                            for indd in range(7):
+                                print(a[indd].shape[0])
+                                print(ind, v)
 
                         data1 = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 

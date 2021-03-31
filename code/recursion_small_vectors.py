@@ -66,13 +66,11 @@ def main():
     mu_1 = 3.
 
     # we limit the size of updating the recursions
-    units = 5
+    units = 2000000
 
     # computing M/G/1 steady-state
     u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
     steady_arr = get_steady_for_given_v(u0, u10, u11, R, 1)
-
-
 
     # prob_b1 = get_prob_c(0, steady_arr, 2, mu_1, lam_0 + lam_1)
     # prob_b2 = get_prob_c(1, steady_arr, 2, mu_1, lam_0 + lam_1)
@@ -118,7 +116,7 @@ def main():
         # looping over the values of c for each v
         for ind, val in enumerate(options_list[v - 1]):
 
-            if val < units:
+            if True:  # val < units:
 
                 if ind == 0:  # dumping the recursion vectors for each pair in (ph_prob, val)
                     for rate_phprob in rate_ph_list:
@@ -129,7 +127,7 @@ def main():
                     for rate_phprob in rate_ph_list:
                         insert_to_pkl_v_greater_2(rate_phprob[0], rate_phprob[1], v, ind, units)
 
-                else: # dumping the recursion vectors for each pair in (ph_prob, val)
+                else:  # dumping the recursion vectors for each pair in (ph_prob, val)
 
                     for rate_phprob in rate_ph_list:
                         insert_to_pkl_v_plus_1(rate_phprob[0], rate_phprob[1], v, ind, units)
@@ -138,7 +136,7 @@ def main():
                     # and marginal prob. also merge similar cases and sum their probabilities. Using pickles
                     a = []
                     for rate_phase in rate_ph_list:
-                        curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind)
+                        curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind, 1)
                         with open(curr_path, 'rb') as f:
                             curr_arr = pkl.load(f)[0]
                         a.append(curr_arr.reshape(1, 1).astype(int))
@@ -147,40 +145,46 @@ def main():
                     data = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 
                     df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
+                    df_acuum1 = merge_curr(df_curr1, df_acuum1)
 
                 else:
-                    a = []
-                    for rate_phase in rate_ph_list:
-                        curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind)
-                        with open(curr_path, 'rb') as f:
-                            curr_arr = pkl.load(f)[0]
-                        a.append(curr_arr.reshape(curr_arr.shape[0], 1).astype(int))
 
-                    if v + 2 - ind == 1:
-                        a.append(np.sum(steady_arr[:2]) * np.ones((a[0].shape[0], 1)))
-                    else:
-                        a.append(steady_arr[v + 2 - ind]*np.ones((a[0].shape[0], 1)))
+                    example_path = os.path.join('..\pkl', str(v), rate_ph_list[0][1], rate_ph_list[0][0], str(ind))
+                    num_parts = len(os.listdir(example_path))
+                    for part in range(1, num_parts+1):
+                        a = []
+                        for rate_phase in rate_ph_list:
+                            curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind, part)
+                            with open(curr_path, 'rb') as f:
+                                curr_arr = pkl.load(f)[0]
+                            a.append(curr_arr.reshape(curr_arr.shape[0], 1).astype(int))
 
-                    a.append(geometric_pdf(lam_0, lam_1, v)*np.ones((a[0].shape[0], 1)))
+                        if v + 2 - ind == 1:
+                            a.append(np.sum(steady_arr[:2]) * np.ones((a[0].shape[0], 1)))
+                        else:
+                            a.append(steady_arr[v + 2 - ind]*np.ones((a[0].shape[0], 1)))
 
-                    total_shape = a[0].shape[0]
+                        a.append(geometric_pdf(lam_0, lam_1, v)*np.ones((a[0].shape[0], 1)))
 
-                    data1 = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
+                        total_shape = a[0].shape[0]
 
-                    df1 = pd.DataFrame(data1, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
-                                                     'steady_prob', 'v_prob'])
-                    df1 = add_prob_even_total_prob(df1, lam_0, lam_1, mu_0)
+                        data1 = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 
-                    df_curr1 = merge_cases(df1)
-                    df_curr1['prob'] = df_curr1['prob'].astype(float)
+                        df1 = pd.DataFrame(data1, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
+                                                         'steady_prob', 'v_prob'])
+                        df1 = add_prob_even_total_prob(df1, lam_0, lam_1, mu_0)
 
-                df_curr1['prob'] = df_curr1['prob'].astype(float)
-                df_acuum1['prob'] = df_acuum1['prob'].astype(float)
-                df_acuum1 = pd.concat([df_curr1, df_acuum1])
-                df_acuum1['prob'] = df_acuum1['prob'].astype(float)
-
-                df_acuum1 = merge_cases(df_acuum1)
-                df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+                        df_acuum1 = merge_curr(df1, df_acuum1)
+                        # df_curr1 = merge_cases(df1)
+                        # df_curr1['prob'] = df_curr1['prob'].astype(float)
+                        #
+                        # df_curr1['prob'] = df_curr1['prob'].astype(float)
+                        # df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+                        # df_acuum1 = pd.concat([df_curr1, df_acuum1])
+                        # df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+                        #
+                        # df_acuum1 = merge_cases(df_acuum1)
+                        # df_acuum1['prob'] = df_acuum1['prob'].astype(float)
 
             # total_v_prob += df_curr['prob'].sum()
             else:  # that is, there are more than units values
@@ -283,7 +287,19 @@ def main():
         print(df_acuum1.shape[0])
 
 
+def merge_curr(df1, df_acuum1):
+    df_curr1 = merge_cases(df1)
+    df_curr1['prob'] = df_curr1['prob'].astype(float)
 
+    df_curr1['prob'] = df_curr1['prob'].astype(float)
+    df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+    df_acuum1 = pd.concat([df_curr1, df_acuum1])
+    df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+
+    df_acuum1 = merge_cases(df_acuum1)
+    df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+
+    return df_acuum1
 
 
 def convert_to_pd_with_merge(data, lam_0, lam_1, mu_0):
@@ -298,7 +314,7 @@ def convert_to_pd_with_merge(data, lam_0, lam_1, mu_0):
 
 def insert_pkl_ind_0(rate, ph_prob, v, ind = 0):
 
-    curr_full_path = create_path_pkl(rate, ph_prob, v, ind)
+    curr_full_path = create_path_pkl(rate, ph_prob, v, ind, 1)
     if (rate == 'mu') & (ph_prob == 'ph'):
         arr = np.array([v])
     else:
@@ -307,7 +323,8 @@ def insert_pkl_ind_0(rate, ph_prob, v, ind = 0):
     with open(curr_full_path, 'wb') as f:
         pkl.dump((arr,  1), f)
 
-def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
+def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units):
+
 
     pkl_path_1 = os.path.join('..\pkl', str(v), ph_prob, rate, str(ind-1))
     first_part_list = os.listdir(pkl_path_1)
@@ -318,7 +335,6 @@ def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
         with open(full_path, 'rb') as f:
             curr_num = pkl.load(f)[1]
         total_first_cases += curr_num
-
 
     pkl_path_2 = os.path.join('..\pkl', str(v - 1), ph_prob, rate, str(ind))
     second_part_list = os.listdir(pkl_path_2)
@@ -332,8 +348,8 @@ def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
 
     if total_first_cases + total_second_cases < units:
 
-        first_part_path = create_path_pkl(rate, ph_prob, v, ind - 1)
-        second_part_path = create_path_pkl(rate, ph_prob, v - 1, ind)
+        first_part_path = create_path_pkl(rate, ph_prob, v, ind - 1, 1)
+        second_part_path = create_path_pkl(rate, ph_prob, v - 1, ind, 1)
 
         with open(first_part_path, 'rb') as f:
             first_part = pkl.load(f)[0]
@@ -349,8 +365,17 @@ def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
         if (ph_prob == 'prob') & (rate == 'mu'):
             second_part += 1
 
+        con_arr = np.append(first_part, second_part)
+        # print('V=' + str(v) + ', ind = ' + str(ind) + 'rate: ' + rate + 'ph_prob: ' + ph_prob +  ' , arr = ' + str(con_arr))
+
+        curr_path_pkl = create_path_pkl(rate, ph_prob, v, ind, 1)
+        with open(curr_path_pkl, 'wb') as f:
+            pkl.dump((con_arr, con_arr.shape[0]), f)
+
     else:
         part = 1
+        num_vectors_first = len(first_part_list)
+
         for curr_part in first_part_list:
             full_path = os.path.join(pkl_path_1, curr_part)
             with open(full_path, 'rb') as f:
@@ -379,6 +404,8 @@ def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
             part += 1
 
 
+
+
     # total_shape = first_part.shape[0] + second_part.shape[0]
     # if (total_shape > units) & False:
     #     print('stop')
@@ -392,12 +419,7 @@ def insert_to_pkl_v_greater_2(rate, ph_prob, v, ind, units ):
     #
     # else:
     #
-    #     con_arr = np.append(first_part, second_part)
-    #     # print('V=' + str(v) + ', ind = ' + str(ind) + 'rate: ' + rate + 'ph_prob: ' + ph_prob +  ' , arr = ' + str(con_arr))
-    #
-    #     curr_path_pkl = create_path_pkl(rate, ph_prob, v, ind)
-    #     with open(curr_path_pkl, 'wb') as f:
-    #         pkl.dump((con_arr, con_arr.shape[0]), f)
+
 
 def insert_to_pkl_v_plus_1(rate, ph_prob, v, ind, units):
 
@@ -439,7 +461,7 @@ def insert_to_pkl_v_plus_1(rate, ph_prob, v, ind, units):
 def insert_to_pkl_v_1(rate, ph_prob, lower_bound, upper_bound, v ,ind, val_arr):
 
 
-    curr_full_path = create_path_pkl(rate, ph_prob, v, ind)
+    curr_full_path = create_path_pkl(rate, ph_prob, v, ind, 1)
 
     arr = val_arr[lower_bound:upper_bound]
 

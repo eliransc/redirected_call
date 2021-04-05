@@ -21,7 +21,7 @@ from tqdm import tqdm
 from utils_ph import *
 
 PKL_PATH = '/scratch/d/dkrass/eliransc/redircted_git/pkl'
-# PKL_PATH = '../pkl'
+PKL_PATH = '../pkl'
 def main():
 
     ## each v can be partitioned into different sets of c. here we compute the size of set
@@ -136,18 +136,18 @@ def main():
                 for rate_phprob in rate_ph_list:
                     insert_pkl_ind_0(rate_phprob[0], rate_phprob[1], v, ind)
 
-                    a = []
-                    for rate_phase in rate_ph_list:
-                        curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind, 1)
-                        with open(curr_path, 'rb') as f:
-                            curr_arr = pkl.load(f)[0]
-                        a.append(curr_arr.reshape(1, 1).astype(int))
-                    a.append(np.array([steady_arr[-1]]).reshape(1, 1))
-                    a.append(np.array([geometric_pdf(lam_0, lam_1, v)]).reshape(1, 1))
-                    data = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
+                a = []
+                for rate_phase in rate_ph_list:
+                    curr_path = create_path_pkl(rate_phase[0], rate_phase[1], v, ind, 1)
+                    with open(curr_path, 'rb') as f:
+                        curr_arr = pkl.load(f)[0]
+                    a.append(curr_arr.reshape(1, 1).astype(int))
+                a.append(np.array([steady_arr[-1]]).reshape(1, 1))
+                a.append(np.array([geometric_pdf(lam_0, lam_1, v)]).reshape(1, 1))
+                data = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 
-                    df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
-                    df_acuum1 = merge_curr(df_curr1, df_acuum1)
+                df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
+                df_acuum1 = merge_curr(df_curr1, df_acuum1)
 
             elif ind < len(options_list[v - 1]) - 1:  # dumping the recursion vectors for each pair in (ph_prob, val)
 

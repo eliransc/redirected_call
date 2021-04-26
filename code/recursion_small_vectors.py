@@ -75,12 +75,14 @@ def main():
     u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
     steady_arr = get_steady_for_given_v(u0, u10, u11, R, 1)
 
-    # prob_b1 = get_prob_c(0, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b2 = get_prob_c(1, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b3 = get_prob_c(2, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b4 = get_prob_c(3, steady_arr, 2, mu_1, lam_0 + lam_1)
-    #
-    # summ = prob_b1+prob_b2+prob_b3+prob_b4
+    steady_arr = get_steady_for_given_v(u0, u10, u11, R, 2)
+
+    prob_b1 = get_prob_c(0, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b2 = get_prob_c(1, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b3 = get_prob_c(2, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b4 = get_prob_c(3, steady_arr, 2, mu_1, lam_0 + lam_1)
+
+    summ = prob_b1+prob_b2+prob_b3+prob_b4
 
 
     #converting v=1 tuples and probabilites into a dataframe
@@ -423,35 +425,7 @@ def add_prob_even_total_prob(df,lam_0,lam_1,mu_0):
 
     return df
 
-def get_prob_c(c,steady_state,v, mu1, lam):
-    '''
 
-    :param c: number of customers to arrive in the future
-    :param steady_state: M/G/1 steady-state
-    :param v: num of type 0 customers
-    :param mu1: type 1 arrival rate
-    :param lam: conditioned arrival rate
-    :return: a vector the probabilites of b for all states under (v,c)
-    '''
-    b = v+1-c
-    prob_b = 0
-
-    if b == 0:
-        prob_b += np.sum(steady_state[:2])*prob_arrivals_during_exp(mu1, lam, 0)
-
-    elif b == v+1:
-        prob_b += np.sum(steady_state[:2])*tail_arrivals_during_exp(mu1, lam, v+1)
-        u_arr = np.arange(2, b+1)
-        k_arr = b-(u_arr-1)
-        prob_b += np.sum(steady_state[u_arr]*tail_arrivals_during_exp(mu1, lam, k_arr))
-        prob_b += steady_state[-1]
-    else:
-        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
-        u_arr = np.arange(2, b + 2)
-        k_arr = b - (u_arr-1)
-        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
-
-    return prob_b
 
 
 def prob_arrivals_during_exp(mu1, lam, k):

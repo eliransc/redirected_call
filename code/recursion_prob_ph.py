@@ -350,12 +350,6 @@ def get_prob_c(c,steady_state,v, mu1, lam):
     return prob_b
 
 
-def prob_arrivals_during_exp(mu1, lam, k):
-    return (lam**k)*mu1/(lam+mu1)**(k+1)
-
-def tail_arrivals_during_exp(mu1,lam, k):
-    return (lam/(lam+mu1))**(k)
-
 def merge_cases(df):
     df_grp = df.groupby(['event'])
     unique_vals = df['event'].unique()

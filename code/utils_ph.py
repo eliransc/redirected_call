@@ -25,6 +25,11 @@ from numpy.linalg import matrix_power
 def busy(s, lam2, mu2):
     return ((lam2 + mu2 + s) - ((lam2 + mu2 + s) ** 2 - 4 * lam2 * mu2) ** 0.5) / (2 * lam2)
 
+def prob_arrivals_during_exp(mu1, lam, k):
+    return (lam**k)*mu1/(lam+mu1)**(k+1)
+
+def tail_arrivals_during_exp(mu1,lam, k):
+    return (lam/(lam+mu1))**(k)
 
 def ser_lap(s, mu):
     return mu / (s + mu)
@@ -301,6 +306,36 @@ def get_steady_for_given_v(u0, u10, u11, R, v):
     steady = np.append(steady, 1-np.sum(steady))
 
     return steady
+
+def get_prob_c(c,steady_state,v, mu1, lam):
+    '''
+
+    :param c: number of customers to arrive in the future
+    :param steady_state: M/G/1 steady-state
+    :param v: num of type 0 customers
+    :param mu1: type 1 arrival rate
+    :param lam: conditioned arrival rate
+    :return: a vector the probabilites of b for all states under (v,c)
+    '''
+    b = v+1-c
+    prob_b = 0
+
+    if b == 0:
+        prob_b += np.sum(steady_state[:2])*prob_arrivals_during_exp(mu1, lam, 0)
+
+    elif b == v+1:
+        prob_b += np.sum(steady_state[:2])*tail_arrivals_during_exp(mu1, lam, v+1)
+        u_arr = np.arange(2, b+1)
+        k_arr = b-(u_arr-1)
+        prob_b += np.sum(steady_state[u_arr]*tail_arrivals_during_exp(mu1, lam, k_arr))
+        prob_b += steady_state[-1]
+    else:
+        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
+        u_arr = np.arange(2, b + 2)
+        k_arr = b - (u_arr-1)
+        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
+
+    return prob_b
 
 def create_ph_matrix_for_each_case(event_list, lam_0, lam_1, mu_0, mu_1):
 

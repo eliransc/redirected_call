@@ -8,31 +8,34 @@ from compute_df_probs_ph import compute_df
 from utils_ph import give_cdf_point
 
 def main(args):
-    ub_high = 21
+    ub_high = 12
     ub_low = 10
 
-    lam0s = np.linspace(0.1, 0.9, 9)
+    lam0s = np.linspace(0.1, 0.9, 3)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     for lam0_ind, lam0 in enumerate(lam0s):
         lam1 = 1-lam0
 
-        curr_lam_0_arr = np.array([])
+
         for ub_v in range(ub_low, ub_high+1):
 
-            df_name = 'df_' + str(ub_v) + '.pkl'
+            df_name_before = 'df_' + str(ub_v) + '_before_probs.pkl'
+            df_name_after = 'df_' + str(ub_v) +'_'+str(lam0) + '_after_probs.pkl'
 
-            if not os.path.exists(df_name):
-                give_number_cases(ub_v, df_name)
+            if not os.path.exists(df_name_before):
+                give_number_cases(ub_v, df_name_before)
 
-                compute_df(args.mu0, args.mu1, lam0, lam1, df_name)
+            if not os.path.exists(df_name_after):
+                compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after)
 
-            df_result = pkl.load(open(df_name, 'rb'))
+
+            df_result = pkl.load(open(df_name_after, 'rb'))
 
             x_vals = np.linspace(0, 2, 10)
 
             curr_time = []
             for xx in x_vals:
-                curr_time.append(give_cdf_point(df_result,args.mu0, args.mu1, lam0, lam1, xx))
+                curr_time.append(give_cdf_point(df_result, args.mu0, args.mu1, lam0, lam1, xx))
 
             total_arr[ub_v-ub_low, lam0_ind] = np.mean(np.array(curr_time))
         #     curr_lam_0_arr = np.append(curr_lam_0_arr,np.mean(np.array(curr_time)))

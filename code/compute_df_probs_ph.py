@@ -3,12 +3,12 @@ import pickle as pkl
 import os
 from utils_ph import *
 
-def compute_df(mu_0, mu_1, lam_0,lam_1, path):
+def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after):
 
 
 
 
-    df1 = pkl.load(open(path, 'rb'))
+    df1 = pkl.load(open(path_before, 'rb'))
 
     df1.loc[df1['c'] == 0, 'mu0'] = df1.loc[df1['c'] == 0, 'v']
     df1.loc[df1['c'] > 0, 'mu0'] = df1.loc[df1['c'] > 0, 'v'] + 1 - df1.loc[df1['c'] > 0, 'Ar']
@@ -35,6 +35,6 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path):
     df_rates = df_rates.rename(columns={0: "mu0", 1: "lam0lam1", 2: 'lam0lam1mu0'})
     result = pd.concat([df_merged, df_rates], axis=1)
 
-    pkl.dump(result, open(path, 'wb'))
+    pkl.dump(result, open(path_after, 'wb'))
 
     # return result

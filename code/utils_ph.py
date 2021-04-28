@@ -5,7 +5,7 @@ from sympy import *
 import sys
 sys.path.append(r'C:\Users\elira\Google Drive\butools2\Python')
 sys.path.append('/home/d/dkrass/eliransc/Python')
-
+import os
 from tqdm import tqdm
 from butools.ph import *
 from butools.map import *
@@ -20,6 +20,7 @@ import pickle as pkl
 import pandas as pd
 from sympy import diff, sin, exp
 from numpy.linalg import matrix_power
+import time
 
 
 def busy(s, lam2, mu2):
@@ -307,35 +308,7 @@ def get_steady_for_given_v(u0, u10, u11, R, v):
 
     return steady
 
-def get_prob_c(c,steady_state,v, mu1, lam):
-    '''
 
-    :param c: number of customers to arrive in the future
-    :param steady_state: M/G/1 steady-state
-    :param v: num of type 0 customers
-    :param mu1: type 1 arrival rate
-    :param lam: conditioned arrival rate
-    :return: a vector the probabilites of b for all states under (v,c)
-    '''
-    b = v+1-c
-    prob_b = 0
-
-    if b == 0:
-        prob_b += np.sum(steady_state[:2])*prob_arrivals_during_exp(mu1, lam, 0)
-
-    elif b == v+1:
-        prob_b += np.sum(steady_state[:2])*tail_arrivals_during_exp(mu1, lam, v+1)
-        u_arr = np.arange(2, b+1)
-        k_arr = b-(u_arr-1)
-        prob_b += np.sum(steady_state[u_arr]*tail_arrivals_during_exp(mu1, lam, k_arr))
-        prob_b += steady_state[-1]
-    else:
-        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
-        u_arr = np.arange(2, b + 2)
-        k_arr = b - (u_arr-1)
-        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
-
-    return prob_b
 
 def create_ph_matrix_for_each_case(event_list, lam_0, lam_1, mu_0, mu_1):
 
@@ -420,6 +393,141 @@ def get_matrix_size(event_list):
 
     return int(total_size), np.array(sizes_list)
 
+def get_prob_c(c,steady_state,v, mu1, lam):
+    '''
+
+    :param c: number of customers to arrive in the future
+    :param steady_state: M/G/1 steady-state
+    :param v: num of type 0 customers
+    :param mu1: type 1 arrival rate
+    :param lam: conditioned arrival rate
+    :return: a vector the probabilites of b for all states under (v,c)
+    '''
+    b = v+1-c
+    prob_b = 0
+
+    if b == 0:
+        prob_b += np.sum(steady_state[:2])*prob_arrivals_during_exp(mu1, lam, 0)
+
+    elif b == v+1:
+        prob_b += np.sum(steady_state[:2])*tail_arrivals_during_exp(mu1, lam, v+1)
+        u_arr = np.arange(2, b+1)
+        k_arr = b-(u_arr-1)
+        prob_b += np.sum(steady_state[u_arr]*tail_arrivals_during_exp(mu1, lam, k_arr))
+        prob_b += steady_state[-1]
+    else:
+        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
+        u_arr = np.arange(2, b + 2)
+        k_arr = b - (u_arr-1)
+        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
+
+    return prob_b
 
 
 
+
+def give_pd(v, c):
+    main_path = r'C:\Users\elira\PycharmProjects\redirected_git\redirected_call\pkl'
+    full_path = os.path.join(main_path, str(v) + '_' + str(c) + '.pkl')
+    df = pkl.load(open(full_path, 'rb'))
+    return df
+
+
+def marg_prob_c(v, c, mu_0, lam_0, lam_1, mu_1):
+    u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
+    steady_arr = get_steady_for_given_v(u0, u10, u11, R, v)
+
+    prob = get_prob_c(c, steady_arr, v, mu_1, lam_0 + lam_1)
+
+    return prob
+
+
+def merge_cases(df):
+    df_grp = df.groupby(['event'])
+    unique_vals = df['event'].unique()
+    event_arr = np.array([])
+    prob_arr = np.array([])
+
+    for event in unique_vals:
+        event_arr = np.append(event_arr, event)
+        prob_arr = np.append(prob_arr, df_grp.get_group(event)['total_prob'].sum())
+
+    dat = np.concatenate((event_arr.reshape(event_arr.shape[0], 1), prob_arr.reshape(event_arr.shape[0], 1)), axis=1)
+    df_curr = pd.DataFrame(dat, columns=['event', 'prob'])
+    return df_curr
+
+def prob_v(lam0, lam1, v):
+    return (lam1 / (lam0 + lam1)) * (lam0 / (lam0 + lam1)) ** (v)
+
+
+def prob_arrival(l1, l2, lam0, lam1, mu0, number):
+    return number * ((mu0 / (mu0 + lam0 + lam1)) ** l1) * (((lam0 + lam1) / (mu0 + lam0 + lam1)) ** l2)
+
+def give_cdf_point(result, mu0,mu1,lam0,lam1, xx):
+    start_time = time.time()
+    result['curr_cdf'] = result.apply(lambda x: give_cdf_from_df(x.mu0, x.lam0lam1, x.lam0lam1mu0, mu0,mu1,lam0,lam1, xx), axis=1)
+    result['cdf_marg'] = result['prob']*result['curr_cdf']
+    end_time = time.time()
+    # print("--- %s seconds for one cdf---" % (end_time - start_time))
+    return end_time - start_time
+
+
+def give_cdf_from_df(num_mu0, numlam0lam1, nummu0lam0lam1, mu_0,mu_1,lam_0,lam_1, x):
+    num_mu0 = int(num_mu0)
+    numlam0lam1 = int(numlam0lam1)
+    nummu0lam0lam1 = int(nummu0lam0lam1)
+
+    size = num_mu0 + numlam0lam1 + nummu0lam0lam1 + 1
+
+    limit1 = num_mu0
+    limit2 = num_mu0 + numlam0lam1
+    limit3 = size - 1
+
+    s = np.zeros((size, size))
+    for ind in range(s.shape[0]):
+        if ind < limit1:
+            s[ind, ind] = -mu_0
+            s[ind, ind + 1] = mu_0
+        elif ind < limit2:
+            s[ind, ind] = -(lam_0 + lam_1)
+            s[ind, ind + 1] = lam_0 + lam_1
+        elif ind < limit3:
+            s[ind, ind] = -(lam_0 + lam_1 + mu_0)
+            s[ind, ind + 1] = lam_0 + lam_1 + mu_0
+        else:
+            s[ind, ind] = -mu_1
+
+    alpha = np.zeros(size)
+    alpha[0] = 1
+
+    return 1 - np.sum(np.dot(alpha, expm(s * x)))
+
+def get_prob_c(c, steady_state, v, mu1, lam):
+    '''
+
+    :param c: number of customers to arrive in the future
+    :param steady_state: M/G/1 steady-state
+    :param v: num of type 0 customers
+    :param mu1: type 1 arrival rate
+    :param lam: conditioned arrival rate
+    :return: a vector the probabilites of b for all states under (v,c)
+    '''
+    b = v + 1 - c
+    prob_b = 0
+
+    if b == 0:
+        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, 0)
+
+    elif b == v + 1:
+        prob_b += np.sum(steady_state[:2]) * tail_arrivals_during_exp(mu1, lam, v + 1)
+        u_arr = np.arange(2, b + 1)
+        k_arr = b - (u_arr - 1)
+        prob_b += np.sum(steady_state[u_arr] * tail_arrivals_during_exp(mu1, lam, k_arr))
+        prob_b += steady_state[-1]
+    else:
+        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
+        u_arr = np.arange(2, b + 2)
+        k_arr = b - (u_arr - 1)
+        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
+
+    return prob_b

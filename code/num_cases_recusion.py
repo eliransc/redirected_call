@@ -75,6 +75,16 @@ def one_idle_period(c,b,Ar):
             total_options += before_options*after_options
         return total_options
 
+
+def N(df, v, c, Id, Ar):
+    #     print(v,c,Id,Ar)
+
+    if df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == Id) & (df['Ar'] == Ar), 'number'].shape[0]:
+        #         print(df.loc[(df['v']==v)&(df['c']==c)&(df['Id']==Id)&(df['Ar']==Ar),'number'].values[0])
+        return df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == Id) & (df['Ar'] == Ar), 'number'].values[0]
+    else:
+        return 0
+
 def add_row_to_df(df,v,c,Id,Ar, number):
     curr_row = df.shape[0]
     df.loc[curr_row, 'v'] = v
@@ -84,10 +94,10 @@ def add_row_to_df(df,v,c,Id,Ar, number):
     df.loc[curr_row, 'number'] = number
     return df
 
-def main():
+def give_number_cases(ub_v, df_name):
 
 
-    ub_v = 11
+    # ub_v = 31
 
 
     df = pd.DataFrame([], columns=['v', 'c', 'Id', 'Ar', 'number'])
@@ -95,7 +105,7 @@ def main():
     df = add_row_to_df(df, 0, 1, 1, 1, 1)
 
 
-    for v in tqdm(range(1,ub_v)):
+    for v in tqdm(range(1,2)):
         for c in range(v+2):
             if c == 0:
                 Ar = 0
@@ -110,8 +120,51 @@ def main():
                     # print(total_id_0)
                     df = add_row_to_df(df, v, c, 0, Ar, total_id_0)
 
+    for v in tqdm(range(2, ub_v)):
+        for c in range(v + 1):
+            if c == 0:
+                # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == 0), 'number'] = 1
+                df = add_row_to_df(df, v, c, 0, 0,  1)
+            else:
+                for Ar in range(1, v + 1):
 
-    for v in tqdm(range(1, ub_v)):
+                    if c == 1:
+                        #                     print(v)
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = 1
+                        df = add_row_to_df(df, v, c, 0, Ar, 1)
+                    elif Ar == 1:
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = 1
+                        df = add_row_to_df(df, v, c, 0, Ar, 1)
+
+                    elif v == Ar:
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = N(df, v, c, 0, Ar - 1)
+                        df = add_row_to_df(df, v, c, 0, Ar, N(df, v, c, 0, Ar - 1))
+
+                    elif c == v:
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = N(df, v, c - 1, 0, Ar)
+                        df = add_row_to_df(df, v, c, 0, Ar, N(df, v, c - 1, 0, Ar))
+
+                    elif (Ar + c >= v + 2):
+                        df = add_row_to_df(df, v, c, 0, Ar, N(df, v, c, 0, Ar - 1) + N(df, v - 1, c - 1, 0, Ar))
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = N(df, v, c, 0, Ar - 1) + N(df, v - 1, c - 1, 0, Ar)
+
+                    elif (Ar + c < v + 2):
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = N(df, v, c, 0, Ar - 1) + N(df, v, c - 1, 0, Ar)
+                        df = add_row_to_df(df, v, c, 0, Ar, N(df, v, c, 0, Ar - 1) + N(df, v, c - 1, 0, Ar))
+
+                    elif c == v:
+                        #           
+                        # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == Ar), 'number'] = N(df, v, c - 1, 0, Ar)
+                        df = add_row_to_df(df, v, c, 0, Ar, N(df, v, c - 1, 0, Ar))
+                    #            
+                    #                 elif (c==v-1) :
+                    # #                     print('before',v,c,0,Ar)
+                    #                     df.loc[(df['v']==v)&(df['c']==c)&(df['Id']==0)&(df['Ar']==Ar),'number'] = N(df, v-1,c,0,Ar)+ N(df, v,c,0,Ar-1)
+                    else:
+                        print('should not be here')
+
+
+    for v in tqdm(range(1, 2)):
         for c in range(v + 2):
             b = v + 1 - c
             if c == 0:
@@ -135,8 +188,43 @@ def main():
                     # print(total_id_1)
                     df = add_row_to_df(df, v, c, 1, Ar, total_id_1)
 
+
+    for v in tqdm(range(2, ub_v)):
+        for c in range(1, v + 2):
+
+            for Ar in range(v + 1 - c + 1, v + 2):
+
+
+                if (Ar == v + 1 - c + 1) & (c < v + 1):
+                    #                 print(v,c,Ar)
+                    #                 print(N(df, v,c,1,Ar-1),N(df,v-1,c,1,Ar-1))
+
+                    df = add_row_to_df(df, v, c, 1, Ar, N(df,v, c,1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1))
+                    # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df,v, c,1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1)
+
+                elif (c==v+1)& (Ar == v+1):
+                    pass
+
+                elif (Ar < v + 1) & (c < v + 1):
+                    df = add_row_to_df(df, v, c, 1, Ar, N(df,v, c, 1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1))
+
+                    # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df,v, c, 1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1)
+
+                elif c == v + 1:
+                    # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df,v,c - 1,1,Ar + 1)
+                    df = add_row_to_df(df, v, c, 1, Ar, N(df,v,c - 1,1,Ar + 1))
+                elif (c == v) & (Ar == v + 1):
+                    # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df, v, c,1,Ar - 1)
+                    df = add_row_to_df(df, v, c, 1, Ar, N(df, v, c,1,Ar - 1))
+                elif (c <= v) & (Ar == v + 1):
+                    # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df, v, c,1, Ar - 1) + N(df, v - 1, c, 1, Ar - 1)
+                    df = add_row_to_df(df, v, c, 1, Ar, N(df, v, c,1, Ar - 1) + N(df, v - 1, c, 1, Ar - 1))
+
+                else:
+                    print(v, c, Ar)
+
     unique_v = df['v'].unique()
-    for v in unique_v:
+    for v in tqdm(unique_v):
         unique_c = df.loc[df['v'] == v, 'c'].unique()
         for c in unique_c:
             if c > 0:
@@ -152,7 +240,7 @@ def main():
                             df.loc[df_row, 'Ar'] = ar + 1
                             df.loc[df_row, 'number'] = df.loc[
                                 (df['v'] == v) & (df['c'] == c) & (df['Id'] == Id) & (
-                                            df['Ar'] == ar), 'number'].values[0]
+                                        df['Ar'] == ar), 'number'].values[0]
                         else:
                             if (c == v + 1) & (Id == 1):
                                 df_row = df.shape[0]
@@ -162,11 +250,12 @@ def main():
                                 df.loc[df_row, 'Ar'] = ar + 1
                                 df.loc[df_row, 'number'] = df.loc[
                                     (df['v'] == v) & (df['c'] == c) & (df['Id'] == Id) & (
-                                                df['Ar'] == ar), 'number'].values[0]
+                                            df['Ar'] == ar), 'number'].values[0]
 
-    pkl.dump(df, open('df', 'wb'))
+    # df_name = 'df_' + str(ub_v) +'.pkl'
+    pkl.dump(df, open(df_name, 'wb'))
 
 
 if __name__ == '__main__':
 
-    main()
+    give_number_cases(11)

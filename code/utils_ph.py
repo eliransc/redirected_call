@@ -205,6 +205,37 @@ def compute_curr_t(curr_ind, r, mu):
     return moments
 
 
+def give_tail_analytic(num_mu0, numlam0lam1, nummu0lam0lam1, mu_0, lam_0, lam_1, mu_1,x):
+    num_mu0 = int(num_mu0)
+    numlam0lam1 = int(numlam0lam1)
+    nummu0lam0lam1 = int(nummu0lam0lam1)
+
+    size = num_mu0 + numlam0lam1 + nummu0lam0lam1 + 1
+
+    limit1 = num_mu0
+    limit2 = num_mu0 + numlam0lam1
+    limit3 = size - 1
+
+    s = np.zeros((size, size))
+    for ind in range(s.shape[0]):
+        if ind < limit1:
+            s[ind, ind] = -mu_0
+            s[ind, ind + 1] = mu_0
+        elif ind < limit2:
+            s[ind, ind] = -(lam_0 + lam_1)
+            s[ind, ind + 1] = lam_0 + lam_1
+        elif ind < limit3:
+            s[ind, ind] = -(lam_0 + lam_1 + mu_0)
+            s[ind, ind + 1] = lam_0 + lam_1 + mu_0
+        else:
+            s[ind, ind] = -mu_1
+
+    alpha = np.zeros(size)
+    alpha[0] = 1
+
+    return Matrix(alpha).transpose() * (exp(Matrix(s) * x)) * ones(num_mu0 + numlam0lam1 + nummu0lam0lam1 + 1, 1)
+
+
 def get_Ts_alphas(r, mu, station_ind):
     alphas = []
     Ts = []

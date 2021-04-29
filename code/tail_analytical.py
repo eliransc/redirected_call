@@ -21,13 +21,13 @@ def analytical_expression(result,  mu_0, lam_0, lam_1, mu_1,  vals):
         expression = simplify(expression)
 
     start_time = time.time()
-    bb = exp_simp.subs(x, vals[0])
+    bb = expression.subs(x, vals[0])
     end_time = time.time()
 
     time1 = end_time-start_time
 
     start_time = time.time()
-    bb = exp_simp.subs(x, vals[1])
+    bb = expression.subs(x, vals[1])
     end_time = time.time()
 
     time2 = end_time - start_time

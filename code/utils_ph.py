@@ -562,3 +562,43 @@ def get_prob_c(c, steady_state, v, mu1, lam):
         prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
 
     return prob_b
+
+
+# def get_C(T01, T02, alpha1, alpha2, s):
+#     krom_sum = kroneker_sum(np.dot(T01, alpha1), np.dot(T02, alpha2))
+#     krom_sum = kroneker_sum(krom_sum, np.zeros(s.shape))
+#     return krom_sum
+#
+#
+# def get_C_0(T01, T02, alpha1, alpha2, Beta):
+#     krom_sum = kroneker_sum(np.dot(T01, alpha1), np.dot(T02, alpha2))
+#     krom_sum = np.kron(krom_sum, Beta)
+#
+#     return krom_sum
+#
+#
+# def get_B(T1, T2, s):
+#     krom_sum = kroneker_sum(T1, T2)
+#
+#     return kroneker_sum(krom_sum, s)
+
+
+# def get_A(T1, T2, Beta, s0):
+#     kron_sum = kroneker_sum(np.zeros(T1.shape), np.zeros(T2.shape))
+#     kron_sum = kroneker_sum(kron_sum, np.dot(s0, Beta))
+#     return kron_sum
+
+
+# def get_A0(T1, T2):
+#     krom_sum = kroneker_sum(T1, T2)
+#     return krom_sum
+
+
+def kroneker_sum(G, H):
+    size_g = G.shape[0]
+    size_h = H.shape[0]
+    return np.kron(G, np.identity(size_h)) + np.kron(np.identity(size_g), H)
+
+
+def get_ro(lam1, lam_ext, mu11):
+    return (lam1 + lam_ext) / mu11

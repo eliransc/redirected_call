@@ -2,6 +2,7 @@ import pandas as pd
 import pickle as pkl
 import os
 from utils_ph import *
+import numpy as np
 
 def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after):
 
@@ -34,6 +35,13 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after):
     df_rates = df_merged['event'].str.split('_', expand=True)
     df_rates = df_rates.rename(columns={0: "mu0", 1: "lam0lam1", 2: 'lam0lam1mu0'})
     result = pd.concat([df_merged, df_rates], axis=1)
+
+    result['mu0'] = result['mu0'].astype(int)
+    result['lam0lam1'] = result['lam0lam1'].astype(int)
+    result['lam0lam1mu0'] = result['lam0lam1mu0'].astype(int)
+
+
+
 
     pkl.dump(result, open(path_after, 'wb'))
 

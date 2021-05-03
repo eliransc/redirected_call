@@ -8,9 +8,12 @@ from num_cases_recusion import give_number_cases
 from compute_df_probs_ph import compute_df
 from tail_analytical import analytical_expression
 from utils_ph import give_cdf_point
-
+from create_ph_matrix import compute_ph_matrix
+from get_steady_ph import get_steady_ph_sys
 
 def main(args):
+
+    pkl_path = r'..\pkl'
     ub_high = 5
     ub_low = 5
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
@@ -23,7 +26,11 @@ def main(args):
         for ind_ub_v, ub_v in enumerate(ub_vals):
 
             df_name_before = 'df_' + str(ub_v) + '_before_probs.pkl'
+            df_name_before = os.path.join(pkl_path,df_name_before)
+
             df_name_after = 'df_' + str(ub_v) +'_'+str(lam0) + '_after_probs.pkl'
+            df_name_after = os.path.join(pkl_path, df_name_after)
+
 
             if not os.path.exists(df_name_before):
                 give_number_cases(ub_v, df_name_before)
@@ -34,21 +41,32 @@ def main(args):
 
             df_result = pkl.load(open(df_name_after, 'rb'))
 
-            x_vals = np.linspace(0, 2, 2)
 
-            curr_time = []
+            path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'.pkl')
+            compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph)
 
-            time_avg = analytical_expression(df_result, args.mu0, args.mu1, lam0, lam1, [0.5,1])
-
-
-            # for xx in x_vals:
-            #     curr_time.append(give_cdf_point(df_result, args.mu0, args.mu1, lam0, lam1, xx))
-
-            total_arr[ind_ub_v, lam0_ind] = time_avg
+            get_steady_ph_sys(args.lam1, args.lam_ext, args.mu_11, path_ph)
 
 
-            pkl.dump(total_arr, open('total_arr', 'wb'))
-    print(total_arr)
+
+
+
+
+    #         x_vals = np.linspace(0, 2, 2)
+    #
+    #         curr_time = []
+    #
+    #         time_avg = analytical_expression(df_result, args.mu0, args.mu1, lam0, lam1, [0.5,1])
+    #
+    #
+    #         # for xx in x_vals:
+    #         #     curr_time.append(give_cdf_point(df_result, args.mu0, args.mu1, lam0, lam1, xx))
+    #
+    #         total_arr[ind_ub_v, lam0_ind] = time_avg
+    #
+    #
+    #         pkl.dump(total_arr, open('total_arr', 'wb'))
+    # print(total_arr)
 
 
 def parse_arguments(argv):
@@ -59,6 +77,8 @@ def parse_arguments(argv):
     parser.add_argument('--mu1', type=float, help='mu0', default=3.)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
+    parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
+    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
 
 
     args = parser.parse_args(argv)

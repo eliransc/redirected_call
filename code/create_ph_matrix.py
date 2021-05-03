@@ -10,9 +10,28 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph):
 
 
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
-    ts = result['ph_size'].sum()
+
+    eps = 10 ** (-5)
+    mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
+    lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
+    lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1
+
+    reduced_result = result.loc[result['prob'] > eps, :].reset_index()
+    curr_row = reduced_result.shape[0]
+    reduced_result.loc[curr_row, 'event'] = str(mu0_avg) + '_' + str(lam0lam1_avg) + '_' + str(lam0lam1mu0_avg)
+    reduced_result.loc[curr_row, 'prob'] = result.loc[result['prob'] < eps, 'prob'].sum()
+    reduced_result.loc[curr_row, 'mu0'] = mu0_avg
+    reduced_result.loc[curr_row, 'lam0lam1'] = lam0lam1_avg
+    reduced_result.loc[curr_row, 'lam0lam1mu0'] = lam0lam1mu0_avg
+    reduced_result.loc[curr_row, 'ph_size'] = int(mu0_avg + lam0lam1_avg + lam0lam1mu0_avg+1)
+
+    print('Total lost prob: ', reduced_result.loc[curr_row, 'prob'])
+
+    result = reduced_result.reset_index()
+
+    ts = int(result['ph_size'].sum())
     probs = np.array(result['prob'])
-    ph_size = np.array(result['ph_size'])
+    ph_size = np.array(result['ph_size']).astype(int)
     prob_arr = np.zeros((ts, 1))
     initial_ind = []
     for ind_prob, prob in enumerate(probs):
@@ -22,9 +41,9 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph):
 
     ph = np.zeros((ts, ts))
     for ind, init_ind in enumerate(initial_ind):
-        num_mu0 = result.loc[ind, 'mu0']
-        num_lam0lam1 = result.loc[ind, 'lam0lam1']
-        num_lam0lam1mu0 = result.loc[ind, 'lam0lam1mu0']
+        num_mu0 = int(result.loc[ind, 'mu0'])
+        num_lam0lam1 = int(result.loc[ind, 'lam0lam1'])
+        num_lam0lam1mu0 = int(result.loc[ind, 'lam0lam1mu0'])
 
         for mu_0_ind in range(num_mu0):
             ph[init_ind + mu_0_ind, init_ind + mu_0_ind] = -mu_0

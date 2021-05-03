@@ -130,7 +130,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph):
 
     alpha1, T1 = pkl.load(open(path_ph, 'rb'))
     T01 = -np.dot(T1, np.ones((T1.shape[0], 1)))
-
+    print('T1 is loaded')
     alpha2 = np.array([1])
     T2 = np.array([-lam_ext]).reshape((1, 1))
     T02 = -np.dot(T2, np.ones((T2.shape[0], 1)))
@@ -151,12 +151,14 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph):
     epsilon = 10 ** (-30)
     R = np.zeros(AA.shape)
     from scipy.spatial import distance
-    for i in range(50):
+    for i in range(500):
         R_curr = -np.dot((np.dot(matrix_power(R, 2), AA) + C), np.linalg.inv(B))
         dst = np.sum(np.square(R_curr - R))
         R = R_curr
+        print(dst)
         if dst < epsilon:
             break
+
 
     rho_value = get_ro(lam_1, lam_ext, mu_11)
     n = R.shape[0]

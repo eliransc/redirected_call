@@ -126,7 +126,7 @@ def kroneker_sum(G, H):
 def get_ro(lam1, lam_ext, mu11):
     return (lam1 + lam_ext) / mu11
 
-def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph):
+def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
 
     alpha1, T1 = pkl.load(open(path_ph, 'rb'))
     T01 = -np.dot(T1, np.ones((T1.shape[0], 1)))
@@ -148,17 +148,18 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph):
 
     from scipy.spatial import distance_matrix
 
-    epsilon = 10 ** (-30)
+    epsilon = 10 ** (-20)
     R = np.zeros(AA.shape)
     from scipy.spatial import distance
-    for i in range(500):
+    for i in tqdm(range(500)):
         R_curr = -np.dot((np.dot(matrix_power(R, 2), AA) + C), np.linalg.inv(B))
         dst = np.sum(np.square(R_curr - R))
         R = R_curr
-        print(dst)
+        # print(dst)
         if dst < epsilon:
             break
 
+    # pkl.dump(R, open('../pkl/R_'+str(ub_v)+'.pkl', 'wb'))
 
     rho_value = get_ro(lam_1, lam_ext, mu_11)
     n = R.shape[0]
@@ -216,7 +217,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph):
     avg_mm1 = rho_mm1/(1-rho_mm1)
 
     print('The mm1 avg is {} and the true avg is: {} '.format(avg_mm1, avg_number))
-
+    pkl.dump((R,x), open('../pkl/R_' + str(ub_v) + '.pkl', 'wb'))
 
 if __name__ =='__main__':
 

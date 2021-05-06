@@ -3,15 +3,18 @@ import pickle as pkl
 import os
 from utils_ph import *
 import numpy as np
+from numpy.linalg import matrix_power
 
 
-def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph):
+
+def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v):
+
 
 
 
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
-    eps = 10 ** (-6)
+    eps = 10 ** (-5)
     mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
     lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
     lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1
@@ -28,6 +31,20 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph):
     print('Total lost prob: ', reduced_result.loc[curr_row, 'prob'])
 
     result = reduced_result.reset_index()
+
+    epsilon = 1-result['prob'].sum()
+
+    mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v = pkl.load(open('mean_num_rates_ub_v.pkl', 'rb'))
+
+    curr_row = reduced_result.shape[0]
+    result.loc[curr_row, 'event'] = str(mu0_avg) + '_' + str(lam0lam1_avg) + '_' + str(lam0lam1mu0_avg)
+    result.loc[curr_row, 'prob'] = epsilon
+    result.loc[curr_row, 'mu0'] = mu0_avg_max_v
+    result.loc[curr_row, 'lam0lam1'] = lam0lam1_avg_max_v
+    result.loc[curr_row, 'lam0lam1mu0'] = lam0lam1mu0_avg_max_v
+    result.loc[curr_row, 'ph_size'] = int(mu0_avg_max_v + lam0lam1_avg_max_v + lam0lam1mu0_avg_max_v + 1)
+
+
 
     ts = int(result['ph_size'].sum())
     probs = np.array(result['prob'])
@@ -63,3 +80,9 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph):
 
     prob_arr = prob_arr.reshape((1, prob_arr.shape[0]))
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
+    PH_minus_2 = matrix_power(ph, -2)
+    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    variance = second_moment - (1 / lam_1) ** 2
+
+    print('The true variance is: ', variance)
+    print('The markovian variance is:', (1/lam_1)**2)

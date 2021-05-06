@@ -34,7 +34,7 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
         else:
             steady_probs.append(np.sum(np.dot(u1, matrix_power(R, d - 1))))
         print(np.sum(np.array(steady_probs)))
-        if np.sum(np.array(steady_probs))>0.9999:
+        if np.sum(np.array(steady_probs)) > 0.9999:
             break
 
     steady_probs_arr = np.array(steady_probs)

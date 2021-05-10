@@ -48,7 +48,7 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
 
 
     plt.figure(figsize=(4, 2.5))
-    plt.plot(w_arr, waiting_list, label='Out method')
+    plt.plot(w_arr, waiting_list, label='Our method')
     plt.plot(w_arr, 1 - np.exp(-w_arr * (mu_11 - (lam_1 + lam_ext))), label='Markovian approximation')
     plt.legend()
     plt.xlabel('Waiting time')

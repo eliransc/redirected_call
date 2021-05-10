@@ -148,7 +148,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
 
     from scipy.spatial import distance_matrix
 
-    epsilon = 10 ** (-20)
+    epsilon = 10 ** (-40)
     R = np.zeros(AA.shape)
     from scipy.spatial import distance
     for i in tqdm(range(500)):
@@ -217,7 +217,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
     avg_mm1 = rho_mm1/(1-rho_mm1)
 
     print('The mm1 avg is {} and the true avg is: {} '.format(avg_mm1, avg_number))
-    pkl.dump((R,x), open('../pkl/R_' + str(ub_v) + '.pkl', 'wb'))
+    pkl.dump((R, x), open('../pkl/R_' + str(ub_v) + '.pkl', 'wb'))
 
 if __name__ =='__main__':
 

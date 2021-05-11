@@ -15,13 +15,13 @@ from compute_waiting_time import compute_waiting_time_
 def main(args):
 
     pkl_path = r'../pkl'
-    ub_high = 9
-    ub_low = 9
+    ub_high = 14
+    ub_low = 14
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.8, 0.8, 1)
+    lam0s = np.linspace(0.33333, 0.33333, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
-        lam1 = 1-lam0
+        lam1 = 0.5
 
 
         for ind_ub_v, ub_v in enumerate(ub_vals):
@@ -52,7 +52,7 @@ def main(args):
 
             R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
             print('stage 5: compute waiting time')
-            compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 4)
+            compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 2)
 
 
     #         x_vals = np.linspace(0, 2, 2)
@@ -76,12 +76,12 @@ def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=1.2)
-    parser.add_argument('--mu1', type=float, help='mu0', default=1.5)
+    parser.add_argument('--mu0', type=float, help='mu0', default=1.11111111)
+    parser.add_argument('--mu1', type=float, help='mu0', default=1)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
-    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
+    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.25)
 
 
     args = parser.parse_args(argv)

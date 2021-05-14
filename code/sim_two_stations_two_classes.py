@@ -50,7 +50,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         if np.remainder(name[station], 10000) == 0:
             print('The current time is: ', env.now)
 
-            with open('../pkl/avg_waiting', 'rb') as f:
+            with open('../pkl/avg_waiting'+str(case_num), 'rb') as f:
                 avg_waiting = pkl.load(f)
             print(avg_waiting)
 
@@ -88,7 +88,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
 
         yield env.timeout(ser_time)
 
-        with open('../pkl/avg_waiting', 'rb') as f:
+        with open('../pkl/avg_waiting'+str(case_num), 'rb') as f:
             avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
@@ -98,7 +98,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
             pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'wb'))
 
         avg_waiting[station] = (avg_waiting[station] * name[station] + waiting_time) / (name[station] + 1)
-        with open('../pkl/avg_waiting', 'wb') as f:
+        with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
             pkl.dump(avg_waiting, f)
         # if customer is mismatched then she is redirected to the her designated queue
         if class_ != station:
@@ -166,7 +166,7 @@ def main(args):
 
         start_time = time.time()
 
-        with open('../pkl/avg_waiting', 'wb') as f:
+        with open('../pkl/avg_waiting'+str(args.case_num), 'wb') as f:
             pkl.dump(list(np.zeros(args.size)), f)
 
         env = simpy.Environment()
@@ -225,7 +225,7 @@ def main(args):
                                       probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num))
         env.run(until=(args.end_time))
 
-        with open('../pkl/avg_waiting', 'rb') as f:
+        with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
             avg_waiting = pkl.load(f)
         print(avg_waiting)
 
@@ -275,7 +275,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
-    parser.add_argument('--case_num', type=int, help='case number in my settings', default=1)
+    parser.add_argument('--case_num', type=int, help='case number in my settings', default=3)
 
     args = parser.parse_args(argv)
 

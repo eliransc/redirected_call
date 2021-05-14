@@ -11,6 +11,8 @@ import sympy
 from sympy import *
 import sys
 sys.path.append(r'C:\Users\elira\Google Drive\butools2\Python')
+sys.path.append('/home/d/dkrass/eliransc/Python')
+
 from butools.ph import *
 from butools.map import *
 from butools.queues import *

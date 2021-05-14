@@ -15,9 +15,9 @@ def waiting_time(w, steady_probs_arr, u0, mu_11):
     total_prob_waiting = 0
     for ind_d, d in enumerate(range(steady_probs_arr.shape[0])):
         if d == 0:
-            total_prob_waiting += u0 * erlang.cdf(w, d + 1, loc=0, scale=mu_11)
+            total_prob_waiting += u0 * erlang.cdf(w, d + 1, loc=0, scale=1/mu_11)
         else:
-            total_prob_waiting += steady_probs_arr[ind_d] * erlang.cdf(w, d + 1, loc=0, scale=mu_11)
+            total_prob_waiting += steady_probs_arr[ind_d] * erlang.cdf(w, d + 1, loc=0, scale=1/mu_11)
 
     return total_prob_waiting
 

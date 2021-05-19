@@ -15,8 +15,8 @@ from compute_waiting_time import compute_waiting_time_
 def main(args):
 
     pkl_path = r'../pkl'
-    ub_high = 16
-    ub_low = 16
+    ub_high = 14
+    ub_low = 14
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
     lam0s = np.linspace(0.5, 0.5, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
@@ -76,8 +76,8 @@ def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=1.666666)
-    parser.add_argument('--mu1', type=float, help='mu0', default=1)
+    parser.add_argument('--mu0', type=float, help='mu0', default=2.25)
+    parser.add_argument('--mu1', type=float, help='mu0', default=2)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)

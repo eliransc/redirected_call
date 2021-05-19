@@ -14,7 +14,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v):
 
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
-    eps = 10 ** (-5.1)
+    eps = 10 ** (-5.4)
     mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
     lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
     lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1

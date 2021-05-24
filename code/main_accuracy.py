@@ -18,19 +18,19 @@ def main(args):
     sum_results_name = 'sum_result.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 20
-    ub_low = 20
+    ub_high = 15
+    ub_low = 15
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam1s = np.linspace(1,2,6)
-    total_arr = np.zeros([ub_high-ub_low+1, lam1s.shape[0]])
+    lam0s = np.linspace(1,2,6)
+    total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
 
 
     sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
     if not os.path.exists(sum_res_full_path):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
-    for lam1_ind, lam1 in tqdm(enumerate(lam1s)):
-        lam0 = 1.5
+    for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
+        lam1 = 1.5
 
 
         for ind_ub_v, ub_v in enumerate(ub_vals):
@@ -105,7 +105,7 @@ def parse_arguments(argv):
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
-    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.25)
+    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=3)
 
 
     args = parser.parse_args(argv)

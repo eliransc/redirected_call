@@ -219,6 +219,8 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
     print('The mm1 avg is {} and the true avg is: {} '.format(avg_mm1, avg_number))
     pkl.dump((R, x), open('../pkl/R_' + str(ub_v) + '.pkl', 'wb'))
 
+    return avg_number
+
 if __name__ =='__main__':
 
     lam_0 = 0.1

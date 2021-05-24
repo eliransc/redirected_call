@@ -4,7 +4,7 @@ import os
 from utils_ph import *
 import numpy as np
 
-def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v):
+def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_rates_ub_v_path):
 
 
 
@@ -44,7 +44,7 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v):
     lam0lam1_avg_max_v = round(df1.loc[df1['v'] == ub_v-1, 'lam0lam1'].mean()) + 1
     lam0lam1mu0_avg_max_v = round(df1.loc[df1['v'] == ub_v-1, 'lam0lam1mu0'].mean()) + 1
 
-    pkl.dump((mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v), open('mean_num_rates_ub_v.pkl', 'wb'))
+    pkl.dump((mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v), open(mean_num_rates_ub_v_path, 'wb'))
 
 
 

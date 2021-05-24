@@ -7,7 +7,7 @@ from numpy.linalg import matrix_power
 
 
 
-def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v):
+def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_rates_ub_v_path):
 
 
 
@@ -15,29 +15,31 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v):
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
     eps = 10 ** (-5.4)
-    mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
-    lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
-    lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1
+    if result.loc[result['prob'] < eps, 'mu0'].shape[0]>0:
+        mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
+        lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
+        lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1
 
-    reduced_result = result.loc[result['prob'] > eps, :].reset_index()
-    curr_row = reduced_result.shape[0]
-    reduced_result.loc[curr_row, 'event'] = str(mu0_avg) + '_' + str(lam0lam1_avg) + '_' + str(lam0lam1mu0_avg)
-    reduced_result.loc[curr_row, 'prob'] = result.loc[result['prob'] < eps, 'prob'].sum()
-    reduced_result.loc[curr_row, 'mu0'] = mu0_avg
-    reduced_result.loc[curr_row, 'lam0lam1'] = lam0lam1_avg
-    reduced_result.loc[curr_row, 'lam0lam1mu0'] = lam0lam1mu0_avg
-    reduced_result.loc[curr_row, 'ph_size'] = int(mu0_avg + lam0lam1_avg + lam0lam1mu0_avg+1)
+        reduced_result = result.loc[result['prob'] > eps, :].reset_index()
+        curr_row = reduced_result.shape[0]
+        reduced_result.loc[curr_row, 'event'] = str(mu0_avg) + '_' + str(lam0lam1_avg) + '_' + str(lam0lam1mu0_avg)
+        reduced_result.loc[curr_row, 'prob'] = result.loc[result['prob'] < eps, 'prob'].sum()
+        reduced_result.loc[curr_row, 'mu0'] = mu0_avg
+        reduced_result.loc[curr_row, 'lam0lam1'] = lam0lam1_avg
+        reduced_result.loc[curr_row, 'lam0lam1mu0'] = lam0lam1mu0_avg
+        reduced_result.loc[curr_row, 'ph_size'] = int(mu0_avg + lam0lam1_avg + lam0lam1mu0_avg+1)
 
-    print('Total lost prob: ', reduced_result.loc[curr_row, 'prob'])
 
-    result = reduced_result.reset_index()
+        print('Total lost prob: ', reduced_result.loc[curr_row, 'prob'])
+
+        result = reduced_result.reset_index()
 
     epsilon = 1-result['prob'].sum()
 
-    mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v = pkl.load(open('mean_num_rates_ub_v.pkl', 'rb'))
+    mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v = pkl.load(open(mean_num_rates_ub_v_path, 'rb'))
 
-    curr_row = reduced_result.shape[0]
-    result.loc[curr_row, 'event'] = str(mu0_avg) + '_' + str(lam0lam1_avg) + '_' + str(lam0lam1mu0_avg)
+    curr_row = result.shape[0]
+    result.loc[curr_row, 'event'] = str(mu0_avg_max_v) + '_' + str(lam0lam1_avg_max_v) + '_' + str(lam0lam1mu0_avg_max_v)
     result.loc[curr_row, 'prob'] = epsilon
     result.loc[curr_row, 'mu0'] = mu0_avg_max_v
     result.loc[curr_row, 'lam0lam1'] = lam0lam1_avg_max_v
@@ -88,3 +90,5 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v):
     print('The markovian variance is:', (1/lam_1)**2)
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
+
+    return  variance

@@ -18,19 +18,19 @@ def main(args):
     sum_results_name = 'sum_result3.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 21
-    ub_low = 21
+    ub_high = 16
+    ub_low = 16
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.6,0.6,1)
-    total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
+    lam1s = np.linspace(1,2,6)
+    total_arr = np.zeros([ub_high-ub_low+1, lam1s.shape[0]])
 
 
     sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
     if not os.path.exists(sum_res_full_path):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
-    for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
-        lam1 = 1-lam0
+    for lam0_ind, lam0 in tqdm(enumerate(lam1s)):
+        lam1 = 1.5
 
 
         for ind_ub_v, ub_v in enumerate(ub_vals):
@@ -74,9 +74,9 @@ def main(args):
             print(sum_res)
 
 
-            R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
-            print('stage 5: compute waiting time')
-            compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
+            # R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
+            # print('stage 5: compute waiting time')
+            # compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
 
 
     #         x_vals = np.linspace(0, 2, 2)
@@ -100,8 +100,8 @@ def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=1.5)
-    parser.add_argument('--mu1', type=float, help='mu1', default=0.8)
+    parser.add_argument('--mu0', type=float, help='mu0', default=6)
+    parser.add_argument('--mu1', type=float, help='mu1', default=3)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
@@ -111,8 +111,6 @@ def parse_arguments(argv):
     args = parser.parse_args(argv)
 
     return args
-
-
 
 if __name__ =='__main__':
     args = parse_arguments(sys.argv[1:])

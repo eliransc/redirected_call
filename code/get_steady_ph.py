@@ -151,7 +151,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
     epsilon = 10 ** (-40)
     R = np.zeros(AA.shape)
     from scipy.spatial import distance
-    for i in tqdm(range(500)):
+    for i in tqdm(range(100)):
         R_curr = -np.dot((np.dot(matrix_power(R, 2), AA) + C), np.linalg.inv(B))
         dst = np.sum(np.square(R_curr - R))
         R = R_curr

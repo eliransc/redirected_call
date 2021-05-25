@@ -53,8 +53,8 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
     # print(index_90)
 
     # print(w_arr)
-    # print(waiting_list)
-    pkl.dump((w_arr, waiting_list), open('../pkl/waiting_list_' + str(ub_v) + '.pkl', 'wb'))
+    # print(waiting_list), ,lam_ext
+    pkl.dump((w_arr, waiting_list), open('../pkl/waiting_list_'+str(lam_1) + '_'+str(mu_11) + '_'+str(lam_ext) + '_' + str(ub_v) + '.pkl', 'wb'))
 
     print('The 90th percentile of our method is: ', w_arr[index_90])
     print('The 90th percentile of the poisson process is: ', -np.log(1-waiting_list[index_90])/(mu_11 - (lam_1 + lam_ext)))

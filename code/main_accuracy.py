@@ -76,7 +76,7 @@ def main(args):
 
             R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
             print('stage 5: compute waiting time')
-            compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 1)
+            compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
 
 
     #         x_vals = np.linspace(0, 2, 2)

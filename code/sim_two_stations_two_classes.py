@@ -184,13 +184,13 @@ def main(args):
         mis_arrival = 0.15
 
 
-        lam00 = 0.9
-        lam01 = 0.1
+        lam00 = 1
+        lam01 = 1
         lam10 = 0
         lam11 = 0.5
 
         mu00 = 1.5
-        mu01 = 0.80
+        mu01 = 5000
         mu10 = 2000
         mu11 = 1.5
 
@@ -255,6 +255,13 @@ def main(args):
         df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_' + str(args.case_num) + '.pkl', 'rb'))
         df_inter_departure_station_0 = df_inter_departure_station_0.iloc[1:, :]
 
+        arr = np.array(df_inter_departure_station_0.loc[1:, 'inter_departure_time'])
+        arr_two_dim = np.zeros((arr.shape[0], 2))
+        for inter in range(arr.shape[0] - 1):
+            arr_two_dim[inter, 0] = arr[inter]
+            arr_two_dim[inter, 1] = arr[inter + 1]
+        print('The correlation is', np.corrcoef(arr_two_dim[:,0], arr_two_dim[:,1]) )
+
         print('The inter-departure variance is: ',df_inter_departure_station_0['inter_departure_time'].var())
 
         waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_' + str(args.case_num) + '.pkl', 'rb'))
@@ -269,7 +276,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=500000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=50000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

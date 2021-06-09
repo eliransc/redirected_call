@@ -18,10 +18,10 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 8
-    ub_low = 8
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.1,0.1,1)
+    lam0s = np.linspace(0.5,0.5,1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
 
 

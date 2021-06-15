@@ -326,6 +326,9 @@ def geometric_pdf(lam0,lam1,n):
     p = lam1/(lam1+lam0)
     return p*((1-p)**(n))
 
+def give_prob_u(u10,u11, R, u):
+    return np.sum(np.dot(np.array([u10, u11]), matrix_power(R, u - 1)))
+
 def get_steady_for_given_v(u0, u10, u11, R, v):
 
     steady = [u0, u10+u11]

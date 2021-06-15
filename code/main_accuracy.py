@@ -21,7 +21,7 @@ def main(args):
     ub_high = 4
     ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.5,0.5,1)
+    lam0s = np.linspace(0.25,0.25,1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
 
 

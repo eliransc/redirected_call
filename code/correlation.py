@@ -106,15 +106,9 @@ def main(args):
             break
 
     t1_prob = np.array(t1_prob)
-    max_val = 30
-    # data = [u_prob[:max_val], t1_prob[:max_val]]
-    # X = np.arange(max_val)
-    # fig = plt.figure()
-    # ax = fig.add_axes([0, 0, 1, 1])
-    # ax.bar(X + 0.00, data[0], color='b', width=0.125)
-    # ax.bar(X + 0.075, data[1], color='g', width=0.125)
-    #
-    # ax.legend(labels=['u', 't1'])
+
+
+
     columns = ['t1', 'v', 'c','id','ar', 'init', 'p_v','p_a','n_v_c_id_ar']
     df = pd.DataFrame([], columns = columns)
 

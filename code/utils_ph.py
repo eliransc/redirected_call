@@ -475,6 +475,12 @@ def marg_prob_c(v, c, mu_0, lam_0, lam_1, mu_1):
 
     return prob
 
+def marg_prob_c_corr(v,c,t_prob):
+    if c == 0:
+        return np.sum(t_prob[v+1:])
+    else:
+        return t_prob[v+1-c]
+
 
 def merge_cases(df):
     df_grp = df.groupby(['event'])

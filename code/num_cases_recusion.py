@@ -254,8 +254,6 @@ def give_number_cases(ub_v, df_name):
 
     # df_name = 'df_' + str(ub_v) +'.pkl'
 
-
-
     pkl.dump(df, open(df_name, 'wb'))
 
 

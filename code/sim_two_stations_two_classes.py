@@ -151,7 +151,7 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
 def main(args):
 
-    df_inter_departure_station_0 = pd.DataFrame([], columns = ['departure_time','inter_departure_time'])
+    df_inter_departure_station_0 = pd.DataFrame([], columns = ['departure_time', 'inter_departure_time'])
     pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(args.case_num)+'.pkl', 'wb'))
 
     waiting_time_list = []
@@ -197,10 +197,10 @@ def main(args):
         row, col = np.diag_indices(args.r.shape[0])
         args.r[row, col] = match_arrival
         args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
-        args.r[0,0] = lam00
+        args.r[0, 0] = lam00
         args.r[0, 1] = lam01
         args.r[1, 0] = lam10
-        args.r[1,1] = lam11
+        args.r[1, 1] = lam11
 
 
 

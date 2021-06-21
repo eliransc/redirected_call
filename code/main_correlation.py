@@ -31,8 +31,8 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 4
-    ub_low = 4
+    ub_high = 10
+    ub_low = 10
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     h0 = 1
@@ -131,8 +131,8 @@ def parse_arguments(argv):
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
     parser.add_argument('--mu0', type=float, help='mu0', default=2000)
     parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.0000000001)

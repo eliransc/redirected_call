@@ -13,11 +13,11 @@ def get_curr_dens(df_name_after, mu0, mu1, lam0, lam1, h):
     for comb_ind in range(df.shape[0]):
 
         S = create_curr_ph_inter(df, comb_ind, lam0, lam1, mu0, mu1)
-        curr_dens = get_density_ph(h,  S, lam0, lam1)
+        curr_dens = get_cdf_ph(h,  S)
         curr_prob = df.loc[comb_ind, 'prob']
         total_dens += curr_dens*curr_prob
 
-    return total_dens[0]
+    return total_dens
 
 
 
@@ -57,3 +57,10 @@ def get_density_ph(h,  S, lam0, lam1):
     alph[0] = 1
 
     return  np.dot(np.dot(alph, expm(S * h)), S0)
+
+def get_cdf_ph(h,  S):
+
+    alph = np.zeros(S.shape[0])
+    alph[0] = 1
+
+    return  1-np.sum(np.dot(alph, expm(S * h)))

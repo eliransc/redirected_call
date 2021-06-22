@@ -490,7 +490,7 @@ def merge_cases(df):
 
     for event in unique_vals:
         event_arr = np.append(event_arr, event)
-        prob_arr = np.append(prob_arr, df_grp.get_group(event)['total_prob'].sum())
+        prob_arr = np.append(prob_arr, df_grp.get_group(event)['prob'].sum())
 
     dat = np.concatenate((event_arr.reshape(event_arr.shape[0], 1), prob_arr.reshape(event_arr.shape[0], 1)), axis=1)
     df_curr = pd.DataFrame(dat, columns=['event', 'prob'])

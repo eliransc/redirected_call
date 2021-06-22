@@ -89,9 +89,9 @@ def main(args):
 def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
+    parser.add_argument('--correlation', type=bool, help='computing_correlation', default=False)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=0.8)
+    parser.add_argument('--mu0', type=float, help='mu0', default=2000)
     parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)

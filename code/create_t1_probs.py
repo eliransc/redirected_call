@@ -13,33 +13,33 @@ def create_t_1_probs(df_path, lam_0, lam_1, mu_0, mu_1, t_prob_path, t1_path_a, 
 
     max_v = df['v'].max()
 
-    df = df.loc[df['c'] <= df['v'], :]
+    df = df.loc[df['c'] > 0, :]
     df.reset_index(drop=True)
 
     t_1_dict = {}
     marg_Bayes_prob = {}
 
     for num0 in df['num_mu_0'].unique():
-        for num1 in range(1, 3):
-            print(num0, num1)
-            print(df.loc[(df['num_mu_0'] == num0) & (df['num_mu_1'] == num1), 'baysian_prob'].sum())
-            marg_Bayes_prob[str(num0)+'_'+str(num1)] = df.loc[(df['num_mu_0'] == num0) & (df['num_mu_1'] == num1), 'baysian_prob'].sum()
-            ph = create_ph_arr_(num0, num1, mu_0, mu_1)
-            sums = 0
-            t1_curr = []
-            for t_1 in range(t_shape):
-                cur = quad(create_t1_dens_, 0, 100, args=(t_1, ph, lam_0, lam_1,))[0]
-                t1_curr.append(cur)
-                #             print(cur)
-                sums += cur
-            t_1_dict[str(num0) + '_' + str(num1)] = t1_curr
-            print(sums)
+        num1 = 1
+        print(num0, num1)
+        print(df.loc[(df['num_mu_0'] == num0) & (df['num_mu_1'] == num1), 'baysian_prob'].sum())
+        marg_Bayes_prob[str(num0)+'_'+str(num1)] = df.loc[(df['num_mu_0'] == num0) & (df['num_mu_1'] == num1), 'baysian_prob'].sum()
+        ph = create_ph_arr_(num0, num1, mu_0, mu_1)
+        sums = 0
+        t1_curr = []
+        for t_1 in range(t_shape):
+            cur = quad(create_t1_dens_, 0, 100, args=(t_1, ph, lam_0, lam_1,))[0]
+            t1_curr.append(cur)
+            #             print(cur)
+            sums += cur
+        t_1_dict[str(num0) + '_' + str(num1)] = t1_curr
+        print(sums)
 
     pkl.dump(t_1_dict, open(t1_path_a, 'wb'))
     pkl.dump(marg_Bayes_prob, open(bayes_prob_a, 'wb'))
 
     df = pkl.load(open(df_path, 'rb'))
-    df = df.loc[df['c'] == df['v']+1, :]
+    df = df.loc[df['c'] == 0, :]
     df.reset_index(drop=True)
 
     t1_dict_b = {}
@@ -49,17 +49,20 @@ def create_t_1_probs(df_path, lam_0, lam_1, mu_0, mu_1, t_prob_path, t1_path_a, 
     for v in v_vals:
         mu_0_vals = df.loc[df['v'] == v, 'num_mu_0'].unique()
         for num0 in mu_0_vals:
-            ph = create_ph_arr_(num0, 1, mu_0, mu_1)
+            ph = create_ph_arr_(num0, 2, mu_0, mu_1)
             marg_Bayes_prob_b[str(v) + '_' + str(num0)] = df.loc[
                 (df['num_mu_0'] == num0) & (df['v'] == v), 'baysian_prob'].sum()
             t_1_probs = []
             for t_1 in range(t_shape-max_v):
+                if np.sum(np.array(t_1_probs)) > 0.99999:
+                    break
                 curr_v = v
                 curr_sum = 0
                 for t in range(curr_v + 1, curr_v + 1 + t_1 + 1):
                     if t < t_prob.shape[0]:
-                        curr_sum += (t_prob[t] / np.sum(t_prob[curr_v + 1:])) * \
-                                    quad(create_t1_dens_, 0, 100, args=(t_1 - t + curr_v + 1, ph, lam_0, lam_1,))[0]
+                        if (t_prob[t] / np.sum(t_prob[curr_v + 1:])) > 0.000001:
+                            curr_sum += (t_prob[t] / np.sum(t_prob[curr_v + 1:])) * \
+                                        quad(create_t1_dens_, 0, 100, args=(t_1 - t + curr_v + 1, ph, lam_0, lam_1,))[0]
                 t_1_probs.append(curr_sum)
             t1_dict_b[str(v) + '_' + str(num0)] = t_1_probs
 

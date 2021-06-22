@@ -41,27 +41,29 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_
     df_rates = df1['event'].str.split('_', expand=True)
     df_rates = df_rates.rename(columns={0: "mu0", 1: "lam0lam1", 2: 'lam0lam1mu0'})
     if not args.correlation:
-        df1 = merge_cases(df1)
-        df1['prob'] = df1['prob'].astype('float')
+        results = merge_cases(df1)
+        results['prob'] = results['prob'].astype('float')
 
         df_rates = df1['event'].str.split('_', expand=True)
         df_rates = df_rates.rename(columns={0: "mu0", 1: "lam0lam1", 2: 'lam0lam1mu0'})
-        result = pd.concat([df1, df_rates], axis=1)
+        results = pd.concat([results, df_rates], axis=1)
 
-        result['mu0'] = result['mu0'].astype(int)
-        result['lam0lam1'] = result['lam0lam1'].astype(int)
-        result['lam0lam1mu0'] = result['lam0lam1mu0'].astype(int)
+        results['mu0'] = results['mu0'].astype(int)
+        results['lam0lam1'] = results['lam0lam1'].astype(int)
+        results['lam0lam1mu0'] = results['lam0lam1mu0'].astype(int)
 
-    mu0_avg_max_v = round(df1.loc[df1['v'] == ub_v-1, 'mu0'].mean()) + 1
-    lam0lam1_avg_max_v = round(df1.loc[df1['v'] == ub_v-1, 'lam0lam1'].mean()) + 1
-    lam0lam1mu0_avg_max_v = round(df1.loc[df1['v'] == ub_v-1, 'lam0lam1mu0'].mean()) + 1
+
+
+    mu0_avg_max_v = round(df1.loc[df1['v'] == ub_v - 1, 'mu0'].mean()) + 1
+    lam0lam1_avg_max_v = round(df1.loc[df1['v'] == ub_v - 1, 'lam0lam1'].mean()) + 1
+    lam0lam1mu0_avg_max_v = round(df1.loc[df1['v'] == ub_v - 1, 'lam0lam1mu0'].mean()) + 1
 
     pkl.dump((mu0_avg_max_v, lam0lam1_avg_max_v, lam0lam1mu0_avg_max_v), open(mean_num_rates_ub_v_path, 'wb'))
 
     if not args.correlation:
 
-        pkl.dump(result, open(path_after, 'wb'))
+        pkl.dump(results, open(path_after, 'wb'))
     else:
         pkl.dump(df1, open(path_after, 'wb'))
 
-    # return result
+    return df1.loc[df1['Ar']==0,'prob'].sum(), df1.loc[df1['Ar']>0,'prob'].sum()

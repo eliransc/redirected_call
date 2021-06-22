@@ -31,8 +31,8 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 10
-    ub_low = 10
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     h0 = 1
@@ -78,20 +78,26 @@ def main(args):
             args.mu1) + '_after_probs_non_eq.pkl'
         df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-        h_arr = np.linspace(0.000001, 3, 50)
+        h_arr = np.linspace(0.000001, 10, 75)
 
         cond_list = []
         uncond_list = []
-
         for h in tqdm(h_arr):
+            tot_prob_0 = 0
+            tot_prob_not_0 = 0
             total_cond_dens = 0
+            print(tot_prob_0, tot_prob_not_0)
             for key in t1_prob_a.keys():
 
-                compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after_non_eq, ub_v, mean_num_rates_ub_v_path,
+                p_ar_0, p_ar_not_0 = compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after_non_eq, ub_v, mean_num_rates_ub_v_path,
                            args, False, np.array(t1_prob_a[key]))
 
                 curr_dens = get_curr_dens(df_name_after_non_eq, args.mu0, args.mu1, lam0, lam1, h)
                 curr_prob = bayes_prob_a_dict[key]
+
+                tot_prob_0 += curr_prob * p_ar_0
+                tot_prob_not_0 += curr_prob * p_ar_not_0
+
                 total_cond_dens += curr_dens*curr_prob
 
             t1_prob_b = pkl.load(open(t1_path_b, 'rb'))
@@ -99,12 +105,17 @@ def main(args):
 
             for key in t1_prob_b.keys():
 
-                compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after_non_eq, ub_v, mean_num_rates_ub_v_path,
+                p_ar_0, p_ar_not_0 = compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after_non_eq, ub_v, mean_num_rates_ub_v_path,
                            args, False, np.array(t1_prob_b[key]))
 
                 curr_dens = get_curr_dens(df_name_after_non_eq, args.mu0, args.mu1, lam0, lam1, h)
                 curr_prob = bayes_prob_b_dict[key]
+
+                tot_prob_0 += curr_prob*p_ar_0
+                tot_prob_not_0 += curr_prob * p_ar_not_0
+
                 total_cond_dens += curr_dens*curr_prob
+
 
             print(total_cond_dens)
             cond_list.append(total_cond_dens)
@@ -112,6 +123,7 @@ def main(args):
             uncod_dens = get_curr_dens(df_name_after, args.mu0, args.mu1, lam0, lam1, h)
             uncond_list.append(uncod_dens)
             print(uncod_dens)
+            print(tot_prob_0, tot_prob_not_0)
 
         plt.figure()
         plt.plot(h_arr, cond_list, label = 'conditioned')
@@ -120,6 +132,7 @@ def main(args):
         plt.show()
 
         print('the end')
+        plt.savefig('cond_dist.png')
 
 
 
@@ -129,10 +142,10 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=2000)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.8)
     parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.0000000001)

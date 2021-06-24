@@ -19,8 +19,6 @@ import matplotlib.pyplot as plt
 
 def main(args):
 
-    t1_path = '../pkl/t1_dict.pkl'
-
 
     lam0 = args.lam0
     lam1 = args.lam1
@@ -29,12 +27,13 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 10
-    ub_low = 10
+    ub_high = 8
+    ub_low = 8
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     h0 = 3
-
+    t1_path = '../pkl/' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
+        h0) + 't1_dict.pkl'
 
     sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
     if not os.path.exists(sum_res_full_path):
@@ -68,8 +67,6 @@ def main(args):
         if not os.path.exists(t1_path):
             create_t_1_probs(df_name_after,  lam0, lam1, args.mu0, args.mu1, t_prob_path, h0, t1_path)
 
-        # t1_prob_a = pkl.load(open(t1_path_a, 'rb'))
-        # bayes_prob_a_dict = pkl.load(open(bayes_prob_a, 'rb'))
 
 
         df_name_after_non_eq = 'df_' + str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(
@@ -86,10 +83,7 @@ def main(args):
 
 
         for h in tqdm(h_arr):
-            # tot_prob_0 = 0
-            # tot_prob_not_0 = 0
-            # total_cond_dens = 0
-            # print(tot_prob_0, tot_prob_not_0)
+
             tot_curr_denst = 0
 
             for key in t1_prob.keys():
@@ -98,50 +92,25 @@ def main(args):
                            args, False, np.array(t1_prob[key]))
 
                 curr_dens = get_curr_dens(df_name_after_non_eq, args.mu0, args.mu1, lam0, lam1, h)
-                # print(curr_dens)
                 curr_prob = df_eq.loc[int(key), 'baysian_prob']
                 tot_curr_denst += curr_dens*curr_prob
 
             cond_list.append(tot_curr_denst)
 
-
-            # t1_prob_b = pkl.load(open(t1_path_b, 'rb'))
-            # bayes_prob_b_dict = pkl.load(open(bayes_prob_b, 'rb'))
-            #
-            # for key in t1_prob_b.keys():
-            #
-            #     p_ar_0, p_ar_not_0 = compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after_non_eq, ub_v, mean_num_rates_ub_v_path,
-            #                args, False, np.array(t1_prob_b[key]))
-            #
-            #     curr_dens = get_curr_dens(df_name_after_non_eq, args.mu0, args.mu1, lam0, lam1, h)
-            #     curr_prob = bayes_prob_b_dict[key]
-            #
-            #     tot_prob_0 += curr_prob*p_ar_0
-            #     tot_prob_not_0 += curr_prob * p_ar_not_0
-            #
-            #     total_cond_dens += curr_dens*curr_prob
-            #
-            #
-            # print(total_cond_dens)
-            # cond_list.append(total_cond_dens)
-
             uncod_dens = get_curr_dens(df_name_after, args.mu0, args.mu1, lam0, lam1, h)
             uncond_list.append(uncod_dens)
-            # print(uncod_dens)
-            # print(tot_prob_0, tot_prob_not_0)
+
 
         plt.figure()
         plt.plot(h_arr, cond_list, label = 'conditioned',  linestyle='dashed', color = 'blue', alpha = 0.6,linewidth=5, )
         plt.plot(h_arr, uncond_list, label = 'prior', alpha = 0.6, color = 'green', linewidth=5)
         plt.legend()
-        plt.savefig('cond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h)+'.png')
+        plt.savefig('cond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.png')
         plt.show()
 
         print('the end')
 
-        pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h)+'.pkl', 'rb'))
-
-
+        pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.pkl', 'rb'))
 
 
 

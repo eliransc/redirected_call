@@ -281,6 +281,29 @@ def get_bound_steady_state(R, A0, A1, AA, B, C0, ro):
     u0, u10, u11 = np.linalg.solve(np.array(A_mat, dtype=np.float), np.array(b, dtype=np.float))
     return u0[0], u10[0], u11[0]
 
+def create_curr_ph_inter(num_mu0, num_lam0_1, num_mu0_lam0_1,  lam_0, lam_1, mu_0, mu_1):
+
+
+
+    size = num_mu0 + num_lam0_1 + num_mu0_lam0_1 + 1
+
+    ph = np.zeros((size, size))
+
+    for ind in range(num_mu0):
+        ph[ind, ind] = -mu_0
+        ph[ind, ind + 1] = mu_0
+
+    for ind in range(num_mu0, num_mu0 + num_lam0_1):
+        ph[ind, ind] = -(lam_0 + lam_1)
+        ph[ind, ind + 1] = lam_0 + lam_1
+
+    for ind in range(num_mu0 + num_lam0_1, num_mu0 + num_lam0_1 + num_mu0_lam0_1):
+        ph[ind, ind] = -(mu_0 + lam_0 + lam_1)
+        ph[ind, ind + 1] = mu_0 + lam_0 + lam_1
+
+    ph[size - 1, size - 1] = -mu_1
+
+    return ph
 
 def get_Avg_system(R, u10, u11):
     p1 = np.array([u10, u11])

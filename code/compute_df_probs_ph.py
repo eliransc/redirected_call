@@ -66,4 +66,3 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_
     else:
         pkl.dump(df1, open(path_after, 'wb'))
 
-    return df1.loc[df1['Ar']==0,'prob'].sum(), df1.loc[df1['Ar']>0,'prob'].sum()

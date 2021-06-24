@@ -500,9 +500,15 @@ def marg_prob_c(v, c, mu_0, lam_0, lam_1, mu_1):
 
 def marg_prob_c_corr(v,c,t_prob):
     if c == 0:
-        return np.sum(t_prob[v+1:])
+        if t_prob.shape[0] >= v+1:
+            return np.sum(t_prob[v+1:])
+        else:
+            return 0
     else:
-        return t_prob[v+1-c]
+        if v+1-c<t_prob.shape[0]:
+            return t_prob[v+1-c]
+        else:
+            return 0
 
 
 def merge_cases(df):

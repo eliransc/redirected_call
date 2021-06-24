@@ -33,7 +33,7 @@ def main(args):
     ub_low = 10
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
-    h0 = 4
+    h0 = 3
 
 
     sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
@@ -76,7 +76,7 @@ def main(args):
             args.mu1) + '_after_probs_non_eq.pkl'
         df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-        h_arr = np.linspace(0.1, 10, 16)
+        h_arr = np.linspace(0.1, 10, 25)
 
         cond_list = []
         uncond_list = []

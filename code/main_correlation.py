@@ -43,15 +43,15 @@ def main(args):
     for ind_ub_v, ub_v in enumerate(ub_vals):
 
         t_prob_path = '../pkl/' + str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(
-            args.mu0) + '_' + str(args.mu1) + 't_prob.pkl'
+            args.mu0) + '_' + str(args.mu1)+ '_' + str(h0) + 't_prob.pkl'
 
         mean_num_rates_ub_v_path = os.path.join(pkl_path, str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(
-            args.mu0) + '_' + str(args.mu1) + 'mean_nam_rate_ub_v.pkl')
+            args.mu0) + '_' + str(args.mu1)+ '_' + str(h0) + 'mean_nam_rate_ub_v.pkl')
 
-        df_name_before = 'df_' + str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) + '_before_probs.pkl'
+        df_name_before = 'df_' + str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) + '_' + str(h0)+ '_before_probs.pkl'
         df_name_before = os.path.join(pkl_path, df_name_before)
 
-        df_name_after = 'df_' + str(ub_v) +'_'+str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)  + '_after_probs.pkl'
+        df_name_after = 'df_' + str(ub_v) +'_'+str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1) + '_' + str(h0) + '_after_probs.pkl'
         df_name_after = os.path.join(pkl_path, df_name_after)
 
         print('stage 1: compute general structure')
@@ -70,7 +70,7 @@ def main(args):
 
 
         df_name_after_non_eq = 'df_' + str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(
-            args.mu1) + '_after_probs_non_eq.pkl'
+            args.mu1)+ '_' + str(h0) + '_after_probs_non_eq.pkl'
         df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
         h_arr = np.linspace(0.1, 10, 25)

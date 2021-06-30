@@ -27,15 +27,16 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 8
-    ub_low = 8
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
-    h0 = 3
 
-    h0_list = [0.5,1,1.5,2,2.5,3]
-    for h0 in h0_list:
 
+    mu_0list = [0.8,1.2, 3,10]
+    for mu_0 in mu_0list:
+        h0 = 1
+        args.mu0 = mu_0
         t1_path = '../pkl/' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
             h0) + 't1_dict.pkl'
 
@@ -106,7 +107,7 @@ def main(args):
 
 
             plt.figure()
-            plt.plot(h_arr, cond_list, label = 'conditioned',  linestyle='dashed', color = 'blue', alpha = 0.6,linewidth=3, )
+            plt.plot(h_arr, cond_list, label = 'conditioned',  linestyle='dashed', color = 'blue', alpha = 0.6,linewidth=3 )
             plt.plot(h_arr, uncond_list, label = 'prior', alpha = 0.6, color = 'green', linewidth=3)
             plt.legend()
             plt.savefig('cond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.png')
@@ -114,7 +115,7 @@ def main(args):
 
             print('the end')
 
-            pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.pkl', 'rb'))
+            pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.pkl', 'wb'))
 
 
 
@@ -123,13 +124,13 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=1.5)
-    parser.add_argument('--mu1', type=float, help='mu1', default=3)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.4)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.6)
+    parser.add_argument('--mu0', type=float, help='mu0', default=3)
+    parser.add_argument('--mu1', type=float, help='mu1', default=1.2)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
-    parser.add_argument('--eps', type=float, help='error for T and U', default=0.0000000001)
+    parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)
 
 
     args = parser.parse_args(argv)

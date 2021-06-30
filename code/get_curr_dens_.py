@@ -17,7 +17,8 @@ def get_curr_dens(df_name_after, mu0, mu1, lam0, lam1, h):
         num_mu0_lam0_1 = df.loc[comb_ind, 'lam0lam1mu0']
 
         S = create_curr_ph_inter(num_mu0, num_lam0_1,num_mu0_lam0_1, lam0, lam1, mu0, mu1)
-        curr_dens = get_density_ph(h,  S)
+        # curr_dens = get_density_ph(h,  S)
+        curr_dens = get_density_ph(h,S)
         curr_prob = df.loc[comb_ind, 'prob']
         total_dens += curr_dens*curr_prob
 

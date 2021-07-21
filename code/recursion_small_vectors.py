@@ -75,12 +75,14 @@ def main():
     u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
     steady_arr = get_steady_for_given_v(u0, u10, u11, R, 1)
 
-    # prob_b1 = get_prob_c(0, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b2 = get_prob_c(1, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b3 = get_prob_c(2, steady_arr, 2, mu_1, lam_0 + lam_1)
-    # prob_b4 = get_prob_c(3, steady_arr, 2, mu_1, lam_0 + lam_1)
-    #
-    # summ = prob_b1+prob_b2+prob_b3+prob_b4
+    steady_arr = get_steady_for_given_v(u0, u10, u11, R, 2)
+
+    prob_b1 = get_prob_c(0, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b2 = get_prob_c(1, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b3 = get_prob_c(2, steady_arr, 2, mu_1, lam_0 + lam_1)
+    prob_b4 = get_prob_c(3, steady_arr, 2, mu_1, lam_0 + lam_1)
+
+    summ = prob_b1+prob_b2+prob_b3+prob_b4
 
 
     #converting v=1 tuples and probabilites into a dataframe
@@ -103,23 +105,19 @@ def main():
     # adding the marginal prob of events and a string of the event
     df = add_prob_even_total_prob(df, lam_0, lam_1, mu_0)
 
-    # merging cases and leaving only the case and its final marginal prob
-    df_acuum1_path = os.path.join(PKL_PATH, 'df_acuum.pkl')
-    if os.path.exists(df_acuum1_path):
-        df_acuum1 = pkl.load(open(df_acuum1_path, 'rb'))
-    else:
-        df_acuum1 = merge_cases(df)
-        df_acuum1['prob'] = df_acuum1['prob'].astype(float)
-        with open(os.path.join(PKL_PATH, 'df_acuum.pkl'), 'wb') as f:
-            pkl.dump(df_acuum1, f)
+
+    df_acuum1 = merge_cases(df)
+    df_acuum1['prob'] = df_acuum1['prob'].astype(float)
+    with open(os.path.join(PKL_PATH, 'df_acuum.pkl'), 'wb') as f:
+        pkl.dump(df_acuum1, f)
 
     # all the possible pairs we need to apply the recursion. Used later for dumping the pickles
     rate_ph_list = [('mu', 'ph'), ('lam0lam1', 'ph'), ('mulam0lam1', 'ph'), ('mu', 'prob'), ('lam0lam1', 'prob')]
 
-    if not os.path.exists('track_df'):
-        track_df = pd.DataFrame([], columns=('v', 'ind'))
-        with open('track_df', 'wb') as f:
-            pkl.dump(track_df, f)
+    # if not os.path.exists('track_df'):
+    #     track_df = pd.DataFrame([], columns=('v', 'ind'))
+    #     with open('track_df', 'wb') as f:
+    #         pkl.dump(track_df, f)
 
 
     for v in tqdm(range(2, upper_bound)): # looping over all requirws values of v
@@ -130,58 +128,58 @@ def main():
         # looping over the values of c for each v
         for ind, val in enumerate(options_list[v - 1]):
 
-            track_df = pkl.load(open('track_df', 'rb'))
+            # track_df = pkl.load(open('track_df', 'rb'))
 
-            if track_df.loc[(track_df['v'] == v)&(track_df['ind'] == ind),:].shape[0] == 1:
-                print('should skip this one')
-                print(v, ind)
-                print('%%%%%%%%%')
-            else:
+            # if track_df.loc[(track_df['v'] == v)&(track_df['ind'] == ind),:].shape[0] == 1:
+            #     print('should skip this one')
+            #     print(v, ind)
+            #     print('%%%%%%%%%')
+            # else:
 
-                if ind == 0:  # dumping the recursion vectors for each pair in (ph_prob, val)
-                    a = []
-                    for rate_phprob in rate_ph_list:
+            if ind == 0:  # dumping the recursion vectors for each pair in (ph_prob, val)
+                a = []
+                for rate_phprob in rate_ph_list:
 
-                        insert_pkl_ind_0(rate_phprob[0], rate_phprob[1], v, ind)
+                    insert_pkl_ind_0(rate_phprob[0], rate_phprob[1], v, ind)
 
-                        curr_path = create_path_pkl(rate_phprob[0], rate_phprob[1], v, ind, 1)
-                        with open(curr_path, 'rb') as f:
-                            curr_arr = pkl.load(f)[0]
-                        a.append(curr_arr.reshape(1, 1).astype(int))
+                    curr_path = create_path_pkl(rate_phprob[0], rate_phprob[1], v, ind, 1)
+                    with open(curr_path, 'rb') as f:
+                        curr_arr = pkl.load(f)[0]
+                    a.append(curr_arr.reshape(1, 1).astype(int))
 
-                    a.append(np.array([steady_arr[-1]]).reshape(1, 1))
-                    a.append(np.array([geometric_pdf(lam_0, lam_1, v)]).reshape(1, 1))
-                    data = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
+                a.append(np.array([steady_arr[-1]]).reshape(1, 1))
+                a.append(np.array([geometric_pdf(lam_0, lam_1, v)]).reshape(1, 1))
+                data = np.concatenate((a[0], a[1], a[2], a[3], a[4], a[5], a[6]), axis=1)
 
-                    df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
-                    df_acuum1 = merge_curr(df_curr1, df_acuum1)
+                df_curr1 = convert_to_pd_with_merge(data, lam_0, lam_1, mu_0)
+                df_acuum1 = merge_curr(df_curr1, df_acuum1)
 
-                elif ind < len(options_list[v - 1]) - 1:  # dumping the recursion vectors for each pair in (ph_prob, val)
+            elif ind < len(options_list[v - 1]) - 1:  # dumping the recursion vectors for each pair in (ph_prob, val)
 
-                    for rate_phprob in rate_ph_list:
-                        insert_to_pkl_v_greater_2(rate_phprob[0], rate_phprob[1], v, ind, units)
+                for rate_phprob in rate_ph_list:
+                    insert_to_pkl_v_greater_2(rate_phprob[0], rate_phprob[1], v, ind, units)
 
-                    df_acuum1 = merge_cases_v_larger_0(rate_ph_list, v, ind, steady_arr, lam_0, lam_1, mu_0, df_acuum1)
-
-
-                else:  # dumping the recursion vectors for each pair in (ph_prob, val)
-
-                    for rate_phprob in rate_ph_list:
-                        insert_to_pkl_v_plus_1(rate_phprob[0], rate_phprob[1], v, ind, units)
-
-                    df_acuum1 = merge_cases_v_larger_0(rate_ph_list, v, ind, steady_arr, lam_0, lam_1, mu_0, df_acuum1)
+                df_acuum1 = merge_cases_v_larger_0(rate_ph_list, v, ind, steady_arr, lam_0, lam_1, mu_0, df_acuum1)
 
 
-                ## dump pkl that tracks what was already done
-                curr_df_ind = track_df.shape[0]
-                track_df.loc[curr_df_ind,'v'] = v
-                track_df.loc[curr_df_ind, 'ind'] = ind
+            else:  # dumping the recursion vectors for each pair in (ph_prob, val)
 
-                with open(os.path.join(PKL_PATH, 'df_acuum.pkl'), 'wb') as f:
-                    pkl.dump(df_acuum1, f)
-                with open('track_df', 'wb') as f:
-                    pkl.dump(track_df, f)
-                # print('dumped v = {} and ind = {}'.format(v, ind))
+                for rate_phprob in rate_ph_list:
+                    insert_to_pkl_v_plus_1(rate_phprob[0], rate_phprob[1], v, ind, units)
+
+                df_acuum1 = merge_cases_v_larger_0(rate_ph_list, v, ind, steady_arr, lam_0, lam_1, mu_0, df_acuum1)
+
+
+            # ## dump pkl that tracks what was already done
+            # curr_df_ind = track_df.shape[0]
+            # track_df.loc[curr_df_ind,'v'] = v
+            # track_df.loc[curr_df_ind, 'ind'] = ind
+            #
+            # with open(os.path.join(PKL_PATH, 'df_acuum.pkl'), 'wb') as f:
+            #     pkl.dump(df_acuum1, f)
+            # with open('track_df', 'wb') as f:
+            #     pkl.dump(track_df, f)
+            # print('dumped v = {} and ind = {}'.format(v, ind))
 
 
 
@@ -227,6 +225,15 @@ def merge_cases_v_larger_0(rate_ph_list, v, ind, steady_arr, lam_0, lam_1, mu_0,
         df1 = pd.DataFrame(data1, columns=['mu', 'lam0lam1', 'mu0lam0lam1', 'mu_prob', 'lam0lam1_prob',
                                            'steady_prob', 'v_prob'])
         df1 = add_prob_even_total_prob(df1, lam_0, lam_1, mu_0)
+
+        df_pkl = df1
+        df_pkl.loc[:, 'c'] = ind
+        df_pkl.loc[:, 'v'] = v
+        df_pkl.loc[:, 'Id'] = df_pkl.loc[:, 'lam0lam1']
+        df_pkl.loc[:, 'Ar'] = v+1 - df_pkl.loc[:, 'mu']
+        pkl_path = os.path.join(PKL_PATH, str(v)+'_'+str(ind)+'.pkl')
+        with open(pkl_path, 'wb') as f:
+            pkl.dump(df_pkl, f)
 
         df_acuum1 = merge_curr(df1, df_acuum1)
 
@@ -418,35 +425,7 @@ def add_prob_even_total_prob(df,lam_0,lam_1,mu_0):
 
     return df
 
-def get_prob_c(c,steady_state,v, mu1, lam):
-    '''
 
-    :param c: number of customers to arrive in the future
-    :param steady_state: M/G/1 steady-state
-    :param v: num of type 0 customers
-    :param mu1: type 1 arrival rate
-    :param lam: conditioned arrival rate
-    :return: a vector the probabilites of b for all states under (v,c)
-    '''
-    b = v+1-c
-    prob_b = 0
-
-    if b == 0:
-        prob_b += np.sum(steady_state[:2])*prob_arrivals_during_exp(mu1, lam, 0)
-
-    elif b == v+1:
-        prob_b += np.sum(steady_state[:2])*tail_arrivals_during_exp(mu1, lam, v+1)
-        u_arr = np.arange(2, b+1)
-        k_arr = b-(u_arr-1)
-        prob_b += np.sum(steady_state[u_arr]*tail_arrivals_during_exp(mu1, lam, k_arr))
-        prob_b += steady_state[-1]
-    else:
-        prob_b += np.sum(steady_state[:2]) * prob_arrivals_during_exp(mu1, lam, b)
-        u_arr = np.arange(2, b + 2)
-        k_arr = b - (u_arr-1)
-        prob_b += np.sum(steady_state[u_arr] * prob_arrivals_during_exp(mu1, lam, k_arr))
-
-    return prob_b
 
 
 def prob_arrivals_during_exp(mu1, lam, k):

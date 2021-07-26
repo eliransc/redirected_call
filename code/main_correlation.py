@@ -33,10 +33,10 @@ def main(args):
 
 
 
-    mu_0list = [0.8,1.2, 3,10]
-    for mu_0 in mu_0list:
-        h0 = 1
-        args.mu0 = mu_0
+    hu_0list = [0.8,1.2, 3,10]
+    for h_0 in hu_0list:
+        h0 = h_0
+        # args.mu0 = mu_0
         t1_path = '../pkl/' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
             h0) + 't1_dict.pkl'
 
@@ -124,8 +124,8 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=3)
-    parser.add_argument('--mu1', type=float, help='mu1', default=1.2)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.25)
+    parser.add_argument('--mu1', type=float, help='mu1', default=250)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.2)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.8)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)

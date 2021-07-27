@@ -39,8 +39,10 @@ def create_t_1_probs(df_path, lam_0, lam_1, mu_0, mu_1, t_prob_path, h0, t1_path
                 if t < t_prob.shape[0]:
                     curr_k = t_1 - t + curr_v + 1
                     if (t_prob[t] / np.sum(t_prob[curr_v + 1:])) > 0.000001:
-                        curr_sum += (t_prob[t] / np.sum(t_prob[curr_v + 1:])) * (
-                                    np.exp(-(lam_0 + lam_1) * h0) * ((lam_0 + lam_1)*h0) ** curr_k) / math.factorial(curr_k)
+                        numirator = (t_prob[t] / np.sum(t_prob[curr_v + 1:])) * (
+                                    np.exp(-(lam_0 + lam_1) * h0) * ((lam_0 + lam_1)*h0) ** curr_k)
+                        if (numirator > 0.000000001) & (curr_k < 150):
+                            curr_sum += numirator/math.factorial(curr_k)
             t_1 += 1
             sums += curr_sum
             t1_curr.append(curr_sum)

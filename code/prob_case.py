@@ -37,8 +37,11 @@ def compute_bayesian_probs(lam_0,lam_1,mu_0,mu_1, eps, df_name_after, t_prob_pat
                 t = t1
             else:
                 t = t1 - u + 1
-            curr_prob += u_prob[u] * quad(get_density, 0, 100, args=(s, lam_0, lam_1, t,))[0] \
-                         / math.factorial(t)
+
+            numirator = u_prob[u] * quad(get_density, 0, 100, args=(s, lam_0, lam_1, t,))[0] \
+
+            if numirator > 0:
+                curr_prob += numirator/math.factorial(t)
 
         t_prob.append(curr_prob)
 
@@ -82,7 +85,18 @@ def get_density(h,  S, lam0, lam1,  k):
     alph = np.zeros(S.shape[0])
     alph[0] = 1
 
-    return np.exp(-(lam0 + lam1) * h) * (((lam0 + lam1) * h) ** k) * np.dot(np.dot(alph, expm(S * h)), S0)
+    val1 = np.exp(-(lam0 + lam1) * h)
+    val3 = np.dot(np.dot(alph, expm(S * h)), S0)
+
+    if k <150:
+        val2 = (((lam0 + lam1) * h) ** k)
+    else:
+        val2 = 0
+    return val1 * val2 * val3
+
+
+
+    # return np.exp(-(lam0 + lam1) * h) * (((lam0 + lam1) * h) ** k) * np.dot(np.dot(alph, expm(S * h)), S0)
 
 def comp_t1(t1_prob, t1):
     return t1_prob[t1]

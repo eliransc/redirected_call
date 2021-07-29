@@ -67,7 +67,7 @@ def create_t_1_probs(df_path, lam_0, lam_1, mu_0, mu_1, t_prob_path, h0, t1_path
 
         # for t_1 in range(t_prob.shape[0]):
         t_1 = 0
-        while sums < 0.99999:
+        while (sums < 0.99999) and (t_1 < 35):
             cur = quad(create_t1_dens_, 0, h0, args=(h0, t_1, curr_ph, ph_before, ph_after, lam_0, lam_1,))[0]
             t1_curr.append(cur)
             sums += cur
@@ -145,6 +145,8 @@ def create_t1_dens_(r, h0, t_1, curr_ph, ph_before, ph_after, lam_0, lam_1):
 
     denom_1 = math.factorial(t_1)
     denom_2 = dens_1
+
+
 
     return (numin_1 * numin_2) / (denom_1*denom_2)
 

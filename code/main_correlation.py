@@ -33,7 +33,7 @@ def main(args):
 
 
 
-    hu_0list = [0.05 ]
+    hu_0list = [0.05, 0.5, 1, 3,5 ]
     for h_0 in hu_0list:
         h0 = h_0
         # args.mu0 = mu_0
@@ -124,10 +124,10 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=0.135)
-    parser.add_argument('--mu1', type=float, help='mu1', default=25)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
+    parser.add_argument('--mu0', type=float, help='mu0', default=1)
+    parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.65)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.35)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)

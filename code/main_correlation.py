@@ -27,13 +27,13 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 5
-    ub_low = 5
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
 
 
-    hu_0list = [0.5, 5, 10,15,20]
+    hu_0list = [0.05 ]
     for h_0 in hu_0list:
         h0 = h_0
         # args.mu0 = mu_0
@@ -78,7 +78,7 @@ def main(args):
                 args.mu1)+ '_' + str(h0) + '_after_probs_non_eq.pkl'
             df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-            h_arr = np.linspace(0.1, 2.5, 25)
+            h_arr = np.linspace(0.001, 2, 20)
 
             cond_list = []
             uncond_list = []
@@ -124,10 +124,10 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=0.37)
-    parser.add_argument('--mu1', type=float, help='mu1', default=2500)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.3)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.7)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.135)
+    parser.add_argument('--mu1', type=float, help='mu1', default=25)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)

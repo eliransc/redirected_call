@@ -194,15 +194,15 @@ def main(args):
         # mis_arrival = 0.15
 
 
-        lam00 = 0.3
-        lam01 = 0.7
+        lam00 = 0.1
+        lam01 = 0.9
         lam10 = 0
         lam11 = 0 #1-lam10
 
-        mu00 = 0.8
-        mu01 = 1000
+        mu00 = 0.135
+        mu01 = 25
         mu10 = 2.5
-        mu11 = 2.5
+        mu11 = 1.25
 
         # row, col = np.diag_indices(args.r.shape[0])
         # args.r[row, col] = match_arrival
@@ -285,7 +285,7 @@ def main(args):
         wait_arr = np.array(waiting_time_list)
         print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
-    print(df_summary_result)
+    print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
 
 def parse_arguments(argv):
 
@@ -293,7 +293,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=137500)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=288000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

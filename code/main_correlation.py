@@ -27,8 +27,8 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 4
-    ub_low = 4
+    ub_high = 8
+    ub_low = 8
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
 

@@ -35,9 +35,16 @@ def avg_sys(r ,mu,ind):
     return  avg_sys, rho
 
 
-def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num):
+def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args):
     if np.remainder(name[station], 10000) == 0:
         print('The current time is: ', env.now)
+        station_ind = 1
+        with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
+            avg_waiting = pkl.load(f)
+        print('The average sys in station 1 is: ',avg_waiting[station_ind] *(np.sum(args.r[station_ind, :]) +
+                                                                       np.sum(args.r[:, station_ind])
+                                                                       -args.r[station_ind, station_ind]))
+
     if (station == 0)& False:
         pkl_name = r'..\pkl\station0.pkl'
         if not os.path.exists(pkl_name):
@@ -122,7 +129,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
                 if cur_ind > 0:
                     df_inter_departure_station_0.loc[cur_ind, 'inter_departure_time'] = arrival_time - df_inter_departure_station_0.loc[cur_ind-1, 'departure_time']
                 pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'wb'))
-                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num))
+                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args))
 
 
 
@@ -157,7 +164,7 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
         name[station] += 1
         is_matched = station == class_
-        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num))
+        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args))
 
 def main(args):
 
@@ -194,15 +201,15 @@ def main(args):
         # mis_arrival = 0.15
 
 
-        lam00 = 0.1
-        lam01 = 0.9
+        lam00 = 0.5
+        lam01 = 0.5
         lam10 = 0
         lam11 = 0 #1-lam10
 
-        mu00 = 0.135
+        mu00 = 0.675
         mu01 = 25
         mu10 = 2.5
-        mu11 = 1.25
+        mu11 = 0.694444444
 
         # row, col = np.diag_indices(args.r.shape[0])
         # args.r[row, col] = match_arrival
@@ -293,7 +300,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=288000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=88000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

@@ -10,6 +10,7 @@ import os
 from tqdm import tqdm
 from datetime import datetime
 from utils import *
+import random
 
 
 def avg_sys_station_0(r ,mu,ind):
@@ -168,6 +169,8 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
 def main(args):
 
+    print('Case number: ', args.case_num)
+
     df_inter_departure_station_0 = pd.DataFrame([], columns = ['departure_time', 'inter_departure_time'])
     pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(args.case_num)+'.pkl', 'wb'))
 
@@ -201,15 +204,15 @@ def main(args):
         # mis_arrival = 0.15
 
 
-        lam00 = 0.5
-        lam01 = 0.5
+        lam00 = 0.75
+        lam01 = 0.25
         lam10 = 0
         lam11 = 0 #1-lam10
 
-        mu00 = 0.675
-        mu01 = 25
+        mu00 = 2
+        mu01 = 0.715
         mu10 = 2.5
-        mu11 = 0.694444444
+        mu11 = 0.333333
 
         # row, col = np.diag_indices(args.r.shape[0])
         # args.r[row, col] = match_arrival
@@ -300,13 +303,13 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=88000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=100000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
-    parser.add_argument('--case_num', type=int, help='case number in my settings', default=1)
+    parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
 
     args = parser.parse_args(argv)
 

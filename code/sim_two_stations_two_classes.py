@@ -204,15 +204,15 @@ def main(args):
         # mis_arrival = 0.15
 
 
-        lam00 = 0.75
-        lam01 = 0.25
+        lam00 = 0.9
+        lam01 = 0.1
         lam10 = 0
         lam11 = 0 #1-lam10
 
         mu00 = 2
-        mu01 = 0.715
-        mu10 = 2.5
-        mu11 = 0.333333
+        mu01 = 0.25
+        mu10 = 0.2
+        mu11 = 0.125
 
         # row, col = np.diag_indices(args.r.shape[0])
         # args.r[row, col] = match_arrival

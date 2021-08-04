@@ -13,18 +13,19 @@ from create_ph_matrix import compute_ph_matrix
 from get_steady_ph import get_steady_ph_sys
 from compute_waiting_time import compute_waiting_time_
 from prob_case import compute_bayesian_probs
+import time
 
 def main(args):
 
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 4
-    ub_low = 4
+    ub_high = 25
+    ub_low = 25
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
     lam0s = np.linspace(0.1, 0.1, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
-
+    start_time = time.time()
 
     sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
     if not os.path.exists(sum_res_full_path):
@@ -62,27 +63,31 @@ def main(args):
                 print('stage 3: create ph matrix')
                 path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) +'.pkl')
                 variance = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path)
+                end_time = time.time()
+                print('Total time for v_max = {} is: {}' .format(ub_high, end_time-start_time))
 
-                print('stage 4: compute steady-state')
-                avg_number = get_steady_ph_sys(lam1, args.lam_ext, args.mu_11, path_ph, ub_v)
+                if not args.time_check:
 
-                sum_res = pkl.load(open(sum_res_full_path,'rb'))
-                ind = sum_res.shape[0]
-                sum_res.loc[ind, 'lam0'] = lam0
-                sum_res.loc[ind, 'lam1'] = lam1
-                sum_res.loc[ind, 'mu0'] = args.mu0
-                sum_res.loc[ind, 'mu1'] = args.mu1
-                sum_res.loc[ind, 'avg_station_1'] = avg_number
-                sum_res.loc[ind, 'inter_depart_type_1'] = variance
+                    print('stage 4: compute steady-state')
+                    avg_number = get_steady_ph_sys(lam1, args.lam_ext, args.mu_11, path_ph, ub_v)
 
-                pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
+                    sum_res = pkl.load(open(sum_res_full_path,'rb'))
+                    ind = sum_res.shape[0]
+                    sum_res.loc[ind, 'lam0'] = lam0
+                    sum_res.loc[ind, 'lam1'] = lam1
+                    sum_res.loc[ind, 'mu0'] = args.mu0
+                    sum_res.loc[ind, 'mu1'] = args.mu1
+                    sum_res.loc[ind, 'avg_station_1'] = avg_number
+                    sum_res.loc[ind, 'inter_depart_type_1'] = variance
 
-                print(sum_res)
+                    pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
+
+                    print(sum_res)
 
 
-                R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
-                print('stage 5: compute waiting time')
-                compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
+                    R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
+                    print('stage 5: compute waiting time')
+                    compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
 
 
 
@@ -91,13 +96,14 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=False)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=2000)
-    parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.72)
+    parser.add_argument('--mu1', type=float, help='mu1', default=1500)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.5)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000000001)
+    parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=True)
 
 
     args = parser.parse_args(argv)

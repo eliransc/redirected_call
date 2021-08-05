@@ -64,7 +64,7 @@ def main(args):
                 path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) +'.pkl')
                 variance = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path)
                 end_time = time.time()
-                print('Total time for v_max = {} is: {}' .format(ub_high, end_time-start_time))
+                print('Total time for v_max = {} is: {}' .format(ub_high, (end_time-start_time)/60))
 
                 if not args.time_check:
 

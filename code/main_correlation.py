@@ -27,13 +27,13 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 8
-    ub_low = 8
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
 
 
-    hu_0list = [0.05, 0.5, 1, 3,5 ]
+    hu_0list = [0.05, 0.1, 0.25, 0.5,0.75, 1,1.5,2,2.5, 3,5 ]
     for h_0 in hu_0list:
         h0 = h_0
         # args.mu0 = mu_0
@@ -78,7 +78,7 @@ def main(args):
                 args.mu1)+ '_' + str(h0) + '_after_probs_non_eq.pkl'
             df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-            h_arr = np.linspace(0.001, 2, 20)
+            h_arr = np.linspace(0.001, 5, 20)
 
             cond_list = []
             uncond_list = []
@@ -106,6 +106,7 @@ def main(args):
                 uncond_list.append(uncod_dens)
 
 
+
             plt.figure()
             plt.plot(h_arr, cond_list, label = 'conditioned',  linestyle='dashed', color = 'blue', alpha = 0.6,linewidth=3 )
             plt.plot(h_arr, uncond_list, label = 'prior', alpha = 0.6, color = 'green', linewidth=3)
@@ -117,6 +118,42 @@ def main(args):
 
             pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.pkl', 'wb'))
 
+            cond = []
+            for val_cond in cond_list:
+                #     print(val_cond[0])
+                cond.append(val_cond[0])
+            cond_arr = np.array(cond)
+
+            uncond = []
+            for val_uncond in uncond_list:
+                #     print(val_uncond[0])
+                uncond.append(val_uncond[0])
+            uncond_arr = np.array(uncond)
+
+            cond_arr_norm = cond_arr / np.sum(cond_arr)
+            uncond_arr_norm = uncond_arr / np.sum(uncond_arr)
+
+            curr_kl = np.sum(uncond_arr_norm * np.log(uncond_arr_norm / cond_arr_norm))
+
+            if not os.path.exists(args.kl_pd_path):
+                df = pd.DataFrame([],columns = ['lam0', 'lam1', 'mu0', 'mu1', 'h', 'KL'])
+                pkl.dump(df, open(args.kl_pd_path,'wb'))
+            else:
+                df = pkl.load(open(args.kl_pd_path, 'rb'))
+
+            curr_row = df.shape[0]
+            df.loc[curr_row,'lam0'] = lam0
+            df.loc[curr_row, 'lam1'] = lam1
+            df.loc[curr_row, 'mu0'] = args.mu0
+            df.loc[curr_row, 'mu1'] = args.mu1
+            df.loc[curr_row, 'h'] = h_0
+            df.loc[curr_row, 'KL'] = curr_kl
+
+            pkl.dump(df, open(args.kl_pd_path,'wb'))
+
+
+
+
 
 
 def parse_arguments(argv):
@@ -125,12 +162,13 @@ def parse_arguments(argv):
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
     parser.add_argument('--mu0', type=float, help='mu0', default=2)
-    parser.add_argument('--mu1', type=float, help='mu1', default=1.25)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.25)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.75)
+    parser.add_argument('--mu1', type=float, help='mu1', default=1.334)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
-    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.5)
+    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)
+    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data.pkl')
 
     args = parser.parse_args(argv)
 

@@ -20,9 +20,9 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 60
-    ub_low = 60
-    ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
+    ub_high = 40
+    ub_low = 5
+    ub_vals = np.linspace(ub_low, ub_high, 8).astype(int)
     lam0s = np.linspace(0.1, 0.1, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     start_time = time.time()
@@ -64,7 +64,7 @@ def main(args):
                 path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) +'.pkl')
                 variance = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path)
                 end_time = time.time()
-                print('Total time for v_max = {} is: {}' .format(ub_high, (end_time-start_time)/60))
+                print('Total time for v_max = {} is: {}' .format(ub_v, (end_time-start_time)/60))
 
                 if not args.time_check:
 

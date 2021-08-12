@@ -203,7 +203,7 @@ def main(args):
         # match_arrival = 0.6
         # mis_arrival = 0.15
 
-        p = 0.9
+        p = 1
         lam0 = 1
         lam00 = p*lam0
         lam01 = (1-p)*lam0

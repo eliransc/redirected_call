@@ -48,7 +48,7 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
 
         if (waiting_list[-1]>0.9) & (flag == 0):
             index_90 = ind_w
-            flag=1
+            flag = 1
 
     # print(index_90)
 

@@ -295,7 +295,7 @@ def main(args):
         # wait_arr = np.array(waiting_time_list)
         # print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
-    print('The average is station 0 is: ', df_summary_result.loc[0, 'avg_sys_0'])
+    print('The average is station 0 is: ', avg_waiting[0] /(lam00+lam01))
     print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
 
 def parse_arguments(argv):

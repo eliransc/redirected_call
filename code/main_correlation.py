@@ -33,7 +33,7 @@ def main(args):
 
 
 
-    hu_0list = [0.05, 0.1, 0.25, 0.5,0.75, 1,1.5,2,2.5, 3,5 ]
+    hu_0list = [0.1,1,2,3 ]
     for h_0 in hu_0list:
         h0 = h_0
         # args.mu0 = mu_0
@@ -78,7 +78,7 @@ def main(args):
                 args.mu1)+ '_' + str(h0) + '_after_probs_non_eq.pkl'
             df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-            h_arr = np.linspace(0.01, 0.25, 20)
+            h_arr = np.linspace(0.01, 2, 20)
             h_arr = np.append(h_arr, np.array([0.3, 0.5, 1]))
 
             cond_list = []
@@ -162,8 +162,8 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=0.135)
-    parser.add_argument('--mu1', type=float, help='mu1', default=25)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.3641)
+    parser.add_argument('--mu1', type=float, help='mu1', default=2)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)

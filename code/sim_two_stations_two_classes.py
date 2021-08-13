@@ -110,10 +110,10 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
             avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
-        if station == 1:
-            waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'rb'))
-            waiting_time_list.append(waiting_time)
-            pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'wb'))
+        # if station == 1:
+        #     waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'rb'))
+        #     waiting_time_list.append(waiting_time)
+        #     pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'wb'))
 
         avg_waiting[station] = (avg_waiting[station] * name[station] + waiting_time) / (name[station] + 1)
         with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
@@ -125,11 +125,11 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
                 name[station] += 1
                 arrival_time = env.now
                 df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'rb'))
-                cur_ind = df_inter_departure_station_0.shape[0]
-                df_inter_departure_station_0.loc[cur_ind,'departure_time'] = arrival_time
-                if cur_ind > 0:
-                    df_inter_departure_station_0.loc[cur_ind, 'inter_departure_time'] = arrival_time - df_inter_departure_station_0.loc[cur_ind-1, 'departure_time']
-                pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'wb'))
+                # cur_ind = df_inter_departure_station_0.shape[0]
+                # df_inter_departure_station_0.loc[cur_ind,'departure_time'] = arrival_time
+                # if cur_ind > 0:
+                #     df_inter_departure_station_0.loc[cur_ind, 'inter_departure_time'] = arrival_time - df_inter_departure_station_0.loc[cur_ind-1, 'departure_time']
+                # pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'wb'))
                 env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args))
 
 
@@ -203,17 +203,16 @@ def main(args):
         # match_arrival = 0.6
         # mis_arrival = 0.15
 
-        p = 1
-        lam0 = 1
-        lam00 = p*lam0
-        lam01 = (1-p)*lam0
+
+        lam00 = 0.5
+        lam01 = 0.1
         lam10 = 0.5
-        lam11 = 0.5
+        lam11 = 0.9
 
         mu00 = 2
         mu01 = 5
         mu10 = 2
-        mu11 = 2
+        mu11 = 1.75
 
         # row, col = np.diag_indices(args.r.shape[0])
         # args.r[row, col] = match_arrival
@@ -280,21 +279,21 @@ def main(args):
             pkl.dump(df_summary_result, f)
         print('The average number of customers in station 1 is: ', df_summary_result.loc[0,'avg_sys_1'])
 
-        df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_' + str(args.case_num) + '.pkl', 'rb'))
-        df_inter_departure_station_0 = df_inter_departure_station_0.iloc[1:, :]
-
-        arr = np.array(df_inter_departure_station_0.loc[1:, 'inter_departure_time'])
-        arr_two_dim = np.zeros((arr.shape[0], 2))
-        for inter in range(arr.shape[0] - 1):
-            arr_two_dim[inter, 0] = arr[inter]
-            arr_two_dim[inter, 1] = arr[inter + 1]
-        print('The correlation is', np.corrcoef(arr_two_dim[:, 0], arr_two_dim[:,1]) )
+        # df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_' + str(args.case_num) + '.pkl', 'rb'))
+        # df_inter_departure_station_0 = df_inter_departure_station_0.iloc[1:, :]
+        #
+        # arr = np.array(df_inter_departure_station_0.loc[1:, 'inter_departure_time'])
+        # arr_two_dim = np.zeros((arr.shape[0], 2))
+        # for inter in range(arr.shape[0] - 1):
+        #     arr_two_dim[inter, 0] = arr[inter]
+        #     arr_two_dim[inter, 1] = arr[inter + 1]
+        # print('The correlation is', np.corrcoef(arr_two_dim[:, 0], arr_two_dim[:,1]) )
 
         # print('The inter-departure variance is: ',df_inter_departure_station_0['inter_departure_time'].var())
 
-        waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_' + str(args.case_num) + '.pkl', 'rb'))
-        wait_arr = np.array(waiting_time_list)
-        print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
+        # waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_' + str(args.case_num) + '.pkl', 'rb'))
+        # wait_arr = np.array(waiting_time_list)
+        # print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
     print('The average is station 0 is: ', df_summary_result.loc[0, 'avg_sys_0'])
     print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
@@ -305,7 +304,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=2000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=1000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

@@ -295,8 +295,34 @@ def main(args):
         # wait_arr = np.array(waiting_time_list)
         # print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
-    print('The average is station 0 is: ', avg_waiting[0] /(lam00+lam01))
+    print('The average is station 0 is: ', avg_waiting[0] / (lam00+lam01))
     print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
+
+    if not os.path.exists(args.df_summ):
+        df = pd.DataFrame([])
+    else:
+        df = pkl.load(open(args.df_summ, 'rb'))
+    ind = df.shape[0]
+    df.loc[ind, 'lam00'] = lam00
+    df.loc[ind, 'lam01'] = lam01
+    df.loc[ind, 'lam10'] = lam10
+    df.loc[ind, 'lam11'] = lam11
+
+    df.loc[ind, 'mu00'] = mu00
+    df.loc[ind, 'mu01'] = mu01
+    df.loc[ind, 'mu10'] = mu10
+    df.loc[ind, 'mu11'] = mu11
+
+    df.loc[ind, 'avg_cust_0'] = avg_waiting[0] / (lam00+lam01)
+    df.loc[ind, 'avg_cust_1'] = df_summary_result.loc[0, 'avg_sys_1']
+    df.loc[ind, 'avg_wait_0'] = avg_waiting[0]
+    df.loc[ind, 'avg_wait_1'] = avg_waiting[1]
+
+    pkl.dump(df, open(args.df_summ,'wb'))
+
+    print(df)
+
+
 
 def parse_arguments(argv):
 
@@ -304,13 +330,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=1000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=100)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim.pkl')
 
     args = parser.parse_args(argv)
 

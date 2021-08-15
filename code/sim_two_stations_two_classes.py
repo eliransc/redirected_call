@@ -19,7 +19,7 @@ def avg_sys_station_0(r ,mu,ind):
     p0 = r[ind,0]/(r[ind,0]+r[ind,1])
     expected  = p0/mu[ind,0]+(1-p0)/mu[ind,1]
     expected_2 = p0/mu[ind,0]**2+(1-p0)/mu[ind,1]**2
-    avg_waiting = expected+lamb*expected_2/(2-rho)
+    avg_waiting = expected+lamb*expected_2/(2*(1-rho))
     avg_sys = avg_waiting*lamb
     return avg_sys, rho
 

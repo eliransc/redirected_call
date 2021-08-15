@@ -23,7 +23,7 @@ def main(args):
     ub_high = 9
     ub_low = 9
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.3, 0.5,3)
+    lam0s = np.linspace(0.1, 0.5,5)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     start_time = time.time()
 
@@ -33,6 +33,9 @@ def main(args):
 
     for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
         lam1 = 1-lam0
+        lam0 = 1
+        args.lam_ext = 1-lam1
+
 
 
         for ind_ub_v, ub_v in enumerate(ub_vals):
@@ -85,9 +88,9 @@ def main(args):
                     print(sum_res)
 
 
-                    R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
-                    print('stage 5: compute waiting time')
-                    compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
+                    # R,x = pkl.load(open('../pkl/R_' + str(ub_v) + '.pkl', 'rb'))
+                    # print('stage 5: compute waiting time')
+                    # compute_waiting_time_(R, x, args.mu_11, lam1, args.lam_ext, ub_v, 6)
 
 
 
@@ -96,12 +99,12 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=False)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=2)
-    parser.add_argument('--mu1', type=float, help='mu1', default=5)
+    parser.add_argument('--mu0', type=float, help='mu0', default=1.25)
+    parser.add_argument('--mu1', type=float, help='mu1', default=100)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.2)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.8)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=1)
-    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=2)
+    parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.25)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000000001)
     parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=False)
 

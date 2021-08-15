@@ -28,7 +28,7 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
     u1 = x[n:].reshape((1, n))
     steady_probs = []
     # flag = 0
-    for d in tqdm(range(100)):
+    for d in tqdm(range(150)):
         if d == 0:
             steady_probs.append(u0)
         else:
@@ -68,4 +68,4 @@ def compute_waiting_time_(R,x, mu_11,lam_1 ,lam_ext, ub_v, case_number):
     plt.ylabel('Cdf')
     plt.title('Case '+str(case_number))
     plt.savefig('../figs/Case '+str(case_number)+'.png')
-    plt.show()
+    # plt.show()

@@ -44,7 +44,7 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_
         results = merge_cases(df1)
         results['prob'] = results['prob'].astype('float')
 
-        df_rates = df1['event'].str.split('_', expand=True)
+        df_rates = results['event'].str.split('_', expand=True)
         df_rates = df_rates.rename(columns={0: "mu0", 1: "lam0lam1", 2: 'lam0lam1mu0'})
         results = pd.concat([results, df_rates], axis=1)
 

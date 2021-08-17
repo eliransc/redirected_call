@@ -27,13 +27,14 @@ def main(args):
     sum_results_name = 'sum_result20.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 3
-    ub_low = 3
+    ub_high = 4
+    ub_low = 4
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
 
 
-    hu_0list = [0.1,1,2,3 ]
+    hu_0list = [0.1,1,2,5]
+    cond_dict = {}
     for h_0 in hu_0list:
         h0 = h_0
         # args.mu0 = mu_0
@@ -78,8 +79,8 @@ def main(args):
                 args.mu1)+ '_' + str(h0) + '_after_probs_non_eq.pkl'
             df_name_after_non_eq = os.path.join(pkl_path, df_name_after_non_eq)
 
-            h_arr = np.linspace(0.01, 2, 20)
-            h_arr = np.append(h_arr, np.array([0.3, 0.5, 1]))
+            h_arr = np.linspace(0.01, 1, 20)
+            h_arr = np.append(h_arr, np.array([1.5, 2, 3]))
 
             cond_list = []
             uncond_list = []
@@ -106,18 +107,12 @@ def main(args):
                 uncod_dens = get_curr_dens(df_name_after, args.mu0, args.mu1, lam0, lam1, h)
                 uncond_list.append(uncod_dens)
 
+            cond_dict[h_0] = cond_list
 
-
-            plt.figure()
-            plt.plot(h_arr, cond_list, label = 'conditioned',  linestyle='dashed', color = 'blue', alpha = 0.6,linewidth=3 )
-            plt.plot(h_arr, uncond_list, label = 'prior', alpha = 0.6, color = 'green', linewidth=3)
-            plt.legend()
-            plt.savefig('cond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.png')
-            plt.show()
 
             print('the end')
 
-            pkl.dump((h_arr, cond_list, uncond_list), open('../pkl/h_arr_cond_dist_uncond_dist' +str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)+'_'+str(h0)+'.pkl', 'wb'))
+
 
             cond = []
             for val_cond in cond_list:
@@ -152,20 +147,54 @@ def main(args):
 
             pkl.dump(df, open(args.kl_pd_path,'wb'))
 
+    pkl.dump((h_arr, cond_dict, uncond_list), open(
+        '../pkl/h_arr_cond_dist_uncond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(
+            args.mu1) + '_' + str(hu_0list[0])+'_'+str(hu_0list[-1])+ '.pkl', 'wb'))
 
+    plt.figure()
+    for key in cond_dict.keys():
+        plt.plot(h_arr, cond_dict[key], label='w = ' + str(key),   alpha=0.6, linewidth=3)
 
+    plt.plot(h_arr, uncond_list, label='Equilibrium', alpha=0.9,  linewidth=3, linestyle='dashed')
+    plt.legend()
+    plt.savefig(
+        'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(hu_0list[0])+'_'+str(hu_0list[-1]) + '.png')
+    plt.show()
 
+    max_ind = 10
+    plt.figure()
+    for key in cond_dict.keys():
+        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='w = ' + str(key), alpha=0.6, linewidth=3)
 
+    plt.plot(h_arr[:max_ind], uncond_list[:max_ind], label='Equilibrium', alpha=0.9, linewidth=3, linestyle='dashed')
+    plt.legend()
+    plt.savefig(
+        'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
+            hu_0list[0]) + '_' + str(hu_0list[-1]) + 'max_ind'+str(max_ind) +  '.png')
+    plt.show()
+
+    max_ind = 20
+    plt.figure()
+    for key in cond_dict.keys():
+        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='w = ' + str(key), alpha=0.6, linewidth=3)
+
+    plt.plot(h_arr[:max_ind], uncond_list[:max_ind], label='Equilibrium', alpha=0.9, linewidth=3,
+             linestyle='dashed')
+    plt.legend()
+    plt.savefig(
+        'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
+            hu_0list[0]) + '_' + str(hu_0list[-1]) + 'max_ind' + str(max_ind) + '.png')
+    plt.show()
 
 def parse_arguments(argv):
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=0.3641)
-    parser.add_argument('--mu1', type=float, help='mu1', default=2)
-    parser.add_argument('--lam0', type=float, help='mu0', default=0.1)
-    parser.add_argument('--lam1', type=float, help='mu0', default=0.9)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.75)
+    parser.add_argument('--mu1', type=float, help='mu1', default=1.8)
+    parser.add_argument('--lam0', type=float, help='mu0', default=0.25)
+    parser.add_argument('--lam1', type=float, help='mu0', default=0.75)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)

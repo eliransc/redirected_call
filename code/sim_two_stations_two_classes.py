@@ -17,12 +17,12 @@ def main(args):
     lam00 = 2
     lam01 = 2
     lam10 = 0.0
-    lam11 = 0.25
+    lam11 = 1.0
 
-    mu00 = 100.0
-    mu01 = 4.0
+    mu00 = 4.0
+    mu01 = 5.0
     mu10 = 2
-    mu11 = 2.5
+    mu11 = 4.0
 
     print('Case number: ', args.case_num)
 

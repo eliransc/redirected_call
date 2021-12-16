@@ -19,10 +19,10 @@ def main(args):
     lam10 = 0.0
     lam11 = 1.0
 
-    mu00 = 5.0
-    mu01 = 7.5
+    mu00 = 7.5
+    mu01 = 5.0
     mu10 = 2
-    mu11 = 6.0
+    mu11 = 4.0
 
     print('Case number: ', args.case_num)
 

@@ -4,7 +4,7 @@ import os
 from utils_ph import *
 import numpy as np
 from numpy.linalg import matrix_power
-
+from tqdm import tqdm
 
 
 def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_rates_ub_v_path):
@@ -91,7 +91,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     time_0 = time.time()
 
     lst_list = []
-    for alph in np.linspace(0,10,40):
+    for alph in tqdm(np.linspace(0,10,40)):
         inv_mat = inv(alph * I - ph)
         first_lst = np.dot(prob_arr, inv_mat)
         ones = np.ones((ph.shape[0], 1))

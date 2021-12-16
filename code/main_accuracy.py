@@ -17,13 +17,13 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result20.pkl'
+    sum_results_name = 'sum_result_new.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 12
-    ub_low = 12
+    ub_high = 10
+    ub_low = 10
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.7, 0.7,1)
+    lam0s = np.linspace(0.5, 0.5,1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     start_time = time.time()
 
@@ -32,12 +32,15 @@ def main(args):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
     for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
-        lam1 = 1-lam0
+
+        lam0 = 1
+        lam1 = 3
+
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 1
-        args.mu1 = 2
-        args.mu_11 = 1.5
+        args.mu0 = 2
+        args.mu1 = 100
+        args.mu_11 = 4
 
 
 
@@ -109,7 +112,7 @@ def parse_arguments(argv):
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=4)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000000001)
-    parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=True)
+    parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=False)
 
 
     args = parser.parse_args(argv)

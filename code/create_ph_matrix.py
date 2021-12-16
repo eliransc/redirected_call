@@ -90,34 +90,34 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     time_0 = time.time()
 
-    lst_list = []
-    for alph in tqdm(np.linspace(0,10,40)):
-        inv_mat = inv(alph * I - ph)
-        first_lst = np.dot(prob_arr, inv_mat)
-        ones = np.ones((ph.shape[0], 1))
-        ph0 = -np.dot(ph, ones)
-        lst = np.dot(first_lst, ph0)
-        lst_list.append(lst[0][0])
+    # lst_list = []
+    # for alph in tqdm(np.linspace(0,10,40)):
+    #     inv_mat = inv(alph * I - ph)
+    #     first_lst = np.dot(prob_arr, inv_mat)
+    #     ones = np.ones((ph.shape[0], 1))
+    #     ph0 = -np.dot(ph, ones)
+    #     lst = np.dot(first_lst, ph0)
+    #     lst_list.append(lst[0][0])
+    #
+    #     print('The lst in {} is {}'.format(alph, lst))
+    #
+    #     print('A single lst derivation takes:', time.time()-time_0)
 
-        print('The lst in {} is {}'.format(alph, lst))
-
-        print('A single lst derivation takes:', time.time()-time_0)
-
-    pkl.dump(lst_list, open('lst_list.pkl', 'wb'))
-    import matplotlib.pyplot as plt
-    plt.figure()
-    plt.plot(np.linspace(0,10,40),np.array(lst_list))
-    plt.show()
-
-
+    # pkl.dump(lst_list, open('lst_list.pkl', 'wb'))
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(np.linspace(0,10,40),np.array(lst_list))
+    # plt.show()
 
 
-    # PH_minus_2 = matrix_power(ph, -2)
-    # second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
-    # variance = second_moment - (1 / lam_1) ** 2
 
-    # print('The true variance is: ', variance)
-    # print('The markovian variance is:', (1/lam_1)**2)
+
+    PH_minus_2 = matrix_power(ph, -2)
+    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    variance = second_moment - (1 / lam_1) ** 2
+
+    print('The true variance is: ', variance)
+    print('The markovian variance is:', (1/lam_1)**2)
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 

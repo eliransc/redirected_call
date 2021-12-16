@@ -158,6 +158,7 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
         # print(dst)
         if dst < epsilon:
             break
+    print(dst)
 
     # pkl.dump(R, open('../pkl/R_'+str(ub_v)+'.pkl', 'wb'))
 

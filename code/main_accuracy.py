@@ -38,9 +38,9 @@ def main(args):
 
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 100.0
-        args.mu1 = 4.0
-        args.mu_11 = 2.5
+        args.mu0 = 4.0
+        args.mu1 = 5.0
+        args.mu_11 = 4.0
 
 
 
@@ -109,7 +109,7 @@ def parse_arguments(argv):
     parser.add_argument('--mu1', type=float, help='mu1', default=2)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.2)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.8)
-    parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.25)
+    parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=1.0)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=4)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000000001)
     parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=False)

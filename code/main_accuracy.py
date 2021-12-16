@@ -33,14 +33,14 @@ def main(args):
 
     for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
 
-        lam0 = 1
-        lam1 = 3
+        lam0 = 2.0
+        lam1 = 2.0
 
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 2
-        args.mu1 = 100
-        args.mu_11 = 4
+        args.mu0 = 4.0
+        args.mu1 = 100.0
+        args.mu_11 = 2.5
 
 
 

@@ -121,4 +121,4 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
-    # return  variance
+    return  variance

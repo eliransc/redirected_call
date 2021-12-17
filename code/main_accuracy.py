@@ -38,8 +38,8 @@ def main(args):
 
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 2.5
-        args.mu1 = 100.00
+        args.mu0 = 3.0
+        args.mu1 = 50.00
         args.mu_11 = 2.5
 
 

@@ -14,8 +14,8 @@ import random
 
 def main(args):
 
-    lam00 = 1
-    lam01 = 2
+    lam00 = 2
+    lam01 = 1
     lam10 = 0.0
     lam11 = 1.0
 
@@ -334,7 +334,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=200000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=300000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

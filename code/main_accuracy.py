@@ -23,7 +23,7 @@ def main(args):
     ub_high = 15
     ub_low = 15
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
-    lam0s = np.linspace(0.5, 0.5,1)
+    lam0s = np.linspace(0.5, 0.5, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     start_time = time.time()
 
@@ -38,8 +38,8 @@ def main(args):
 
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 4.0
-        args.mu1 = 10.0
+        args.mu0 = 2.5
+        args.mu1 = 10.00
         args.mu_11 = 2.5
 
 

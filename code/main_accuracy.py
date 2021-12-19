@@ -20,8 +20,8 @@ def main(args):
     sum_results_name = 'sum_result_new1.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 9
-    ub_low = 9
+    ub_high = 12
+    ub_low = 12
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
     lam0s = np.linspace(0.5, 0.5, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
@@ -33,14 +33,14 @@ def main(args):
 
     for lam0_ind, lam0 in tqdm(enumerate(lam0s)):
 
-        lam0 = 3.0
+        lam0 = 1.0
         lam1 = 1.0
 
 
         # args.lam_ext = 1-lam1
-        args.mu0 = 7.5
-        args.mu1 = 2.5
-        args.mu_11 = 3.0
+        args.mu0 = 1.25
+        args.mu1 = 50.0
+        args.mu_11 = 2.23
 
 
 

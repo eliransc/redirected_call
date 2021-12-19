@@ -20,8 +20,8 @@ def main(args):
     sum_results_name = 'sum_result_new1.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 17
-    ub_low = 17
+    ub_high = 12
+    ub_low = 12
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
     lam0s = np.linspace(0.5, 0.5, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
@@ -40,7 +40,7 @@ def main(args):
         # args.lam_ext = 1-lam1
         args.mu0 = 4.15
         args.mu1 = 12.45
-        args.mu_11 = 6.0
+        args.mu_11 = 2.0
 
 
 
@@ -109,7 +109,7 @@ def parse_arguments(argv):
     parser.add_argument('--mu1', type=float, help='mu1', default=2)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.2)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.8)
-    parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=3.0)
+    parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.333333333)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=4)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000000001)
     parser.add_argument('--time_check', type=bool, help='do we want only the time it takes to build S', default=False)

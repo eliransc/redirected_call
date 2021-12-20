@@ -14,15 +14,17 @@ import random
 
 def main(args):
 
-    lam00 = 3.0
-    lam01 = 1.0
+    lam00 = 2.0
+    lam01 = 2.0
     lam10 = 0.0
-    lam11 = 0.33333333333333
+    lam11 = 2.0
 
-    mu00 = 4.15
-    mu01 = 12.45
-    mu10 = 2
-    mu11 = 2.00
+
+    mu00 = 2.157895
+    mu01 = 86.3158
+    mu10 = 2.0
+    mu11 = 8.0
+
 
     print('Case number: ', args.case_num)
 

@@ -23,7 +23,7 @@ def main(args):
     mu00 = 2.157895
     mu01 = 86.3158
     mu10 = 2.0
-    mu11 = 8.0
+    mu11 = 4.444444
 
 
     print('Case number: ', args.case_num)

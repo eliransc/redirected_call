@@ -34,9 +34,11 @@ def main(args):
     # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
     df = pkl.load(
         open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
+
+    df = df.loc[df['lambda00']==3,:]
     for ind in tqdm(range(df.shape[0])):
 
-        # ind = ind + 8
+
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -53,7 +55,9 @@ def main(args):
         elif lam0 == 1:
             ub_v = 10
         else:
-            ub_v = 16
+            ub_v = 25
+
+
 
         mean_num_rates_ub_v_path = os.path.join(pkl_path, str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(
             args.mu0) + '_' + str(args.mu1) + 'mean_nam_rate_ub_v.pkl')

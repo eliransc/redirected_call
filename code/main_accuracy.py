@@ -47,11 +47,11 @@ def main(args):
 
 
         if lam0 == 2:
-           ub_v = 10
+           ub_v = 12
         elif lam0 == 1:
-            ub_v = 9
+            ub_v = 10
         else:
-            ub_v = 14
+            ub_v = 16
 
         mean_num_rates_ub_v_path = os.path.join(pkl_path, str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(
             args.mu0) + '_' + str(args.mu1) + 'mean_nam_rate_ub_v.pkl')

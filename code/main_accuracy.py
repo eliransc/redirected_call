@@ -37,9 +37,8 @@ def main(args):
 
 
 
-    df = df.loc[df['lambda00']==3,:]
-    df = df.reset_index()
-    for ind in tqdm(range(df.shape[0])):
+
+    for ind in [13,15]:
 
 
 

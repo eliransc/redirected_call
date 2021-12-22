@@ -29,6 +29,8 @@ def main(args):
     mu11 = df.loc[ind, 'mu11']
     lam11 = df.loc[ind, 'lambda11']
 
+    mu10 = 2.0
+    lam10 = 2.0
 
     print('Case number: ', args.case_num)
 
@@ -72,7 +74,7 @@ def main(args):
         # args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
         args.r[0, 0] = lam00
         args.r[0, 1] = lam01
-        args.r[1, 0] = 2.0
+        args.r[1, 0] = lam10
         args.r[1, 1] = lam11
 
 

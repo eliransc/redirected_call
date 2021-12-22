@@ -14,16 +14,20 @@ import random
 
 def main(args):
 
-    lam00 = 2.0
-    lam01 = 2.0
-    lam10 = 0.0
-    lam11 = 2.0
+
+    # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
+    df = pkl.load(
+        open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
+    ind = random.randint(0, df.shape[0]-1)
 
 
-    mu00 = 4.1
-    mu01 = 164.0
-    mu10 = 2.0
-    mu11 = 4.444444
+    lam00 = df.loc[ind, 'lambda00']
+    lam01 = df.loc[ind, 'lambda01']
+
+    mu00 = df.loc[ind, 'mu00']
+    mu01 = df.loc[ind, 'mu01']
+    mu11 = df.loc[ind, 'mu11']
+    lam11 = df.loc[ind, 'lambda11']
 
 
     print('Case number: ', args.case_num)
@@ -68,7 +72,7 @@ def main(args):
         # args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
         args.r[0, 0] = lam00
         args.r[0, 1] = lam01
-        args.r[1, 0] = lam10
+        args.r[1, 0] = 2.0
         args.r[1, 1] = lam11
 
 
@@ -336,7 +340,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=250000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=350000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

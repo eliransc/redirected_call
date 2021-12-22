@@ -35,6 +35,8 @@ def main(args):
     df = pkl.load(
         open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
+
+
     df = df.loc[df['lambda00']==3,:]
     df = df.reset_index()
     for ind in tqdm(range(df.shape[0])):

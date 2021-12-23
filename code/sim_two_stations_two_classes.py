@@ -15,12 +15,13 @@ import random
 def main(args):
 
 
-    # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
-    df = pkl.load(
-        open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
+    df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
+    # df = pkl.load(
+    #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
     ind = random.randint(0, df.shape[0]-1)
-
+    ind = 21
     print(ind)
+
 
 
     lam00 = df.loc[ind, 'lambda00']
@@ -76,7 +77,7 @@ def main(args):
         # args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
         args.r[0, 0] = lam00
         args.r[0, 1] = lam01
-        args.r[1, 0] = lam10
+        args.r[1, 0] = 0.00
         args.r[1, 1] = lam11
 
 
@@ -344,14 +345,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=280000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=250000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_7.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_8.pkl')
 
     args = parser.parse_args(argv)
 

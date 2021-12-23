@@ -38,7 +38,7 @@ def main(args):
 
 
 
-    for ind in [13,15]:
+    for ind in [22,24]:
 
 
 

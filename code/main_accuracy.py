@@ -57,7 +57,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 10
         else:
-            ub_v = 2
+            ub_v = 25
 
 
 

@@ -19,8 +19,6 @@ def main(args):
     df = pkl.load(
         open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
     ind = random.randint(0, df.shape[0]-1)
-    ind = 21
-    print(ind)
 
 
 

@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many9.pkl'
+    sum_results_name = 'sum_result_many10.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -33,12 +33,12 @@ def main(args):
 
     # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python1')
     df = pkl.load(
-        open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings_new.pkl', 'rb'))
+        open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
 
 
 
-    for ind in range(df.shape[0]):
+    for ind in [29, 31]:
 
 
 

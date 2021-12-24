@@ -38,7 +38,7 @@ def main(args):
 
 
 
-    for ind in [21,23]:
+    for ind in range(14,df.shape[0]):
 
 
 
@@ -57,7 +57,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 10
         else:
-            ub_v = 25
+            ub_v = 2
 
 
 

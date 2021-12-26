@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many11.pkl'
+    sum_results_name = 'sum_result_many12.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -38,9 +38,7 @@ def main(args):
 
 
 
-    for ind in range(df.shape[0]):
-
-
+    for ind in [15]:
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -57,7 +55,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 12
         else:
-            ub_v = 1
+            ub_v = 30
 
 
 

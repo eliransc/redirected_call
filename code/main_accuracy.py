@@ -31,14 +31,14 @@ def main(args):
     if not os.path.exists(sum_res_full_path):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
-    # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
-    df = pkl.load(
-        open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
+    df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
+    # df = pkl.load(
+    #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
 
 
 
-    for ind in [15]:
+    for ind in [29]:
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -55,7 +55,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 12
         else:
-            ub_v = 30
+            ub_v = 28
 
 
 

@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many10.pkl'
+    sum_results_name = 'sum_result_many11.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -31,14 +31,14 @@ def main(args):
     if not os.path.exists(sum_res_full_path):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
-    # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python1')
+    # df = pd.read_excel(r'C:\Users\elira\workspace\Research\versions_settings.xlsx', sheet_name='python')
     df = pkl.load(
         open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
 
 
 
-    for ind in [15, 17]:
+    for ind in range(df.shape[0]):
 
 
 
@@ -53,11 +53,11 @@ def main(args):
 
 
         if lam0 == 2:
-           ub_v = 12
+           ub_v = 17
         elif lam0 == 1:
-            ub_v = 10
+            ub_v = 12
         else:
-            ub_v = 25
+            ub_v = 1
 
 
 

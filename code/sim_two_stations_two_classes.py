@@ -31,7 +31,7 @@ def main(args):
     lam11 = df.loc[ind, 'lambda11']
 
     mu10 = 2.0
-    lam10 = 2.0
+    lam10 = 0.0
 
     print('Case number: ', args.case_num)
 

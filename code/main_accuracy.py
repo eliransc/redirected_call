@@ -38,7 +38,7 @@ def main(args):
 
 
 
-    for ind in [29]:
+    for ind in [15]:
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']

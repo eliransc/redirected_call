@@ -36,8 +36,6 @@ def main(args):
         open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
 
-
-
     for ind in [15]:
 
         lam0 = df.loc[ind,'lambda00']
@@ -55,7 +53,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 12
         else:
-            ub_v = 28
+            ub_v = 27
 
 
 

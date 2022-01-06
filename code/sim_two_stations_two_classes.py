@@ -16,7 +16,7 @@ import random
 def main(args):
 
     if sys.platform == 'linux':
-        df = pd.read_excel('/gpfs/fs1/home/d/dkrass/eliransc/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
+        df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
     else:
         df = pd.read_excel(r'C:\Users\elira\workspace\Research\sum_results_for_numer_res.xlsx', sheet_name='python')
 
@@ -346,7 +346,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=500)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=5500)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

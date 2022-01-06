@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many13.pkl'
+    sum_results_name = 'sum_result_many14.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -51,7 +51,7 @@ def main(args):
         if lam0 == 2:
            ub_v = 17
         elif lam0 == 1:
-            ub_v = 13
+            ub_v = 10
         else:
             ub_v = 26
 

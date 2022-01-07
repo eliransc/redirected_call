@@ -209,7 +209,6 @@ def get_steady_ph_sys(lam_1, lam_ext, mu_11, path_ph, ub_v):
 
     avg_number = np.sum(np.dot(u1, matrix_power(np.identity(R.shape[0]) - R, -2)))
 
-    pkl.dump((R, u1), open('R_U1', 'wb'))
 
     ## Rh0 of mm1
 

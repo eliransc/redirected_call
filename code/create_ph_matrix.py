@@ -113,6 +113,9 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
 
     PH_minus_2 = matrix_power(ph, -2)
+    PH_minus_1 = matrix_power(ph, -1)
+    first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
+    print(first_moment)
     second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
     variance = second_moment - (1 / lam_1) ** 2
 

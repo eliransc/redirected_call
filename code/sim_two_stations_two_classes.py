@@ -23,7 +23,7 @@ def main(args):
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
     ind = random.randint(0, df.shape[0]-1)
 
-    ind = 4
+
 
     lam00 = df.loc[ind, 'lambda00']
     lam01 = df.loc[ind, 'lambda01']

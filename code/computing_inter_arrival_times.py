@@ -13,7 +13,7 @@ from scipy.integrate import quad
 from scipy.stats import erlang
 import argparse
 import sys
-sys.path.append(r'C:\Users\elira\Google Drive\butools2\Python')
+sys.path.append(r'G:\My Drive\butools2\Python')
 from butools.ph import *
 from butools.map import *
 from butools.queues import *

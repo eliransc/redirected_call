@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import os
 from scipy.linalg import expm, sinm, cosm
 import sys
-sys.path.append(r'C:\Users\elira\Google Drive\butools2\Python')
+sys.path.append(r'G:\My Drive\butools2\Python')
 
 from butools.ph import *
 from butools.map import *

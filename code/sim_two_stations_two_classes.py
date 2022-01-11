@@ -18,11 +18,11 @@ def main(args):
     if sys.platform == 'linux':
         df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\sum_results.xlsx', sheet_name='Sheet4')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\util0_res.xlsx', sheet_name='Sheet2')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
-    ind = random.randint(0, df.shape[0]-1)
-    ind = 4
+    ind = random.randint(0, df.shape[0])
+    
 
     lam00 = df.loc[ind, 'lambda00']
     lam01 = df.loc[ind, 'lambda01']
@@ -345,7 +345,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=50000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=25000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

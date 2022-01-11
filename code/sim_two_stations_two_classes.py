@@ -16,7 +16,10 @@ import random
 def main(args):
 
     if sys.platform == 'linux':
-        df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
+            if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
+                df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx', sheet_name='Sheet2')
+            elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
+                df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\util0_res.xlsx', sheet_name='Sheet2')
 

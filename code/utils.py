@@ -12,7 +12,7 @@ from sympy import *
 import sys
 sys.path.append(r'G:\My Drive\butools2\Python')
 sys.path.append('/home/d/dkrass/eliransc/Python')
-
+sys.path.append('/home/eliransc/projects/def-dkrass/eliransc/butools/Python')
 from butools.ph import *
 from butools.map import *
 from butools.queues import *

@@ -5,6 +5,7 @@ from sympy import *
 import sys
 sys.path.append(r'G:\My Drive\butools2\Python')
 sys.path.append('/home/d/dkrass/eliransc/Python')
+sys.path.append('/home/eliransc/projects/def-dkrass/eliransc/butools/Python')
 import os
 from tqdm import tqdm
 from butools.ph import *

@@ -26,7 +26,7 @@ def main(args):
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
     ind = random.randint(0, df.shape[0])
 
-
+    ind = 0
     lam00 = df.loc[ind, 'lambda00']
     lam01 = df.loc[ind, 'lambda01']
 
@@ -49,7 +49,6 @@ def main(args):
     now = datetime.now()
     current_time = now.strftime("%H_%M_%S")
 
-
     df_summary_result = pd.DataFrame([])
     for ind in tqdm(range(args.num_iterations)):
 
@@ -71,8 +70,6 @@ def main(args):
 
         # match_arrival = 0.6
         # mis_arrival = 0.15
-
-
 
 
         # row, col = np.diag_indices(args.r.shape[0])
@@ -156,7 +153,7 @@ def main(args):
         # wait_arr = np.array(waiting_time_list)
         # print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
-        print('The average is station 0 is: ', avg_waiting[0] / (lam00+lam01))
+        print('The average is station 0 is: ', avg_waiting[0] * (lam00+lam01))
         print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
 
         if not os.path.exists(args.df_summ):
@@ -174,7 +171,7 @@ def main(args):
         df.loc[ind, 'mu10'] = mu10
         df.loc[ind, 'mu11'] = mu11
 
-        df.loc[ind, 'avg_cust_0'] = avg_waiting[0] / (lam00+lam01)
+        df.loc[ind, 'avg_cust_0'] = avg_waiting[0] * (lam00+lam01)
         df.loc[ind, 'avg_cust_1'] = df_summary_result.loc[0, 'avg_sys_1']
         df.loc[ind, 'avg_wait_0'] = avg_waiting[0]
         df.loc[ind, 'avg_wait_1'] = avg_waiting[1]
@@ -348,7 +345,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=125000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=12500)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

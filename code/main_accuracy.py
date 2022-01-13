@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many16.pkl'
+    sum_results_name = 'sum_result_many18.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -38,7 +38,7 @@ def main(args):
     if sys.platform == 'linux':
         df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\util0_res.xlsx', sheet_name='Sheet2')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\util0_res.xlsx', sheet_name='Sheet9')
 
 
     for ind in range(df.shape[0]):
@@ -56,7 +56,7 @@ def main(args):
         if lam0 == 2:
            ub_v = 9
         elif lam0 == 1:
-            ub_v = 9
+            ub_v = 12
         else:
             ub_v = 26
 

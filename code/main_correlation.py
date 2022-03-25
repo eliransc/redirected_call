@@ -27,8 +27,8 @@ def main(args):
     sum_results_name = 'sum_result21.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 7
-    ub_low = 7
+    ub_high = 5
+    ub_low = 5
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
 
@@ -153,7 +153,7 @@ def main(args):
 
     plt.figure()
     for key in cond_dict.keys():
-        plt.plot(h_arr, cond_dict[key], label='w = ' + str(key),   alpha=0.6, linewidth=3)
+        plt.plot(h_arr, cond_dict[key], label='$w_e$ = ' + str(key),   alpha=0.6, linewidth=3)
 
     plt.plot(h_arr, uncond_list, label='Equilibrium', alpha=0.9,  linewidth=3, linestyle='dashed')
     plt.legend()
@@ -164,7 +164,7 @@ def main(args):
     max_ind = 10
     plt.figure()
     for key in cond_dict.keys():
-        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='w = ' + str(key), alpha=0.6, linewidth=3)
+        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='$w_e$ = ' + str(key), alpha=0.6, linewidth=3)
 
     plt.plot(h_arr[:max_ind], uncond_list[:max_ind], label='Equilibrium', alpha=0.9, linewidth=3, linestyle='dashed')
     plt.legend()
@@ -176,7 +176,7 @@ def main(args):
     max_ind = 20
     plt.figure()
     for key in cond_dict.keys():
-        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='w = ' + str(key), alpha=0.6, linewidth=3)
+        plt.plot(h_arr[:max_ind], cond_dict[key][:max_ind], label='$w_e$ = ' + str(key), alpha=0.6, linewidth=3)
 
     plt.plot(h_arr[:max_ind], uncond_list[:max_ind], label='Equilibrium', alpha=0.9, linewidth=3,
              linestyle='dashed')
@@ -191,8 +191,8 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--correlation', type=bool, help='computing_correlation', default=True)
     parser.add_argument('--ub_v', type=int, help='v_max', default=11)
-    parser.add_argument('--mu0', type=float, help='mu0', default=1)
-    parser.add_argument('--mu1', type=float, help='mu1', default=1.5)
+    parser.add_argument('--mu0', type=float, help='mu0', default=0.433333333)
+    parser.add_argument('--mu1', type=float, help='mu1', default=4.333333333)
     parser.add_argument('--lam0', type=float, help='mu0', default=0.25)
     parser.add_argument('--lam1', type=float, help='mu0', default=0.75)
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)

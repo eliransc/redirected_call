@@ -17,7 +17,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pkl.load(open('data_sim.pkl', 'rb'))
+        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -25,7 +25,7 @@ def main(args):
             # elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
             #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
-        # df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
         df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))

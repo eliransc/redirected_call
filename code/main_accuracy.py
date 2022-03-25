@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many18.pkl'
+    sum_results_name = 'sum_result_many_1.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -36,9 +36,9 @@ def main(args):
     # #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
     if sys.platform == 'linux':
-        df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/sum_results_for_numer_res.xlsx', sheet_name='python')
+        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\util0_res.xlsx', sheet_name='Sheet9')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
 
 
     for ind in range(df.shape[0]):
@@ -46,14 +46,14 @@ def main(args):
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
 
-        # args.lam_ext = 1-lam1
+
         args.mu0 = df.loc[ind,'mu00']
         args.mu1 = df.loc[ind,'mu01']
         args.mu_11 = df.loc[ind,'mu11']
         args.lam_ext = df.loc[ind, 'lambda11']
 
 
-        if lam0 == 2:
+        if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 1:
             ub_v = 12

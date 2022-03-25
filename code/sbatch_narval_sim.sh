@@ -2,4 +2,4 @@
 #SBATCH -t 0-23:58
 #SBATCH -A def-dkrass
 source /home/eliransc/projects/def-dkrass/eliransc/queues/bin/activate
-python /home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/sim_two_stations_classes.py
+python /home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/sim_two_stations_two_classes.py

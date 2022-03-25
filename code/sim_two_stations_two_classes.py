@@ -30,6 +30,7 @@ def main(args):
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
     ind = random.randint(0, df.shape[0])
+    case_ind = ind
 
     lam00 = df.loc[ind, 'lambda00']
     lam01 = df.loc[ind, 'lambda01']
@@ -160,7 +161,7 @@ def main(args):
         print('The average is station 0 is: ', avg_waiting[0] * (lam00+lam01))
         print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
 
-        case_ind = ind
+
         if not os.path.exists(args.df_summ):
             df = pd.DataFrame([])
         else:

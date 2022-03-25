@@ -34,7 +34,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
+        df_ = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -42,19 +42,19 @@ def main(args):
             # elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
             #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
+        # df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
+        df_ = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
     for ind in tqdm(([0,2,4,6,8,10,12,14])):
 
 
-        lam0 = df.loc[ind, 'lambda00']
-        lam1 = df.loc[ind, 'lambda01']
+        lam0 = df_.loc[ind, 'lambda00']
+        lam1 = df_.loc[ind, 'lambda01']
 
-        args.mu0 =  df.loc[ind, 'mu00']
-        args.mu1 = df.loc[ind, 'mu01']
+        args.mu0 =  df_.loc[ind, 'mu00']
+        args.mu1 = df_.loc[ind, 'mu01']
 
         print(lam0,lam1, args.mu0, args.mu1)
 

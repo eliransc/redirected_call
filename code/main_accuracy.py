@@ -41,7 +41,7 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in range(0,4):
+    for ind in range(0,2):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -58,7 +58,7 @@ def main(args):
         elif lam0 == 1:
             ub_v = 12
         else:
-            ub_v = 26
+            ub_v = 20
 
 
 

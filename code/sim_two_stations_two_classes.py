@@ -160,6 +160,7 @@ def main(args):
         print('The average is station 0 is: ', avg_waiting[0] * (lam00+lam01))
         print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
 
+        case_ind = ind
         if not os.path.exists(args.df_summ):
             df = pd.DataFrame([])
         else:
@@ -180,6 +181,8 @@ def main(args):
         df.loc[ind, 'avg_wait_0'] = avg_waiting[0]
         df.loc[ind, 'avg_wait_1'] = avg_waiting[1]
         df.loc[ind,'var_0'] = df_inter_departure_station_0['inter_departure_time'].var()
+
+        df.loc[ind, 'ind'] = case_ind
 
         pkl.dump(df, open(args.df_summ,'wb'))
 

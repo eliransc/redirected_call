@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many_3.pkl'
+    sum_results_name = 'sum_result_many_4.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -36,12 +36,12 @@ def main(args):
     # #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
     if sys.platform == 'linux':
-        df = pd.read_excel('../files/corr_settings_1.xlsx', sheet_name='Sheet3')
+        df = pd.read_excel('../files/corr_settings_1.xlsx', sheet_name='Sheet2')
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet3')
 
 
-    for ind in range(4,8):
+    for ind in range(0,2):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']

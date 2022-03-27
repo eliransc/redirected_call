@@ -41,7 +41,7 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in range(10,12):
+    for ind in range(12,14):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']

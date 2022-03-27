@@ -47,7 +47,7 @@ def main(args):
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([0,2,4,6])):
+    for ind in tqdm(([1])):
 
 
         lam0 = df_.loc[ind, 'lambda00']

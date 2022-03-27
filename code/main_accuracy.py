@@ -38,10 +38,10 @@ def main(args):
     if sys.platform == 'linux':
         df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet3')
 
 
-    for ind in range(14,16):
+    for ind in range(0,4):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']

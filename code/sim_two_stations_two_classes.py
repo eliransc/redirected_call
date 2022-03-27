@@ -17,7 +17,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet3')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):

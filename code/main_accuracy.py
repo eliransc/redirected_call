@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many_2.pkl'
+    sum_results_name = 'sum_result_many_3.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -36,7 +36,7 @@ def main(args):
     # #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
     if sys.platform == 'linux':
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel('../files/corr_settings_1.xlsx', sheet_name='Sheet3')
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet3')
 

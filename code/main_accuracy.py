@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many_1.pkl'
+    sum_results_name = 'sum_result_many_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 3
@@ -51,6 +51,8 @@ def main(args):
         args.mu1 = df.loc[ind,'mu01']
         args.mu_11 = df.loc[ind,'mu11']
         args.lam_ext = df.loc[ind, 'lambda11']
+
+        curr_ind = ind
 
 
         if lam0 == 0.25:
@@ -110,6 +112,7 @@ def main(args):
                 rho1 = (lam1+args.lam_ext)/args.mu_11
                 sum_res.loc[ind, 'Pois_avg_station_1'] = rho1/(1-rho1)
                 sum_res.loc[ind, 'Pois_Var'] = 1/lam1**2
+                sum_res.loc[ind, 'ind'] = curr_ind
 
 
                 pkl.dump(sum_res, open(sum_res_full_path, 'wb'))

@@ -28,8 +28,8 @@ def main(args):
     sum_results_name = 'sum_result_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 5
-    ub_low = 5
+    ub_high = 8
+    ub_low = 8
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     if sys.platform == 'linux':
@@ -47,7 +47,7 @@ def main(args):
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([0,1,2,3,4,5,6,7,8,9,10,11,12])):
+    for ind in tqdm(([0])):
 
 
         lam0 = df_.loc[ind, 'lambda00']
@@ -224,7 +224,7 @@ def parse_arguments(argv):
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)
-    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data.pkl')
+    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data_1.pkl')
 
     args = parser.parse_args(argv)
 

@@ -38,10 +38,10 @@ def main(args):
     if sys.platform == 'linux':
         df = pd.read_excel('../files/corr_settings_1.xlsx', sheet_name='Sheet2')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet3')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
 
 
-    for ind in range(1,2):
+    for ind in range(21,22):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -50,15 +50,15 @@ def main(args):
         args.mu0 = df.loc[ind,'mu00']
         args.mu1 = df.loc[ind,'mu01']
         args.mu_11 = df.loc[ind,'mu11']
-        args.lam_ext = df.loc[ind, 'lambda11']
+        args.lam_ext = 0 #df.loc[ind, 'lambda11']
 
         curr_ind = ind
 
 
         if lam0 == 0.25:
            ub_v = 9
-        elif lam0 == 1:
-            ub_v = 12
+        elif lam0 == 0.5:
+            ub_v = 14
         else:
             ub_v = 25
 

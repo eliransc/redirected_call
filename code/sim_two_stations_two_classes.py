@@ -13,11 +13,14 @@ from utils import *
 import random
 
 
+case_ind = random.randint(0, 24)
 def main(args):
+
+
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet2')
+        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -25,20 +28,20 @@ def main(args):
             # elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
             #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
-        df = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet3')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
+        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
-    ind = random.randint(0, df.shape[0])
-    case_ind = ind
 
-    lam00 = df.loc[ind, 'lambda00']
-    lam01 = df.loc[ind, 'lambda01']
+    print(case_ind)
 
-    mu00 = df.loc[ind, 'mu00']
-    mu01 = df.loc[ind, 'mu01']
-    mu11 = df.loc[ind, 'mu11']
-    lam11 = df.loc[ind, 'lambda11']
+    lam00 = df.loc[case_ind, 'lambda00']
+    lam01 = df.loc[case_ind, 'lambda01']
+
+    mu00 = df.loc[case_ind, 'mu00']
+    mu01 = df.loc[case_ind, 'mu01']
+    mu11 = df.loc[case_ind, 'mu11']
+    lam11 = 0 # df.loc[case_ind, 'lambda11']
 
     mu10 = 2.0
     lam10 = 0.0
@@ -46,7 +49,9 @@ def main(args):
     print('Case number: ', args.case_num)
 
     df_inter_departure_station_0 = pd.DataFrame([], columns = ['departure_time', 'inter_departure_time'])
-    pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(args.case_num)+'.pkl', 'wb'))
+    inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_' + str(case_ind) + '_' + str(
+        args.case_num) + '.pkl'
+    pkl.dump(df_inter_departure_station_0, open(inter_dep_path, 'wb'))
 
     waiting_time_list = []
     pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(args.case_num)+'.pkl', 'wb'))
@@ -141,8 +146,8 @@ def main(args):
         with open('../pkl/df_summary_result_sim_different_sizes_queues_'+str(current_time)+'.pkl', 'wb') as f:
             pkl.dump(df_summary_result, f)
         print('The average number of customers in station 1 is: ', df_summary_result.loc[0,'avg_sys_1'])
-
-        df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_' + str(args.case_num) + '.pkl', 'rb'))
+        inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_'+str(case_ind) + '_' + str(args.case_num) + '.pkl'
+        df_inter_departure_station_0 = pkl.load(open(inter_dep_path, 'rb'))
         df_inter_departure_station_0 = df_inter_departure_station_0.iloc[1:, :]
         #
         # arr = np.array(df_inter_departure_station_0.loc[1:, 'inter_departure_time'])
@@ -170,11 +175,11 @@ def main(args):
         df.loc[ind, 'lam00'] = lam00
         df.loc[ind, 'lam01'] = lam01
         df.loc[ind, 'lam10'] = lam10
-        df.loc[ind, 'lam11'] = lam11
+        df.loc[ind, 'lam11'] = 0#lam11
 
         df.loc[ind, 'mu00'] = mu00
         df.loc[ind, 'mu01'] = mu01
-        df.loc[ind, 'mu10'] = mu10
+        df.loc[ind, 'mu10'] =  0 #mu10
         df.loc[ind, 'mu11'] = mu11
 
         df.loc[ind, 'avg_cust_0'] = avg_waiting[0] * (lam00+lam01)
@@ -184,6 +189,13 @@ def main(args):
         df.loc[ind,'var_0'] = df_inter_departure_station_0['inter_departure_time'].var()
 
         df.loc[ind, 'ind'] = case_ind
+
+        for ind in range(1, df_inter_departure_station_0.shape[0] - 1):
+            df_inter_departure_station_0.loc[ind, 'next_inter'] = df_inter_departure_station_0.loc[ind + 1, 'inter_departure_time']
+        new_df = df_inter_departure_station_0.iloc[1:-1, :].reset_index()
+        new_df = new_df.astype('float64')
+        df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
+
 
         pkl.dump(df, open(args.df_summ,'wb'))
 
@@ -301,12 +313,13 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
                 station = class_
                 name[station] += 1
                 arrival_time = env.now
-                df_inter_departure_station_0 = pkl.load(open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'rb'))
+                inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_' + str(case_ind) + '_' + str(args.case_num) + '.pkl'
+                df_inter_departure_station_0 = pkl.load(open(inter_dep_path, 'rb'))
                 cur_ind = df_inter_departure_station_0.shape[0]
                 df_inter_departure_station_0.loc[cur_ind,'departure_time'] = arrival_time
                 if cur_ind > 0:
                     df_inter_departure_station_0.loc[cur_ind, 'inter_departure_time'] = arrival_time - df_inter_departure_station_0.loc[cur_ind-1, 'departure_time']
-                pkl.dump(df_inter_departure_station_0, open(r'../pkl/df_inter_departure_station_0_'+str(case_num)+'.pkl', 'wb'))
+                pkl.dump(df_inter_departure_station_0, open(inter_dep_path, 'wb'))
                 env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args))
 
 
@@ -353,14 +366,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=290000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=236900)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_3.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_5.pkl')
 
     args = parser.parse_args(argv)
 

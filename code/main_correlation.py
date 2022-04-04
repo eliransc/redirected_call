@@ -28,8 +28,8 @@ def main(args):
     sum_results_name = 'sum_result_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 8
-    ub_low = 8
+    ub_high = 6
+    ub_low = 6
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     if sys.platform == 'linux':
@@ -47,7 +47,7 @@ def main(args):
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([1])):
+    for ind in tqdm(([5])):
 
 
         lam0 = df_.loc[ind, 'lambda00']

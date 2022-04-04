@@ -13,7 +13,7 @@ from utils import *
 import random
 
 
-case_ind = random.randint(0, 24)
+case_ind = random.randint(0, 23)
 def main(args):
 
 

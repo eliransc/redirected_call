@@ -190,9 +190,9 @@ def main(args):
 
         df.loc[ind, 'ind'] = case_ind
 
-        for ind in range(1, df_inter_departure_station_0.shape[0] - 1):
-            df_inter_departure_station_0.loc[ind, 'next_inter'] = df_inter_departure_station_0.loc[ind + 1, 'inter_departure_time']
-        new_df = df_inter_departure_station_0.iloc[1:-1, :].reset_index()
+        for ind_ in range(1, df_inter_departure_station_0.shape[0] - 1):
+            df_inter_departure_station_0.loc[ind_, 'next_inter'] = df_inter_departure_station_0.loc[ind_ + 1, 'inter_departure_time']
+        new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
         new_df = new_df.astype('float64')
         df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
 
@@ -366,14 +366,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=236900)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=236)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_5.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_7.pkl')
 
     args = parser.parse_args(argv)
 

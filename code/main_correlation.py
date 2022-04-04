@@ -25,16 +25,16 @@ def main(args):
     lam1 = args.lam1
 
 
-    sum_results_name = 'sum_result_1.pkl'
+    sum_results_name = 'sum_result_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 9
-    ub_low = 9
+    ub_high = 5
+    ub_low = 5
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     if sys.platform == 'linux':
 
-        df_ = pd.read_excel('../files/corr_settings_1.xlsx', sheet_name='Sheet3')
+        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -43,11 +43,11 @@ def main(args):
             #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
         # df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
-        df_ = pd.read_excel('../files/corr_settings.xlsx', sheet_name='Sheet3')
+        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([1])):
+    for ind in tqdm(([0,1,2,3,4,5,6,7,8,9,10,11,12])):
 
 
         lam0 = df_.loc[ind, 'lambda00']
@@ -185,7 +185,7 @@ def main(args):
         plt.legend()
         plt.savefig(
             'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(hu_0list[0])+'_'+str(hu_0list[-1]) + '.png')
-        plt.show()
+        # plt.show()
 
         max_ind = 10
         plt.figure()
@@ -197,7 +197,7 @@ def main(args):
         plt.savefig(
             'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
                 hu_0list[0]) + '_' + str(hu_0list[-1]) + 'max_ind'+str(max_ind) +  '.png')
-        plt.show()
+        # plt.show()
 
         max_ind = 20
         plt.figure()
@@ -210,7 +210,7 @@ def main(args):
         plt.savefig(
             'cond_dist' + str(lam0) + '_' + str(lam1) + '_' + str(args.mu0) + '_' + str(args.mu1) + '_' + str(
                 hu_0list[0]) + '_' + str(hu_0list[-1]) + 'max_ind' + str(max_ind) + '.png')
-        plt.show()
+        # plt.show()
 
 def parse_arguments(argv):
 

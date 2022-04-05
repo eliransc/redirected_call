@@ -307,8 +307,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
 
         name[station] += 1
         avg_waiting[station] = (avg_waiting[station] * name[station]) / (name[station] + 1)+waiting_time/ (name[station] + 1)
-        if station == 1:
-            print(waiting_time, avg_waiting[1], name[1])
+
         with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
             pkl.dump(avg_waiting, f)
         # if customer is mismatched then she is redirected to the her designated queue

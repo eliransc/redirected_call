@@ -13,7 +13,7 @@ from utils import *
 import random
 
 
-case_ind = random.randint(0, 23)
+case_ind = 18 # random.randint(0, 23)
 def main(args):
 
 
@@ -305,14 +305,17 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         #     waiting_time_list.append(waiting_time)
         #     pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'wb'))
 
-        avg_waiting[station] = (avg_waiting[station] * name[station] + waiting_time) / (name[station] + 1)
+        name[station] += 1
+        avg_waiting[station] = (avg_waiting[station] * name[station]) / (name[station] + 1)+waiting_time/ (name[station] + 1)
+        if station == 1:
+            print(waiting_time, avg_waiting[1], name[1])
         with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
             pkl.dump(avg_waiting, f)
         # if customer is mismatched then she is redirected to the her designated queue
         if class_ != station:
              if station == 0: # we redirect now only from station 0 now.
                 station = class_
-                name[station] += 1
+                # name[station] += 1
                 arrival_time = env.now
                 if args.is_corr:
                     inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_' + str(case_ind) + '_' + str(args.case_num) + '.pkl'
@@ -355,7 +358,7 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
         # update current customer
 
-        name[station] += 1
+        # name[station] += 1
         is_matched = station == class_
         env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args))
 
@@ -368,7 +371,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=2936000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=1936000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

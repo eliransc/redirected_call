@@ -58,7 +58,7 @@ def main(args):
         print(lam0,lam1, args.mu0, args.mu1)
 
 
-        hu_0list = [0.1,1, 2,5]
+        hu_0list = [1, 2,5]
         cond_dict = {}
         for h_0 in hu_0list:
             h0 = h_0

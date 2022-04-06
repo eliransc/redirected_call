@@ -28,8 +28,8 @@ def main(args):
     sum_results_name = 'sum_result_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 8
-    ub_low = 8
+    ub_high = 5
+    ub_low = 5
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
 
     if sys.platform == 'linux':
@@ -43,11 +43,11 @@ def main(args):
             #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
         # df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings.xlsx', sheet_name='Sheet1')
-        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet9')
+        df_ = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([0])):
+    for ind in tqdm((np.arange(30))):
 
         lam0 = df_.loc[ind, 'lambda00']
         lam1 = df_.loc[ind, 'lambda01']
@@ -58,7 +58,7 @@ def main(args):
         print(lam0,lam1, args.mu0, args.mu1)
 
 
-        hu_0list = [ 5]
+        hu_0list = [ 0.1]
         cond_dict = {}
         for h_0 in hu_0list:
             h0 = h_0
@@ -223,7 +223,7 @@ def parse_arguments(argv):
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)
-    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data_4.pkl')
+    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data_8.pkl')
 
     args = parser.parse_args(argv)
 

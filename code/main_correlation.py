@@ -34,7 +34,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
+        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet9')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -58,7 +58,7 @@ def main(args):
         print(lam0,lam1, args.mu0, args.mu1)
 
 
-        hu_0list = [2,5]
+        hu_0list = [0.1,1, 2,5]
         cond_dict = {}
         for h_0 in hu_0list:
             h0 = h_0

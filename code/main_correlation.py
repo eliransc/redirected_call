@@ -34,7 +34,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
+        df_ = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet9')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -47,7 +47,7 @@ def main(args):
 
     # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
-    for ind in tqdm(([11])):
+    for ind in tqdm(([0])):
 
         lam0 = df_.loc[ind, 'lambda00']
         lam1 = df_.loc[ind, 'lambda01']
@@ -223,7 +223,7 @@ def parse_arguments(argv):
     parser.add_argument('--lam_ext', type=float, help='external arrival to sub queue', default=0.5)
     parser.add_argument('--mu_11', type=float, help='service rate in sub queue', default=1.2)
     parser.add_argument('--eps', type=float, help='error for T and U', default=0.000001)
-    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data_3.pkl')
+    parser.add_argument('--kl_pd_path', type=str, help='the path to the kl pandas table', default='kl_data_4.pkl')
 
     args = parser.parse_args(argv)
 

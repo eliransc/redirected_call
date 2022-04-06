@@ -13,14 +13,14 @@ from utils import *
 import random
 
 
-case_ind =  random.randint(0, 23)
+case_ind =  random.randint(0, 3)
 def main(args):
 
 
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
+        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet9')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):

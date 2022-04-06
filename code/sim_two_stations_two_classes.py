@@ -13,12 +13,12 @@ from utils import *
 import random
 
 
-case_ind = 9# random.randint(0, 23)
+# case_ind = 9# random.randint(0, 23)
 
-# initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'rb'))
-# case_ind = np.random.choice(initial_list)
-# initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
-# pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'wb'))
+initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'rb'))
+case_ind = np.random.choice(initial_list)
+initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'wb'))
 
 def main(args):
 

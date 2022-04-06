@@ -13,14 +13,20 @@ from utils import *
 import random
 
 
-case_ind =  random.randint(0, 3)
+case_ind = 9# random.randint(0, 23)
+
+# initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'rb'))
+# case_ind = np.random.choice(initial_list)
+# initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+# pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'wb'))
+
 def main(args):
 
 
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet9')
+        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
 
             # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
@@ -196,6 +202,7 @@ def main(args):
             new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
             new_df = new_df.astype('float64')
             df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
+            print(df.loc[ind, 'inter_rho'])
 
 
         pkl.dump(df, open(args.df_summ,'wb'))
@@ -370,15 +377,15 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=2936000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=100000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_13.pkl')
-    parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=False)
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_14.pkl')
+    parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)
 

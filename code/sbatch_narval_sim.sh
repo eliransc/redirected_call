@@ -3,4 +3,4 @@
 #SBATCH -A def-dkrass
 #SBATCH --mem-per-cpu=10000M
 source /home/eliransc/projects/def-dkrass/eliransc/queues/bin/activate
-python /home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/sim_two_stations_two_classes.py
+python /home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/sim_with_inter_corr.py

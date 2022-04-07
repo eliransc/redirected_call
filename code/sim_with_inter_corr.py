@@ -13,12 +13,12 @@ from utils import *
 import random
 
 
-case_ind = 9# random.randint(0, 23)
+# case_ind = 9# random.randint(0, 23)
 
-# initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'rb'))
-# case_ind = np.random.choice(initial_list)
-# initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
-# pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list.pkl', 'wb'))
+initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho.pkl', 'rb'))
+case_ind = np.random.choice(initial_list)
+initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho.pkl', 'wb'))
 
 def main(args):
 
@@ -70,27 +70,18 @@ def main(args):
 
         start_time = time.time()
 
-        with open('../pkl/avg_waiting'+str(args.case_num), 'wb') as f:
-            pkl.dump(list(np.zeros(args.size)), f)
+        # with open('../pkl/avg_waiting'+str(args.case_num), 'wb') as f:
+        #     pkl.dump(list(np.zeros(args.size)), f)
 
         env = simpy.Environment()
 
         server = []
         for server_ind in range(args.size):
             server.append(simpy.Resource(env, capacity=1))
-        # p_incorrect = (1 - args.p_correct) / (args.size - 1)
-        # args.r = np.identity(args.size)
-        # args.r = np.where(args.r == 1, args.p_correct, p_incorrect)
+
         args.r = np.zeros([args.size, args.size])
         args.mu = np.zeros([args.size, args.size])
 
-        # match_arrival = 0.6
-        # mis_arrival = 0.15
-
-
-        # row, col = np.diag_indices(args.r.shape[0])
-        # args.r[row, col] = match_arrival
-        # args.r = np.where(args.r == match_arrival, match_arrival, mis_arrival)
         args.r[0, 0] = lam00
         args.r[0, 1] = lam01
         args.r[1, 0] = 0.00
@@ -109,18 +100,29 @@ def main(args):
 
 
         probabilities = (args.r / np.sum(args.r)).flatten()
-        #
 
+
+        sums = [0,0,0,0,0,0,0,0]
+
+        corr_time = [0]
+        corr_path = '../pkl/corr_time'+str(args.case_num)+'.pkl'
+        pkl.dump(corr_time, open(corr_path, 'wb'))
 
         avg_time = list(np.zeros(args.size))
 
+        waiting_path = '../pkl/waiting_time' + str(args.case_num) + '.pkl'
+
+        pkl.dump([0,0], open(waiting_path, 'wb'))
+
         env.process(customer_arrivals(env, server, args.r, args.mu, args.size,
-                                      probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num, avg_time))
+                                      probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num, sums, avg_time))
         env.run(until=(args.end_time))
 
-        with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
-            avg_waiting = pkl.load(f)
-        print(avg_waiting)
+        # with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
+        #     avg_waiting = pkl.load(f)
+        # print(avg_waiting)
+
+        avg_waiting = pkl.load(open(waiting_path, 'rb'))
 
         total_avg_system = 0
         for station_ind in range(args.size):
@@ -140,8 +142,7 @@ def main(args):
             else:
                 df_summary_result.loc[ind, 'avg_sys_mg1_'+str(station_ind)], rho = avg_sys(args.r, args.mu, station_ind)
                 df_summary_result.loc[ind, 'avg_sys_mm1_' + str(station_ind)] = rho/(1-rho)
-            # if station_ind == 0:
-            #     df_summary_result.loc[ind, 'avg_sys_gg1_' + str(station_ind)] = compute_G_G_1(args.r, args.mu)
+
 
         df_summary_result.loc[ind, 'avg_sys_total'] = total_avg_system
         print(df_summary_result)
@@ -151,22 +152,6 @@ def main(args):
         with open('../pkl/df_summary_result_sim_different_sizes_queues_'+str(current_time)+'.pkl', 'wb') as f:
             pkl.dump(df_summary_result, f)
         print('The average number of customers in station 1 is: ', df_summary_result.loc[0,'avg_sys_1'])
-        inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_'+str(case_ind) + '_' + str(args.case_num) + '.pkl'
-        df_inter_departure_station_0 = pkl.load(open(inter_dep_path, 'rb'))
-        df_inter_departure_station_0 = df_inter_departure_station_0.iloc[1:, :]
-        #
-        # arr = np.array(df_inter_departure_station_0.loc[1:, 'inter_departure_time'])
-        # arr_two_dim = np.zeros((arr.shape[0], 2))
-        # for inter in range(arr.shape[0] - 1):
-        #     arr_two_dim[inter, 0] = arr[inter]
-        #     arr_two_dim[inter, 1] = arr[inter + 1]
-        # print('The correlation is', np.corrcoef(arr_two_dim[:, 0], arr_two_dim[:,1]) )
-
-        print('The inter-departure variance is: ',df_inter_departure_station_0['inter_departure_time'].var())
-
-        # waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_' + str(args.case_num) + '.pkl', 'rb'))
-        # wait_arr = np.array(waiting_time_list)
-        # print('The 90th precentile of waiting time in station 1 is: ', np.percentile(wait_arr, 90))
 
         print('The average is station 0 is: ', avg_waiting[0] * (lam00+lam01))
         print('The average is station 1 is: ', df_summary_result.loc[0, 'avg_sys_1'])
@@ -177,6 +162,7 @@ def main(args):
         else:
             df = pkl.load(open(args.df_summ, 'rb'))
         ind = df.shape[0]
+
         df.loc[ind, 'lam00'] = lam00
         df.loc[ind, 'lam01'] = lam01
         df.loc[ind, 'lam10'] = lam10
@@ -191,17 +177,19 @@ def main(args):
         df.loc[ind, 'avg_cust_1'] = df_summary_result.loc[0, 'avg_sys_1']
         df.loc[ind, 'avg_wait_0'] = avg_waiting[0]
         df.loc[ind, 'avg_wait_1'] = avg_waiting[1]
-        df.loc[ind,'var_0'] = df_inter_departure_station_0['inter_departure_time'].var()
+        # df.loc[ind,'var_0'] = df_inter_departure_station_0['inter_departure_time'].var()
 
         df.loc[ind, 'ind'] = case_ind
+        corr_time = pkl.load(open(corr_path, 'rb'))
+        df.loc[ind, 'inter_rho'] = corr_time[-1]
 
-        if args.is_corr:
-            for ind_ in range(1, df_inter_departure_station_0.shape[0] - 1):
-                df_inter_departure_station_0.loc[ind_, 'next_inter'] = df_inter_departure_station_0.loc[ind_ + 1, 'inter_departure_time']
-            new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
-            new_df = new_df.astype('float64')
-            df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
-            print(df.loc[ind, 'inter_rho'])
+        # if args.is_corr:
+        #     for ind_ in range(1, df_inter_departure_station_0.shape[0] - 1):
+        #         df_inter_departure_station_0.loc[ind_, 'next_inter'] = df_inter_departure_station_0.loc[ind_ + 1, 'inter_departure_time']
+        #     new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
+        #     new_df = new_df.astype('float64')
+        #     df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
+        #     print(df.loc[ind, 'inter_rho'])
 
 
         pkl.dump(df, open(args.df_summ,'wb'))
@@ -232,65 +220,30 @@ def avg_sys(r ,mu,ind):
     return  avg_sys, rho
 
 
-def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, avg_time):
-    if np.remainder(name[station], 10000) == 0:
+def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, sums, avg_time):
+    if (np.remainder(name[station], 10000) == 0) & (station == 0):
         print('The current time is: ', env.now)
         station_ind = 1
-        with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
-            avg_waiting = pkl.load(f)
-        print('The average sys in station 1 is: ',avg_waiting[station_ind] *(np.sum(args.r[station_ind, :]) +
+        # with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
+        #     avg_waiting = pkl.load(f)
+        print('The average sys in station 1 is: ',avg_time[station_ind] *(np.sum(args.r[station_ind, :]) +
                                                                        np.sum(args.r[:, station_ind])
                                                                        -args.r[station_ind, station_ind]))
 
-    if (station == 0)& False:
-        pkl_name = r'..\pkl\station0.pkl'
-        if not os.path.exists(pkl_name):
-            df = pd.DataFrame([])
-            with open(pkl_name, 'wb') as f:
-                pkl.dump(df, f)
+        if sums[7] > 10:
+            corr_path = '../pkl/corr_time' + str(args.case_num) + '.pkl'
+            corr_time = pkl.load( open(corr_path, 'rb'))
+            curr_corr = (sums[7]*sums[6]-sums[2]*sums[4])/(((sums[7]*sums[3]-sums[2]**2)**0.5)*((sums[7]*sums[5]-sums[4]**2)**0.5))
+            print(curr_corr)
+            corr_time.append(curr_corr)
+            pkl.dump(corr_time, open(corr_path, 'wb'))
 
-        with open(pkl_name, 'rb') as f:
-            df = pkl.load(f)
-        ind = df.shape[0]
-        df.loc[ind, 'arrival_time'] = arrival_time
-        if ind > 0:
-            df.loc[ind, 'inter_arrival'] = arrival_time - df.loc[ind - 1, 'arrival_time']
-        df.loc[ind, 'class'] = class_
-        df.loc[ind, 'queue_0'] = len(server[station].queue)+len(server[station].users)
-        df.loc[ind, 'queue_1'] = len(server[1].queue) + len(server[1].users)
-        df.loc[ind, 'is_matched'] = is_matched
-        with open(pkl_name, 'wb') as f:
-            pkl.dump(df, f)
-        if np.remainder(name[station], 10000) == 0:
-            print('The current time is: ', env.now)
+            waiting_path = '../pkl/waiting_time' + str(args.case_num) + '.pkl'
+            curr_waiting = pkl.load(open(waiting_path, 'rb'))
+            curr_waiting[0] = avg_time[0]
+            curr_waiting[1] = avg_time[1]
+            pkl.dump(curr_waiting, open(waiting_path, 'wb'))
 
-            with open('../pkl/avg_waiting'+str(case_num), 'rb') as f:
-                avg_waiting = pkl.load(f)
-            print(avg_waiting)
-
-            df_summary_result = pd.DataFrame([])
-
-            ind = df_summary_result.shape[0]
-            total_avg_system = 0
-            for station_ind in range(args.size):
-                df_summary_result.loc[ind, 'Arrival_' + str(station_ind)] = str(args.r[station_ind])
-                df_summary_result.loc[ind, 'avg_waiting_' + str(station_ind)] = avg_waiting[station_ind]
-                df_summary_result.loc[ind, 'avg_sys_' + str(station_ind)] = avg_waiting[station_ind] * \
-                                                                            (np.sum(args.r[station_ind, :]) +
-                                                                             np.sum(args.r[:, station_ind])
-                                                                             - args.r[station_ind, station_ind])
-                total_avg_system += df_summary_result.loc[ind, 'avg_sys_' + str(station_ind)]
-                df_summary_result.loc[ind, 'avg_sys_mg1_' + str(station_ind)], rho = avg_sys(args.r, args.mu, station_ind)
-                df_summary_result.loc[ind, 'avg_sys_mm1_' + str(station_ind)] = rho / (1 - rho)
-
-
-            df_summary_result.loc[ind, 'avg_sys_total'] = total_avg_system
-
-            now = datetime.now()
-
-            current_time = now.strftime("%H_%M_%S")
-            with open('../pkl/df_summary_result_sim_different_sizes_queues_' + str(current_time) + '.pkl', 'wb') as f:
-                pkl.dump(df_summary_result, f)
 
     with server[station].request() as req:
         yield req
@@ -302,51 +255,57 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
 
         yield env.timeout(ser_time)
 
-        with open('../pkl/avg_waiting'+str(case_num), 'rb') as f:
-            avg_waiting = pkl.load(f)
+        # with open('../pkl/avg_waiting'+str(case_num), 'rb') as f:
+        #     avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
-        # if station == 1:
-        #     waiting_time_list = pkl.load(open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'rb'))
-        #     waiting_time_list.append(waiting_time)
-        #     pkl.dump(waiting_time_list, open('../pkl/waiting_time_station_1_'+str(case_num)+'.pkl', 'wb'))
+
 
         name[station] += 1
-        curr_waiting = (avg_time[station]  * name[station]) / (name[station] + 1)+waiting_time/(name[station] + 1)
-        avg_waiting[station] = curr_waiting
+        curr_waiting = (avg_time[station] * name[station]) / (name[station] + 1) + waiting_time / (name[station] + 1)
+        # avg_waiting[station] = curr_waiting
         avg_time[station] = curr_waiting
 
-        with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
-            pkl.dump(avg_waiting, f)
+        # with open('../pkl/avg_waiting'+str(case_num), 'wb') as f:
+        #     pkl.dump(avg_waiting, f)
+
+
         # if customer is mismatched then she is redirected to the her designated queue
         if class_ != station:
-             if station == 0: # we redirect now only from station 0 now.
+             if station == 0:  # we redirect now only from station 0 now.
                 station = class_
-                # name[station] += 1
+
                 arrival_time = env.now
                 if args.is_corr:
-                    inter_dep_path = r'../pkl/df_inter_departure_station_0_case_ind_' + str(case_ind) + '_' + str(args.case_num) + '.pkl'
-                    df_inter_departure_station_0 = pkl.load(open(inter_dep_path, 'rb'))
-                    cur_ind = df_inter_departure_station_0.shape[0]
-                    df_inter_departure_station_0.loc[cur_ind,'departure_time'] = arrival_time
-                    if cur_ind > 0:
-                        df_inter_departure_station_0.loc[cur_ind, 'inter_departure_time'] = arrival_time - df_inter_departure_station_0.loc[cur_ind-1, 'departure_time']
-                    pkl.dump(df_inter_departure_station_0, open(inter_dep_path, 'wb'))
-                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args, avg_time))
+
+
+                    if (sums[0] == 0) & (sums[1] == 0):
+                        sums[0] = arrival_time
+                    else:
+                        if sums[1] > 0:  # cur_ind > 0:
+                            prev = sums[1]
+                            curr = arrival_time - sums[0]
+                            sums[0] = arrival_time
+                            sums[1] = curr
+                            sums[2] += prev
+                            sums[3] += prev**2
+                            sums[4] += curr
+                            sums[5] += curr**2
+                            sums[6] += prev*curr
+                            sums[7] += 1
+
+                        else:
+                            sums[1] = arrival_time - sums[0]
+                            sums[0] = arrival_time
+
+                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args, sums, avg_time))
 
 
 
-def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate, ser_mis_matched_rate, case_num, avg_time):
+def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate, ser_mis_matched_rate, case_num, sums, avg_time):
 
     name = np.ones(size)*(-1)
 
-    effective_rates = np.zeros(size)
-    avg_service = np.zeros(size)
-    # for ind in range(size):
-    #     effective_rates[ind] = np.sum(r[ind,:]) + np.sum(r[:, ind]) - r[ind, ind]
-    #     avg_service[ind] = (np.sum(r[:, ind])/effective_rates[ind])*(1/ser_matched_rate)\
-    #                        +(1-(np.sum(r[:, ind]))/effective_rates[ind])*(1/ser_mis_matched_rate)
-    # assert np.max(effective_rates*avg_service) < 1, 'Not a  stable system'
 
     elements = list(np.arange(r.size))
 
@@ -363,11 +322,8 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
 
         arrival_time = env.now
 
-        # update current customer
-
-        # name[station] += 1
         is_matched = station == class_
-        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args, avg_time))
+        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args, sums, avg_time))
 
 
 
@@ -378,14 +334,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=2300000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=7023000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
-    parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
+    parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_18.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_20.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

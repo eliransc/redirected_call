@@ -14,7 +14,7 @@ import random
 
 
 # case_ind = 9# random.randint(0, 23)
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_2.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_3.pkl'
 if not os.path.exists(init_path):
     pkl.dump(np.arange(30),open(init_path, 'wb'))
 
@@ -25,22 +25,13 @@ pkl.dump(initial_list, open(init_path, 'wb'))
 
 def main(args):
 
-
-
     if sys.platform == 'linux':
 
         df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
-
-
-            # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
-            #     df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx', sheet_name='Sheet2')
-            # elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
-            #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
         df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
-    # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
+
 
     print(case_ind)
 
@@ -50,7 +41,7 @@ def main(args):
     mu00 = df.loc[case_ind, 'mu00']
     mu01 = df.loc[case_ind, 'mu01']
     mu11 = df.loc[case_ind, 'mu11']
-    lam11 = 0 # df.loc[case_ind, 'lambda11']
+    lam11 = df.loc[case_ind, 'lambda11']
 
     mu10 = 2.0
     lam10 = 0.0
@@ -72,9 +63,6 @@ def main(args):
     for ind in tqdm(range(args.num_iterations)):
 
         start_time = time.time()
-
-        # with open('../pkl/avg_waiting'+str(args.case_num), 'wb') as f:
-        #     pkl.dump(list(np.zeros(args.size)), f)
 
         env = simpy.Environment()
 
@@ -120,10 +108,6 @@ def main(args):
         env.process(customer_arrivals(env, server, args.r, args.mu, args.size,
                                       probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num, sums, avg_time))
         env.run(until=(args.end_time))
-
-        # with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
-        #     avg_waiting = pkl.load(f)
-        # print(avg_waiting)
 
         avg_waiting = pkl.load(open(waiting_path, 'rb'))
 
@@ -185,15 +169,6 @@ def main(args):
         df.loc[ind, 'ind'] = case_ind
         corr_time = pkl.load(open(corr_path, 'rb'))
         df.loc[ind, 'inter_rho'] = corr_time[-1]
-
-        # if args.is_corr:
-        #     for ind_ in range(1, df_inter_departure_station_0.shape[0] - 1):
-        #         df_inter_departure_station_0.loc[ind_, 'next_inter'] = df_inter_departure_station_0.loc[ind_ + 1, 'inter_departure_time']
-        #     new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
-        #     new_df = new_df.astype('float64')
-        #     df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
-        #     print(df.loc[ind, 'inter_rho'])
-
 
         pkl.dump(df, open(args.df_summ,'wb'))
 
@@ -344,7 +319,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_22.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_24.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

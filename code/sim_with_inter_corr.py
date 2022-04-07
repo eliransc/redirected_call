@@ -15,12 +15,12 @@ import random
 
 # case_ind = 9# random.randint(0, 23)
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho1.pkl'
 if not os.path.exists(init_path):
-    pkl.dump(np.arange(30),open(init_path, 'wb'))
+    pkl.dump(np.arange(16), open(init_path, 'wb'))
 
 initial_list = pkl.load(open(init_path, 'rb'))
-case_ind = np.random.choice(initial_list)
+case_ind = 16 + np.random.choice(initial_list)
 initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
 pkl.dump(initial_list, open(init_path, 'wb'))
 
@@ -31,22 +31,10 @@ pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirec
 
 def main(args):
 
-
-
     if sys.platform == 'linux':
-
         df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
-
-
-            # if os.path.exists('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
-            #     df = pd.read_excel('/scratch/d/dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx', sheet_name='Sheet2')
-            # elif os.path.exists('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx'):
-            #     df = pd.read_excel('/home/eliransc/projects/def-dkrass/eliransc/inter_departure/redirected_call/pkl/util0_res.xlsx',sheet_name='Sheet2')
     else:
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
         df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
-
-    # df = pkl.load(open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/pkl/diff_settings_util0.pkl', 'rb'))
 
     print(case_ind)
 
@@ -56,7 +44,7 @@ def main(args):
     mu00 = df.loc[case_ind, 'mu00']
     mu01 = df.loc[case_ind, 'mu01']
     mu11 = df.loc[case_ind, 'mu11']
-    lam11 = 0 # df.loc[case_ind, 'lambda11']
+    lam11 =df.loc[case_ind, 'lambda11']
 
     mu10 = 2.0
     lam10 = 0.0
@@ -175,7 +163,7 @@ def main(args):
         df.loc[ind, 'lam00'] = lam00
         df.loc[ind, 'lam01'] = lam01
         df.loc[ind, 'lam10'] = lam10
-        df.loc[ind, 'lam11'] = 0#lam11
+        df.loc[ind, 'lam11'] = lam11
 
         df.loc[ind, 'mu00'] = mu00
         df.loc[ind, 'mu01'] = mu01
@@ -192,13 +180,7 @@ def main(args):
         corr_time = pkl.load(open(corr_path, 'rb'))
         df.loc[ind, 'inter_rho'] = corr_time[-1]
 
-        # if args.is_corr:
-        #     for ind_ in range(1, df_inter_departure_station_0.shape[0] - 1):
-        #         df_inter_departure_station_0.loc[ind_, 'next_inter'] = df_inter_departure_station_0.loc[ind_ + 1, 'inter_departure_time']
-        #     new_df = df_inter_departure_station_0.iloc[1:-2, :].reset_index()
-        #     new_df = new_df.astype('float64')
-        #     df.loc[ind, 'inter_rho'] = np.corrcoef(new_df['inter_departure_time'], new_df['next_inter'])[0][1]
-        #     print(df.loc[ind, 'inter_rho'])
+
 
 
         pkl.dump(df, open(args.df_summ,'wb'))

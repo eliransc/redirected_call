@@ -14,11 +14,14 @@ import random
 
 
 # case_ind = 9# random.randint(0, 23)
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_2.pkl'
+if not os.path.exists(init_path):
+    pkl.dump(np.arange(30),open(init_path, 'wb'))
 
-initial_list = pkl.load(open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho.pkl', 'rb'))
+initial_list = pkl.load(open(init_path, 'rb'))
 case_ind = np.random.choice(initial_list)
 initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
-pkl.dump(initial_list, open('/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho.pkl', 'wb'))
+pkl.dump(initial_list, open(init_path, 'wb'))
 
 def main(args):
 
@@ -334,7 +337,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=3023000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=5023000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)

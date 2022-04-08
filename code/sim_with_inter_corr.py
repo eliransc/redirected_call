@@ -15,7 +15,7 @@ import random
 
 # case_ind = 9# random.randint(0, 23)
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho5.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho7.pkl'
 if not os.path.exists(init_path):
     pkl.dump(np.arange(16), open(init_path, 'wb'))
 
@@ -332,7 +332,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_25.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_27.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

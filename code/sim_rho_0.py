@@ -14,7 +14,7 @@ import random
 
 
 # case_ind = 9# random.randint(0, 23)
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_3.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_4.pkl'
 if not os.path.exists(init_path):
     pkl.dump(np.arange(30),open(init_path, 'wb'))
 
@@ -27,7 +27,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
+        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet13')
     else:
         df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
@@ -312,14 +312,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=5023000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=7023000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_24.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_26.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

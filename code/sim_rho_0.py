@@ -14,7 +14,7 @@ import random
 
 
 # case_ind = 9# random.randint(0, 23)
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_4.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_30.pkl'
 if not os.path.exists(init_path):
     pkl.dump(np.arange(30),open(init_path, 'wb'))
 

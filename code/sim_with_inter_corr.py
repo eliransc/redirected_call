@@ -15,9 +15,9 @@ import random
 
 # case_ind = 9# random.randint(0, 23)
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho12.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho13.pkl'
 if not os.path.exists(init_path):
-    pkl.dump(np.array([17,18,20,28,29]), open(init_path, 'wb'))
+    pkl.dump(np.array([17,20]), open(init_path, 'wb'))
 
 initial_list = pkl.load(open(init_path, 'rb'))
 case_ind = np.random.choice(initial_list)

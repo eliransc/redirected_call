@@ -21,7 +21,7 @@ if not os.path.exists(init_path):
 
 initial_list = pkl.load(open(init_path, 'rb'))
 case_ind = 16 + np.random.choice(initial_list)
-initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+initial_list = np.delete(initial_list, np.where(initial_list == case_ind-16))
 pkl.dump(initial_list, open(init_path, 'wb'))
 
 

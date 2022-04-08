@@ -13,15 +13,15 @@ from utils import *
 import random
 
 
-# case_ind = 9# random.randint(0, 23)
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_30.pkl'
-if not os.path.exists(init_path):
-    pkl.dump(np.arange(30),open(init_path, 'wb'))
-
-initial_list = pkl.load(open(init_path, 'rb'))
-case_ind = np.random.choice(initial_list)
-initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
-pkl.dump(initial_list, open(init_path, 'wb'))
+case_ind = random.randint(0, 30)
+# init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_35.pkl'
+# if not os.path.exists(init_path):
+#     pkl.dump(np.arange(30),open(init_path, 'wb'))
+#
+# initial_list = pkl.load(open(init_path, 'rb'))
+# case_ind = np.random.choice(initial_list)
+# initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+# pkl.dump(initial_list, open(init_path, 'wb'))
 
 def main(args):
 

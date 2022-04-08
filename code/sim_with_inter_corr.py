@@ -15,13 +15,13 @@ import random
 
 # case_ind = 9# random.randint(0, 23)
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho10.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho12.pkl'
 if not os.path.exists(init_path):
     pkl.dump(np.array([17,18,20,28,29]), open(init_path, 'wb'))
 
 initial_list = pkl.load(open(init_path, 'rb'))
 case_ind = np.random.choice(initial_list)
-initial_list = np.delete(initial_list, np.where(initial_list == case_ind-16))
+initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
 pkl.dump(initial_list, open(init_path, 'wb'))
 
 

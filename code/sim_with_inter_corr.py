@@ -15,12 +15,12 @@ import random
 
 # case_ind = 9# random.randint(0, 23)
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho8.pkl'
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_rho10.pkl'
 if not os.path.exists(init_path):
-    pkl.dump(np.arange(16), open(init_path, 'wb'))
+    pkl.dump(np.array([17,18,20,28,29]), open(init_path, 'wb'))
 
 initial_list = pkl.load(open(init_path, 'rb'))
-case_ind = 16 + np.random.choice(initial_list)
+case_ind = np.random.choice(initial_list)
 initial_list = np.delete(initial_list, np.where(initial_list == case_ind-16))
 pkl.dump(initial_list, open(init_path, 'wb'))
 
@@ -40,7 +40,7 @@ def main(args):
     mu00 = df.loc[case_ind, 'mu00']
     mu01 = df.loc[case_ind, 'mu01']
     mu11 = df.loc[case_ind, 'mu11']
-    lam11 =df.loc[case_ind, 'lambda11']
+    lam11 = df.loc[case_ind, 'lambda11']
 
     mu10 = 2.0
     lam10 = 0.0

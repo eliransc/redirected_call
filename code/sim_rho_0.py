@@ -13,9 +13,11 @@ from utils import *
 import random
 
 
-init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_36.pkl'
+
+
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
 if not os.path.exists(init_path):
-    pkl.dump(np.array([ 1,  2,  7, 11, 14, 19, 25, 26, 27, 29]),open(init_path, 'wb'))
+    pkl.dump(np.arange(30), open(init_path, 'wb'))
 
 initial_list = pkl.load(open(init_path, 'rb'))
 case_ind = np.random.choice(initial_list)

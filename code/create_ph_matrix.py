@@ -5,7 +5,7 @@ from utils_ph import *
 import numpy as np
 from numpy.linalg import matrix_power
 from tqdm import tqdm
-
+from scipy.linalg import expm, sinm, cosm
 
 def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_rates_ub_v_path):
 
@@ -119,9 +119,18 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
     variance = second_moment - (1 / lam_1) ** 2
 
+    h_vals = []
+    S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
+    for x in [0.1, 1, 2, 5]:
+        curr_we = np.dot(np.dot(prob_arr, expm(x * ph)), S0)[0][0]
+        h_vals.append(curr_we)
+        print(curr_we)
+
+
+
     print('The true variance is: ', variance)
     print('The markovian variance is:', (1/lam_1)**2)
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
-    return  variance
+    return  (variance, h_vals)

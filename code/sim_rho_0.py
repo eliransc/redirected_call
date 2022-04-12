@@ -13,21 +13,20 @@ from utils import *
 import random
 
 
-case_ind = random.randint(0, 30)
-# init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_35.pkl'
-# if not os.path.exists(init_path):
-#     pkl.dump(np.arange(30),open(init_path, 'wb'))
-#
-# initial_list = pkl.load(open(init_path, 'rb'))
-# case_ind = np.random.choice(initial_list)
-# initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
-# pkl.dump(initial_list, open(init_path, 'wb'))
+init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_36.pkl'
+if not os.path.exists(init_path):
+    pkl.dump(np.array([ 1,  2,  7, 11, 14, 19, 25, 26, 27, 29]),open(init_path, 'wb'))
+
+initial_list = pkl.load(open(init_path, 'rb'))
+case_ind = np.random.choice(initial_list)
+initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
+pkl.dump(initial_list, open(init_path, 'wb'))
 
 def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet13')
+        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
     else:
         df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
 
@@ -319,7 +318,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=10)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_26.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_28.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

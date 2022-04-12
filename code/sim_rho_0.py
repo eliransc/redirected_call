@@ -34,7 +34,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
 
-    for case_ind in range(20,30):
+    for case_ind in range(0,10):
 
 
         print(case_ind)
@@ -157,7 +157,7 @@ def main(args):
             df.loc[ind, 'lam00'] = lam00
             df.loc[ind, 'lam01'] = lam01
             df.loc[ind, 'lam10'] = lam10
-            df.loc[ind, 'lam11'] = 0#lam11
+            df.loc[ind, 'lam11'] = lam11
 
             df.loc[ind, 'mu00'] = mu00
             df.loc[ind, 'mu01'] = mu01
@@ -323,7 +323,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=5)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_28.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_29.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

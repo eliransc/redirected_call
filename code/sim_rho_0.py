@@ -23,7 +23,7 @@ def main(args):
 
         df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
     else:
-        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
+        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
 
     # init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
     # if not os.path.exists(init_path):
@@ -34,7 +34,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
 
-    for case_ind in range(20, 30):
+    for case_ind in range(1, 10):
 
 
         print(case_ind)

@@ -11,10 +11,9 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
 
 
-
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
-    eps = 10 ** (-4.8)
+    eps = 10 ** (-5.7)
     if result.loc[result['prob'] < eps, 'mu0'].shape[0]>0:
         mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
         lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
@@ -60,10 +59,45 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
         initial_ind.append(np.sum(ph_size[:ind_prob]))
 
     ph = np.zeros((ts, ts))
+
+    def update_ph(init_ind, num_mu0, num_lam0lam1, num_lam0lam1mu0):
+        for mu_0_ind in range(num_mu0):
+            ph[init_ind + mu_0_ind, init_ind + mu_0_ind] = -mu_0
+            ph[init_ind + mu_0_ind, init_ind + mu_0_ind + 1] = mu_0
+
+        for lam0lam1_ind in range(num_lam0lam1):
+            ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind] = -(lam_0 + lam_1)
+            ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind + 1] = lam_0 + lam_1
+
+        for lam0lam1mu0_ind in range(num_lam0lam1mu0):
+            ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind] \
+                = -(lam_0 + lam_1 + mu_0)
+            ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind + 1] \
+                = lam_0 + lam_1 + mu_0
+
+        ph[init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0, init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0] = -mu_1
+
+    import time
+    start_time = time.time()
+
+    ph1 = ph
+
+
+
+    [update_ph(init_ind, int(result.loc[ind, 'mu0']), int(result.loc[ind, 'lam0lam1']), int(result.loc[ind, 'lam0lam1mu0'])) for ind, init_ind in enumerate(initial_ind)]
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    start_time = time.time()
+    ph = np.zeros((ts, ts))
+
     for ind, init_ind in enumerate(initial_ind):
         num_mu0 = int(result.loc[ind, 'mu0'])
         num_lam0lam1 = int(result.loc[ind, 'lam0lam1'])
         num_lam0lam1mu0 = int(result.loc[ind, 'lam0lam1mu0'])
+
+
+
 
         for mu_0_ind in range(num_mu0):
             ph[init_ind + mu_0_ind, init_ind + mu_0_ind] = -mu_0
@@ -82,6 +116,8 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
         ph[init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0, init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0] = -mu_1
 
     prob_arr = prob_arr.reshape((1, prob_arr.shape[0]))
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
     from numpy.linalg import inv
     size = ph.shape[0]
@@ -112,25 +148,26 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
 
 
-    PH_minus_2 = matrix_power(ph, -2)
-    PH_minus_1 = matrix_power(ph, -1)
-    first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
-    print(first_moment)
-    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
-    variance = second_moment - (1 / lam_1) ** 2
+    # PH_minus_2 = matrix_power(ph, -2)
+    # PH_minus_1 = matrix_power(ph, -1)
+    # first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
+    # print(first_moment)
+    # second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    # variance = second_moment - (1 / lam_1) ** 2
 
-    h_vals = []
-    S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
-    for x in [0.1, 1, 2, 5]:
-        curr_we = np.dot(np.dot(prob_arr, expm(x * ph)), S0)[0][0]
-        h_vals.append(curr_we)
-        print(curr_we)
+    # h_vals = []
+    # S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
+    # for x in np.linspace(0, 3, 20):
+    #     # curr_we = np.dot(np.dot(prob_arr, expm(x * ph)), S0)[0][0]
+    #     curr_lst = np.dot(prob_arr, np.dot(matrix_power(x*np.identity(ph.shape[0])-ph, -1),S0))[0][0]
+    #     h_vals.append(curr_lst)
+    #     print(curr_lst)
 
 
 
-    print('The true variance is: ', variance)
+    print('The true variance is: ', 1)
     print('The markovian variance is:', (1/lam_1)**2)
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
-    return  (variance, h_vals)
+    return  (1) #, h_vals

@@ -17,17 +17,17 @@ import time
 
 def main(args):
 
-    sum_results_name = 'sum_result_many_8.pkl'
+    sum_results_name = 'lst_acc_2.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
-    ub_high = 3
-    ub_low = 3
+    ub_high = 20
+    ub_low = 20
     ub_vals = np.linspace(ub_low, ub_high, 1).astype(int)
     lam0s = np.linspace(0.5, 0.5, 1)
     total_arr = np.zeros([ub_high-ub_low+1, lam0s.shape[0]])
     start_time = time.time()
 
-    sum_res = pd.DataFrame([],columns=('lam0','lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
+    sum_res = pd.DataFrame([],columns=('lam0', 'lam1','mu0','mu1','avg_station_1','inter_depart_type_1'))
     if not os.path.exists(sum_res_full_path):
         pkl.dump(sum_res, open(sum_res_full_path, 'wb'))
 
@@ -42,7 +42,7 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
 
 
-    for ind in range(0,16):
+    for ind in range(1):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -59,7 +59,7 @@ def main(args):
         if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 0.5:
-            ub_v = 14
+            ub_v = 40
         else:
             ub_v = 25
 
@@ -68,18 +68,23 @@ def main(args):
         mean_num_rates_ub_v_path = os.path.join(pkl_path, str(ub_v) + '_' + str(lam0) + '_' + str(lam1) + '_' + str(
             args.mu0) + '_' + str(args.mu1) + 'mean_nam_rate_ub_v.pkl')
 
-        df_name_before = 'df_' + str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) + '_before_probs.pkl'
+        df_name_before = 'df_' + str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) + 'vmax_'+ str(ub_v) +  '_before_probs.pkl'
         df_name_before = os.path.join(pkl_path,df_name_before)
 
-        df_name_after = 'df_' + str(ub_v) +'_'+str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)  + '_after_probs_.pkl'
+        df_name_after = 'df_' + str(ub_v) +'_'+str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)  + 'vmax_'+ str(ub_v) + '_after_probs_.pkl'
         df_name_after = os.path.join(pkl_path, df_name_after)
 
         print('stage 1: compute general structure')
+        start_time = time.time()
         if not os.path.exists(df_name_before):
             give_number_cases(ub_v, df_name_before)
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+        start_time = time.time()
         print('stage 2: compute marginal probs')
         if not os.path.exists(df_name_after):
             compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after, ub_v, mean_num_rates_ub_v_path, args, True)
+        print("--- %s seconds ---" % (time.time() - start_time))
 
         df_result = pkl.load(open(df_name_after, 'rb'))
 
@@ -89,9 +94,10 @@ def main(args):
             compute_bayesian_probs(lam0, lam1, args.mu0, args.mu1, df_result, args.eps)
 
         else:
+            start_time = time.time()
             print('stage 3: create ph matrix')
             path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) +'.pkl')
-            variance, h_vals = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path)
+            variance = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path) # , h_vals
             end_time = time.time()
             print('Total time for v_max = {} is: {}' .format(ub_v, (end_time-start_time)/60))
 
@@ -99,6 +105,8 @@ def main(args):
 
                 print('stage 4: compute steady-state')
                 # avg_number = get_steady_ph_sys(lam1, args.lam_ext, args.mu_11, path_ph, ub_v)
+
+
 
                 sum_res = pkl.load(open(sum_res_full_path,'rb'))
                 ind = sum_res.shape[0]
@@ -114,10 +122,15 @@ def main(args):
                 sum_res.loc[ind, 'Pois_avg_station_1'] = rho1/(1-rho1)
                 sum_res.loc[ind, 'Pois_Var'] = 1/lam1**2
                 sum_res.loc[ind, 'ind'] = curr_ind
-                sum_res.loc[ind, 'h_0.1'] = h_vals[0]
-                sum_res.loc[ind, 'h_1'] = h_vals[1]
-                sum_res.loc[ind, 'h_2'] = h_vals[2]
-                sum_res.loc[ind, 'h_5'] = h_vals[3]
+                sum_res.loc[ind, 'vmax'] = ub_v
+
+                # for x_ind, x_val in enumerate(np.linspace(0,3,20)):
+                #     sum_res.loc[ind, str(x_ind)] = h_vals[x_ind]
+                # sum_res.loc[ind, 'h_0.1'] = h_vals[0]
+                # sum_res.loc[ind, 'h_1'] = h_vals[1]
+                # sum_res.loc[ind, 'h_2'] = h_vals[2]
+                # sum_res.loc[ind, 'h_5'] = h_vals[3]
+
 
 
                 pkl.dump(sum_res, open(sum_res_full_path, 'wb'))

@@ -4,6 +4,7 @@ import os
 from utils_ph import *
 import numpy as np
 
+
 def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_rates_ub_v_path,args, equablibrium,t1_prob = []):
 
 
@@ -23,7 +24,23 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_
     df1.loc[df1['c'] > 0, 'l2'] = df1.loc[df1['c'] > 0, 'c'] - df1.loc[df1['c'] > 0, 'Id']
 
     if equablibrium:
-        df1['prob_c'] = df1.apply(lambda x: marg_prob_c(x.v, x.c, mu_0, lam_0, lam_1, mu_1), axis=1)
+
+        print('computing prob_c')
+
+        start_time = time.time()
+        u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
+        steady_arr_vals = [(get_steady_for_given_v(u0, u10, u11, R, v),v) for v in range(ub_v)]
+
+        dict_vals = {}
+        for val in steady_arr_vals:
+            dict_vals[val[1]] = val[0]
+
+        df1['prob_c'] = df1.apply(lambda x: marg_prob_c1(x.v, x.c, mu_0, lam_0, lam_1, mu_1, dict_vals[x.v]), axis=1)
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+        # start_time = time.time()
+        # df1['prob_c'] = df1.apply(lambda x: marg_prob_c(x.v, x.c, mu_0, lam_0, lam_1, mu_1), axis=1)
+        # print("--- %s seconds ---" % (time.time() - start_time))
     else:
         df1['prob_c'] = df1.apply(lambda x: marg_prob_c_corr(x.v, x.c, t1_prob), axis=1)
 

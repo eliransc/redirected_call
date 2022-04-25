@@ -491,6 +491,14 @@ def give_pd(v, c):
     return df
 
 
+def marg_prob_c1(v, c, mu_0, lam_0, lam_1, mu_1, steady_arr):
+    # u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
+    # steady_arr = get_steady_for_given_v(u0, u10, u11, R, v)
+
+    prob = get_prob_c(c, steady_arr, v, mu_1, lam_0 + lam_1)
+
+    return prob
+
 def marg_prob_c(v, c, mu_0, lam_0, lam_1, mu_1):
     u0, u10, u11, R = get_steady(lam_0, lam_1, mu_0, mu_1)
     steady_arr = get_steady_for_given_v(u0, u10, u11, R, v)

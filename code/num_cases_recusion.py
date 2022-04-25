@@ -97,8 +97,6 @@ def add_row_to_df(df,v,c,Id,Ar, number):
 def give_number_cases(ub_v, df_name):
 
 
-    # ub_v = 31
-
 
     df = pd.DataFrame([], columns=['v', 'c', 'Id', 'Ar', 'number'])
     df = add_row_to_df(df, 0, 0, 0, 0, 1)
@@ -202,7 +200,7 @@ def give_number_cases(ub_v, df_name):
                     df = add_row_to_df(df, v, c, 1, Ar, N(df,v, c,1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1))
                     # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 1) & (df['Ar'] == Ar), 'number'] = N(df,v, c,1,Ar - 1) + N(df, v - 1, c, 1, Ar - 1)
 
-                elif (c==v+1)& (Ar == v+1):
+                elif (c == v+1)& (Ar == v+1):
                     pass
 
                 elif (Ar < v + 1) & (c < v + 1):

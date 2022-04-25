@@ -11,6 +11,8 @@ def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_
 
     df1 = pkl.load(open(path_before, 'rb'))
 
+    df1 = df1.loc[df1['v']<ub_v,:]
+
     df1.loc[df1['c'] == 0, 'mu0'] = df1.loc[df1['c'] == 0, 'v']
     df1.loc[df1['c'] > 0, 'mu0'] = df1.loc[df1['c'] > 0, 'v'] + 1 - df1.loc[df1['c'] > 0, 'Ar']
     df1.loc[df1['c'] == 0, 'lam0lam1'] = 0

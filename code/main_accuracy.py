@@ -59,7 +59,7 @@ def main(args):
         if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 0.5:
-            ub_v = 41
+            ub_v = 60
         else:
             ub_v = 25
 
@@ -77,13 +77,13 @@ def main(args):
         print('stage 1: compute general structure')
         start_time = time.time()
         if not os.path.exists(df_name_before):
-            give_number_cases(ub_v, df_name_before)
+            give_number_cases(ub_v, 'df_name_before')
         print("--- %s seconds ---" % (time.time() - start_time))
 
         start_time = time.time()
         print('stage 2: compute marginal probs')
         if not os.path.exists(df_name_after):
-            compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after, ub_v, mean_num_rates_ub_v_path, args, True)
+            compute_df(args.mu0, args.mu1, lam0, lam1, 'df_name_before', df_name_after, ub_v, mean_num_rates_ub_v_path, args, True)
         print("--- %s seconds ---" % (time.time() - start_time))
 
         df_result = pkl.load(open(df_name_after, 'rb'))

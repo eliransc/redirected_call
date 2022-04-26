@@ -14,7 +14,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
     eps = 10 ** (-5.7)
-    if result.loc[result['prob'] < eps, 'mu0'].shape[0]>0:
+    if result.loc[result['prob'] < eps, 'mu0'].shape[0] > 0:
         mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
         lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
         lam0lam1mu0_avg = round(result.loc[result['prob'] < eps, 'lam0lam1mu0'].mean()) + 1
@@ -138,7 +138,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     #     print('The lst in {} is {}'.format(alph, lst))
     #
     #     print('A single lst derivation takes:', time.time()-time_0)
-
+    #
     # pkl.dump(lst_list, open('lst_list.pkl', 'wb'))
     # import matplotlib.pyplot as plt
     # plt.figure()

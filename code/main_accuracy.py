@@ -59,7 +59,7 @@ def main(args):
         if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 0.5:
-            ub_v = 60
+            ub_v = 50
         else:
             ub_v = 22
 
@@ -69,7 +69,7 @@ def main(args):
             args.mu0) + '_' + str(args.mu1) + 'mean_nam_rate_ub_v.pkl')
 
         df_name_before = 'df_' + str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) + 'vmax_'+ str(ub_v) +  '_before_probs.pkl'
-        df_name_before = os.path.join(pkl_path,df_name_before)
+        df_name_before = 'df_name_before' #os.path.join(pkl_path,df_name_before)
 
         df_name_after = 'df_' + str(ub_v) +'_'+str(lam0)+'_'+str(lam1)+'_'+str(args.mu0)+'_'+str(args.mu1)  + 'vmax_'+ str(ub_v) + '_after_probs_.pkl'
         df_name_after = os.path.join(pkl_path, df_name_after)
@@ -77,13 +77,13 @@ def main(args):
         print('stage 1: compute general structure')
         start_time = time.time()
         if not os.path.exists(df_name_before):
-            give_number_cases(ub_v, 'df_name_before_2')
+            give_number_cases(ub_v, df_name_before)
         print("--- %s seconds ---" % (time.time() - start_time))
 
         start_time = time.time()
         print('stage 2: compute marginal probs')
         if not os.path.exists(df_name_after):
-            compute_df(args.mu0, args.mu1, lam0, lam1, 'df_name_before_2', df_name_after, ub_v, mean_num_rates_ub_v_path, args, True)
+            compute_df(args.mu0, args.mu1, lam0, lam1, df_name_before, df_name_after, ub_v, mean_num_rates_ub_v_path, args, True)
         print("--- %s seconds ---" % (time.time() - start_time))
 
         df_result = pkl.load(open(df_name_after, 'rb'))

@@ -5,7 +5,7 @@ from utils_ph import *
 import numpy as np
 
 
-def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_rates_ub_v_path,args, equablibrium,t1_prob = []):
+def compute_df(mu_0, mu_1, lam_0,lam_1, path_before, path_after, ub_v, mean_num_rates_ub_v_path,args, equablibrium, t1_prob = []):
 
 
 

@@ -118,7 +118,7 @@ def give_number_cases(ub_v, df_name):
                     # print(total_id_0)
                     df = add_row_to_df(df, v, c, 0, Ar, total_id_0)
 
-    for v in range(2, ub_v):
+    for v in tqdm(range(2, ub_v)):
         for c in range(v + 1):
             if c == 0:
                 # df.loc[(df['v'] == v) & (df['c'] == c) & (df['Id'] == 0) & (df['Ar'] == 0), 'number'] = 1
@@ -187,7 +187,7 @@ def give_number_cases(ub_v, df_name):
                     df = add_row_to_df(df, v, c, 1, Ar, total_id_1)
 
 
-    for v in range(2, ub_v):
+    for v in tqdm(range(2, ub_v)):
         for c in range(1, v + 2):
 
             for Ar in range(v + 1 - c + 1, v + 2):
@@ -222,7 +222,7 @@ def give_number_cases(ub_v, df_name):
                     print(v, c, Ar)
 
     unique_v = df['v'].unique()
-    for v in unique_v:
+    for v in tqdm(unique_v):
         unique_c = df.loc[df['v'] == v, 'c'].unique()
         for c in unique_c:
             if c > 0:

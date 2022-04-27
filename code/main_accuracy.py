@@ -59,7 +59,7 @@ def main(args):
         if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 0.5:
-            ub_v = 62
+            ub_v = 40
         else:
             ub_v = 22
 

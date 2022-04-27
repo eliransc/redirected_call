@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'lst_acc_2.pkl'
+    sum_results_name = 'lst_acc_3.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 20
@@ -59,7 +59,7 @@ def main(args):
         if lam0 == 0.25:
            ub_v = 9
         elif lam0 == 0.5:
-            ub_v = 10
+            ub_v = 30
         else:
             ub_v = 22
 

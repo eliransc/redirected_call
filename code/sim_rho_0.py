@@ -21,7 +21,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet13')
+        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
     else:
         df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
 

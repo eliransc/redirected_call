@@ -36,7 +36,7 @@ def main(args):
     # #     open('/gpfs/fs0/scratch/d/dkrass/eliransc/redirected_git/redirected_call/code/diff_settings.pkl', 'rb'))
 
     if sys.platform == 'linux':
-        df = pd.read_excel('../files/corr_settings4.xlsx', sheet_name='Sheet8')
+        df = pd.read_excel('../files/accu_settings.xlsx', sheet_name='Sheet8')
 
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')

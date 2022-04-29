@@ -15,7 +15,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
-    eps = 10 ** (-5.7)
+    eps = 10 ** (-5.2)
     if result.loc[result['prob'] < eps, 'mu0'].shape[0] > 0:
         mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
         lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
@@ -162,32 +162,32 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    start_time = time.time()
-    ph = np.zeros((ts, ts))
-
-    for ind, init_ind in enumerate(initial_ind):
-        num_mu0 = int(result.loc[ind, 'mu0'])
-        num_lam0lam1 = int(result.loc[ind, 'lam0lam1'])
-        num_lam0lam1mu0 = int(result.loc[ind, 'lam0lam1mu0'])
-
-
-
-
-        for mu_0_ind in range(num_mu0):
-            ph[init_ind + mu_0_ind, init_ind + mu_0_ind] = -mu_0
-            ph[init_ind + mu_0_ind, init_ind + mu_0_ind + 1] = mu_0
-
-        for lam0lam1_ind in range(num_lam0lam1):
-            ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind] = -(lam_0 + lam_1)
-            ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind + 1] = lam_0 + lam_1
-
-        for lam0lam1mu0_ind in range(num_lam0lam1mu0):
-            ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind] \
-                = -(lam_0 + lam_1 + mu_0)
-            ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind + 1] \
-                = lam_0 + lam_1 + mu_0
-
-        ph[init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0, init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0] = -mu_1
+    # start_time = time.time()
+    # ph = np.zeros((ts, ts))
+    #
+    # for ind, init_ind in enumerate(initial_ind):
+    #     num_mu0 = int(result.loc[ind, 'mu0'])
+    #     num_lam0lam1 = int(result.loc[ind, 'lam0lam1'])
+    #     num_lam0lam1mu0 = int(result.loc[ind, 'lam0lam1mu0'])
+    #
+    #
+    #
+    #
+    #     for mu_0_ind in range(num_mu0):
+    #         ph[init_ind + mu_0_ind, init_ind + mu_0_ind] = -mu_0
+    #         ph[init_ind + mu_0_ind, init_ind + mu_0_ind + 1] = mu_0
+    #
+    #     for lam0lam1_ind in range(num_lam0lam1):
+    #         ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind] = -(lam_0 + lam_1)
+    #         ph[init_ind + num_mu0 + lam0lam1_ind, init_ind + num_mu0 + lam0lam1_ind + 1] = lam_0 + lam_1
+    #
+    #     for lam0lam1mu0_ind in range(num_lam0lam1mu0):
+    #         ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind] \
+    #             = -(lam_0 + lam_1 + mu_0)
+    #         ph[init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind, init_ind + num_mu0 + num_lam0lam1 + lam0lam1mu0_ind + 1] \
+    #             = lam_0 + lam_1 + mu_0
+    #
+    #     ph[init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0, init_ind + num_mu0 + num_lam0lam1 + num_lam0lam1mu0] = -mu_1
 
     prob_arr = prob_arr.reshape((1, prob_arr.shape[0]))
 
@@ -219,15 +219,14 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     # plt.plot(np.linspace(0,10,40),np.array(lst_list))
     # plt.show()
 
-
-
-
-    # PH_minus_2 = matrix_power(ph, -2)
-    # PH_minus_1 = matrix_power(ph, -1)
-    # first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
-    # print(first_moment)
-    # second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
-    # variance = second_moment - (1 / lam_1) ** 2
+    PH_minus_3 = matrix_power(ph, -3)
+    PH_minus_2 = matrix_power(ph, -2)
+    PH_minus_1 = matrix_power(ph, -1)
+    first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
+    print(first_moment)
+    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    third_moment = -6 * np.sum(np.dot(prob_arr, PH_minus_3))
+    variance = second_moment - (1 / lam_1) ** 2
 
     # h_vals = []
     # S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
@@ -244,4 +243,4 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
-    return  (1) #, h_vals
+    return  (first_moment,second_moment, third_moment) #, h_vals

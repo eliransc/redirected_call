@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'lst_acc_3.pkl'
+    sum_results_name = 'mom_acc_3.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 20
@@ -40,9 +40,10 @@ def main(args):
 
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
+        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\accu_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in range(1):
+    for ind in range(8):
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']
@@ -55,13 +56,16 @@ def main(args):
 
         curr_ind = ind
 
+        ub_v = df.loc[ind, 'vmax']+1
 
-        if lam0 == 0.25:
-           ub_v = 9
-        elif lam0 == 0.5:
-            ub_v = 30
-        else:
-            ub_v = 22
+
+
+        # if lam0 == 0.25:
+        #    ub_v = 9
+        # elif lam0 == 0.5:
+        #     ub_v = 30
+        # else:
+        #     ub_v = 22
 
 
 
@@ -76,7 +80,7 @@ def main(args):
 
         print('stage 1: compute general structure')
         start_time = time.time()
-        if not os.path.exists(df_name_before) or True:
+        if not os.path.exists(df_name_before):
             give_number_cases(ub_v, df_name_before)
         print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -97,7 +101,7 @@ def main(args):
             start_time = time.time()
             print('stage 3: create ph matrix')
             path_ph = os.path.join(pkl_path, 'alpha_ph' +'_'+str(ub_v)+'_'+str(lam0)+'_'+str(lam1) +'_'+str(args.mu0)+'_'+str(args.mu1) +'.pkl')
-            variance = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path) # , h_vals
+            moms = compute_ph_matrix(df_result, args.mu0, args.mu1, lam0, lam1, path_ph, ub_v, mean_num_rates_ub_v_path) # , h_vals
             end_time = time.time()
             print('Total time for v_max = {} is: {}' .format(ub_v, (end_time-start_time)/60))
 
@@ -114,15 +118,18 @@ def main(args):
                 sum_res.loc[ind, 'lam1'] = lam1
                 sum_res.loc[ind, 'mu0'] = args.mu0
                 sum_res.loc[ind, 'mu1'] = args.mu1
-                sum_res.loc[ind, 'lam11'] =  args.lam_ext
+                sum_res.loc[ind, 'lam11'] = args.lam_ext
                 sum_res.loc[ind, 'mu11'] = args.mu_11
                 # sum_res.loc[ind, 'avg_station_1'] = avg_number
-                sum_res.loc[ind, 'inter_depart_type_1'] = variance
+                sum_res.loc[ind, 'mom1'] = moms[0]
+                sum_res.loc[ind, 'mom2'] = moms[1]
+                sum_res.loc[ind, 'mom3'] = moms[2]
+
                 rho1 = (lam1+args.lam_ext)/args.mu_11
                 sum_res.loc[ind, 'Pois_avg_station_1'] = rho1/(1-rho1)
                 sum_res.loc[ind, 'Pois_Var'] = 1/lam1**2
                 sum_res.loc[ind, 'ind'] = curr_ind
-                sum_res.loc[ind, 'vmax'] = ub_v
+                sum_res.loc[ind, 'vmax'] = ub_v -1
 
                 # for x_ind, x_val in enumerate(np.linspace(0,3,20)):
                 #     sum_res.loc[ind, str(x_ind)] = h_vals[x_ind]

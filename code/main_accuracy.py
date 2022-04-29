@@ -43,7 +43,8 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\accu_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in range(8):
+    for ind in [3,4,6,7]:
+
 
         lam0 = df.loc[ind,'lambda00']
         lam1 = df.loc[ind,'lambda01']

@@ -219,14 +219,14 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     # plt.plot(np.linspace(0,10,40),np.array(lst_list))
     # plt.show()
 
-    PH_minus_3 = matrix_power(ph, -3)
-    PH_minus_2 = matrix_power(ph, -2)
+    # PH_minus_3 = matrix_power(ph, -3)
+    # PH_minus_2 = matrix_power(ph, -2)
     PH_minus_1 = matrix_power(ph, -1)
     first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
     print(first_moment)
-    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
-    third_moment = -6 * np.sum(np.dot(prob_arr, PH_minus_3))
-    variance = second_moment - (1 / lam_1) ** 2
+    # second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    # third_moment = -6 * np.sum(np.dot(prob_arr, PH_minus_3))
+    # variance = second_moment - (1 / lam_1) ** 2
 
     h_vals = []
     S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
@@ -241,7 +241,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     print('The true variance is: ', 1)
     print('The markovian variance is:', (1/lam_1)**2)
 
-    pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
+    # pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
     print((first_moment,second_moment, third_moment))
 

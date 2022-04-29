@@ -31,7 +31,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
 
-    for case_ind in range(15, 20):
+    for case_ind in range(20, 25):
 
 
         print(case_ind)

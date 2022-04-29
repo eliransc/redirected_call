@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'mom_acc_3.pkl'
+    sum_results_name = 'mom_acc_4.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 20
@@ -43,7 +43,7 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\accu_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in [2, 5]:
+    for ind in [3, 4, 6, 7]:
 
 
         lam0 = df.loc[ind,'lambda00']

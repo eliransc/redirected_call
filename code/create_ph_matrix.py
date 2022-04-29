@@ -15,7 +15,7 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     result['ph_size'] = result['mu0'] + result['lam0lam1'] + result['lam0lam1mu0'] + 1
 
-    eps = 10 ** (-4.7)
+    eps = 10 ** (-3.9)
     if result.loc[result['prob'] < eps, 'mu0'].shape[0] > 0:
         mu0_avg = round(result.loc[result['prob'] < eps, 'mu0'].mean()) + 1
         lam0lam1_avg = round(result.loc[result['prob'] < eps, 'lam0lam1'].mean()) + 1
@@ -219,17 +219,17 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
     # plt.plot(np.linspace(0,10,40),np.array(lst_list))
     # plt.show()
 
-    # PH_minus_3 = matrix_power(ph, -3)
-    # PH_minus_2 = matrix_power(ph, -2)
-    # PH_minus_1 = matrix_power(ph, -1)
-    # first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
-    # print(first_moment)
-    # second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
-    # third_moment = -6 * np.sum(np.dot(prob_arr, PH_minus_3))
-    # variance = second_moment - (1 / lam_1) ** 2
+    PH_minus_3 = matrix_power(ph, -3)
+    PH_minus_2 = matrix_power(ph, -2)
+    PH_minus_1 = matrix_power(ph, -1)
+    first_moment = -np.sum(np.dot(prob_arr, PH_minus_1))
+    print(first_moment)
+    second_moment = 2 * np.sum(np.dot(prob_arr, PH_minus_2))
+    third_moment = -6 * np.sum(np.dot(prob_arr, PH_minus_3))
+    variance = second_moment - (1 / lam_1) ** 2
 
-    # h_vals = []
-    # S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
+    h_vals = []
+    S0 = -np.dot(ph, np.ones((ph.shape[0], 1)))
     # for x in np.linspace(0, 3, 20):
     #     # curr_we = np.dot(np.dot(prob_arr, expm(x * ph)), S0)[0][0]
     #     curr_lst = np.dot(prob_arr, np.dot(matrix_power(x*np.identity(ph.shape[0])-ph, -1),S0))[0][0]
@@ -243,4 +243,6 @@ def compute_ph_matrix(result, mu_0, mu_1, lam_0,lam_1, path_ph, ub_v, mean_num_r
 
     pkl.dump((prob_arr, ph), open(path_ph, 'wb'))
 
-    return  (1,1,1)# (first_moment,second_moment, third_moment) #, h_vals
+    print((first_moment,second_moment, third_moment))
+
+    return  (first_moment,second_moment, third_moment) #, h_vals

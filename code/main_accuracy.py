@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'mom_acc_4.pkl'
+    sum_results_name = 'mom_acc_5.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 20
@@ -43,7 +43,7 @@ def main(args):
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\accu_settings.xlsx', sheet_name='Sheet1')
 
 
-    for ind in [2, 5]:
+    for ind in range(8):
 
 
         lam0 = df.loc[ind,'lambda00']
@@ -81,6 +81,7 @@ def main(args):
 
         print('stage 1: compute general structure')
         start_time = time.time()
+        start_time1 = time.time()
         if not os.path.exists(df_name_before):
             give_number_cases(ub_v, df_name_before)
         print("--- %s seconds ---" % (time.time() - start_time))
@@ -131,6 +132,7 @@ def main(args):
                 sum_res.loc[ind, 'Pois_Var'] = 1/lam1**2
                 sum_res.loc[ind, 'ind'] = curr_ind
                 sum_res.loc[ind, 'vmax'] = ub_v -1
+                sum_res.loc[ind,'runtime'] = time.time() - start_time1
 
                 # for x_ind, x_val in enumerate(np.linspace(0,3,20)):
                 #     sum_res.loc[ind, str(x_ind)] = h_vals[x_ind]

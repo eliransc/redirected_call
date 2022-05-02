@@ -18,9 +18,9 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
+        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet12')
     else:
-        df = pd.read_excel('../files/util0_res.xlsx', sheet_name='Sheet12')
+        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet17')
 
     # init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
     # if not os.path.exists(init_path):
@@ -31,7 +31,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
 
-    for case_ind in range(5, 11):
+    for case_ind in range( 0, 5):
 
 
         print(case_ind)
@@ -165,7 +165,11 @@ def main(args):
             df_.loc[ind, 'avg_cust_1'] = df_summary_result.loc[0, 'avg_sys_1']
             df_.loc[ind, 'avg_wait_0'] = avg_waiting[0]
             df_.loc[ind, 'avg_wait_1'] = avg_waiting[1]
-            # df.loc[ind,'var_0'] = df_inter_departure_station_0['inter_departure_time'].var()
+
+            var_path = '../pkl/var' + str(args.case_num) + '.pkl'
+            inter_depart_var = pkl.load(open(var_path, 'rb'))
+
+            df.loc[ind,'var_0'] = inter_depart_var # df_inter_departure_station_0['inter_departure_time'].var()
 
             df_.loc[ind, 'ind'] = case_ind
             corr_time = pkl.load(open(corr_path, 'rb'))
@@ -211,11 +215,14 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
 
         if sums[7] > 10:
             corr_path = '../pkl/corr_time' + str(args.case_num) + '.pkl'
+            var_path = '../pkl/var' + str(args.case_num) + '.pkl'
             corr_time = pkl.load( open(corr_path, 'rb'))
             curr_corr = (sums[7]*sums[6]-sums[2]*sums[4])/(((sums[7]*sums[3]-sums[2]**2)**0.5)*((sums[7]*sums[5]-sums[4]**2)**0.5))
-            print(curr_corr)
+            curr_var = (sums[5]-(sums[4]**2)/sums[7])/(sums[7]-1)
+            print(curr_corr, curr_var)
             corr_time.append(curr_corr)
             pkl.dump(corr_time, open(corr_path, 'wb'))
+            pkl.dump(curr_var , open(var_path, 'wb'))
 
             waiting_path = '../pkl/waiting_time' + str(args.case_num) + '.pkl'
             curr_waiting = pkl.load(open(waiting_path, 'rb'))
@@ -313,14 +320,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=20000000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=12000000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_33.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_35.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

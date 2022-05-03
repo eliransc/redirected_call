@@ -169,7 +169,7 @@ def main(args):
             var_path = '../pkl/var' + str(args.case_num) + '.pkl'
             inter_depart_var = pkl.load(open(var_path, 'rb'))
 
-            df.loc[ind,'var_0'] = inter_depart_var # df_inter_departure_station_0['inter_departure_time'].var()
+            df_.loc[ind,'var_0'] = inter_depart_var # df_inter_departure_station_0['inter_departure_time'].var()
 
             df_.loc[ind, 'ind'] = case_ind
             corr_time = pkl.load(open(corr_path, 'rb'))

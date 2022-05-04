@@ -18,7 +18,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet19')
+        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet18')
 
     else:
         df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet18')
@@ -33,7 +33,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
 
-    for case_ind in range(0,5):
+    for case_ind in range(20, 24):
 
 
         print(case_ind)
@@ -97,6 +97,7 @@ def main(args):
 
 
             sums = [0,0,0,0,0,0,0,0]
+            station_1_waits = []
 
             corr_time = [0]
             corr_path = '../pkl/corr_time'+str(args.case_num)+'.pkl'
@@ -109,7 +110,7 @@ def main(args):
             pkl.dump([0,0], open(waiting_path, 'wb'))
 
             env.process(customer_arrivals(env, server, args.r, args.mu, args.size,
-                                          probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num, sums, avg_time))
+                                          probabilities, args.ser_matched_rate, args.ser_mis_matched_rate, args.case_num, sums, avg_time, station_1_waits))
             env.run(until=(args.end_time))
 
             avg_waiting = pkl.load(open(waiting_path, 'rb'))
@@ -205,13 +206,20 @@ def avg_sys(r ,mu,ind):
     return  avg_sys, rho
 
 
-def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, sums, avg_time):
-    if (np.remainder(name[station], 10000) == 0) & (station == 0):
+def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, sums, avg_time, station_1_waits):
+    if (np.remainder(name[station], 10000) == 0) & (station == 1):
+        wait_path = '../pkl/wait_station_1' + str(args.case_num) +'_'+  str(int(name[station]/10000))+'.pkl'
+        # if int(name[station]/10000)>0:
+        #     print('90 percentile is: ', np.percentile(station_1_waits,90, axis=0))
+        # print(len(station_1_waits))
+        # pkl.dump(station_1_waits, open(wait_path, 'wb'))
+        # station_1_waits = []
         print('The current time is: ', env.now)
+
         station_ind = 1
         # with open('../pkl/avg_waiting'+str(args.case_num), 'rb') as f:
         #     avg_waiting = pkl.load(f)
-        print('The average sys in station 1 is: ',avg_time[station_ind] *(np.sum(args.r[station_ind, :]) +
+        print('The average sys in station 1 is: ', avg_time[station_ind] *(np.sum(args.r[station_ind, :]) +
                                                                        np.sum(args.r[:, station_ind])
                                                                        -args.r[station_ind, station_ind]))
 
@@ -221,7 +229,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
             corr_time = pkl.load( open(corr_path, 'rb'))
             curr_corr = (sums[7]*sums[6]-sums[2]*sums[4])/(((sums[7]*sums[3]-sums[2]**2)**0.5)*((sums[7]*sums[5]-sums[4]**2)**0.5))
             curr_var = (sums[5]-(sums[4]**2)/sums[7])/(sums[7]-1)
-            print(curr_corr, curr_var)
+            print(curr_corr, curr_var, sums[-1])
             corr_time.append(curr_corr)
             pkl.dump(corr_time, open(corr_path, 'wb'))
             pkl.dump(curr_var , open(var_path, 'wb'))
@@ -247,6 +255,8 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         #     avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
+        # if station == 1:
+        #     station_1_waits.append(waiting_time)
 
 
         name[station] += 1
@@ -262,6 +272,7 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         if class_ != station:
              if station == 0:  # we redirect now only from station 0 now.
                 station = class_
+                # name[station] += 1
 
                 arrival_time = env.now
                 if args.is_corr:
@@ -286,11 +297,11 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
                             sums[1] = arrival_time - sums[0]
                             sums[0] = arrival_time
 
-                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args, sums, avg_time))
+                env.process(service(env, name, server, mu, arrival_time, class_, station, size, True, case_num, args, sums, avg_time, station_1_waits))
 
 
 
-def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate, ser_mis_matched_rate, case_num, sums, avg_time):
+def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate, ser_mis_matched_rate, case_num, sums, avg_time, station_1_waits):
 
     name = np.ones(size)*(-1)
 
@@ -311,7 +322,7 @@ def customer_arrivals(env, server, r, mu, size, probabilities, ser_matched_rate,
         arrival_time = env.now
 
         is_matched = station == class_
-        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args, sums, avg_time))
+        env.process(service(env, name, server, mu, arrival_time, class_, station, size, is_matched,  case_num, args, sums, avg_time, station_1_waits))
 
 
 
@@ -329,7 +340,7 @@ def parse_arguments(argv):
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_40.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_41.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

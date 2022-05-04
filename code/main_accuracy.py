@@ -17,7 +17,7 @@ import time
 
 def main(args):
 
-    sum_results_name = 'mom_acc_6.pkl'
+    sum_results_name = 'sum_res100.pkl'
     pkl_path = r'../pkl'
     sum_res_full_path = os.path.join(pkl_path,sum_results_name)
     ub_high = 20
@@ -40,10 +40,10 @@ def main(args):
 
     else:
         df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\corr_settings4.xlsx', sheet_name='Sheet8')
-        df = pd.read_excel(r'C:\Users\user\workspace\redirected_call\files\accu_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet18')
 
 
-    for ind in [2, 5]:
+    for ind in [20, 21]:
 
 
         lam0 = df.loc[ind,'lambda00']
@@ -57,7 +57,9 @@ def main(args):
 
         curr_ind = ind
 
-        ub_v = df.loc[ind, 'vmax']+1
+        # ub_v = df.loc[ind, 'vmax']+1
+
+        ub_v = 15
 
 
 
@@ -110,7 +112,7 @@ def main(args):
             if not args.time_check:
 
                 print('stage 4: compute steady-state')
-                # avg_number = get_steady_ph_sys(lam1, args.lam_ext, args.mu_11, path_ph, ub_v)
+                avg_number = get_steady_ph_sys(lam1, args.lam_ext, args.mu_11, path_ph, ub_v)
 
 
 
@@ -122,7 +124,7 @@ def main(args):
                 sum_res.loc[ind, 'mu1'] = args.mu1
                 sum_res.loc[ind, 'lam11'] = args.lam_ext
                 sum_res.loc[ind, 'mu11'] = args.mu_11
-                # sum_res.loc[ind, 'avg_station_1'] = avg_number
+                sum_res.loc[ind, 'avg_station_1'] = avg_number
                 sum_res.loc[ind, 'mom1'] = moms[0]
                 sum_res.loc[ind, 'mom2'] = moms[1]
                 sum_res.loc[ind, 'mom3'] = moms[2]

@@ -18,10 +18,10 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet18')
+        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet1')
 
     else:
-        df = pd.read_excel('../files/util0_res11.xlsx', sheet_name='Sheet18')
+        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet1')
         # df = pd.read_excel(r'G:\My Drive\Research\sum_results.xlsx', sheet_name='Sheet2')
 
     # init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
@@ -32,8 +32,8 @@ def main(args):
     # case_ind = np.random.choice(initial_list)
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
-
-    for case_ind in range(20, 24):
+    aa = np.random.randint(0, 12)
+    for case_ind in range(aa * 4, (aa + 1) * 4):
 
 
         print(case_ind)
@@ -178,6 +178,10 @@ def main(args):
             corr_time = pkl.load(open(corr_path, 'rb'))
             df_.loc[ind, 'inter_rho'] = corr_time[-1]
 
+            wait_path = '../pkl/wait_station_1' + str(args.case_num) + '_' + '.pkl'
+            wait_90 = pkl.load(open(wait_path, 'rb'))
+            df_.loc[ind, 'wait_90'] = wait_90
+
             pkl.dump(df_, open(args.df_summ,'wb'))
 
             print(df_)
@@ -208,12 +212,14 @@ def avg_sys(r ,mu,ind):
 
 def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, sums, avg_time, station_1_waits):
     if (np.remainder(name[station], 10000) == 0) & (station == 1):
-        wait_path = '../pkl/wait_station_1' + str(args.case_num) +'_'+  str(int(name[station]/10000))+'.pkl'
-        # if int(name[station]/10000)>0:
-        #     print('90 percentile is: ', np.percentile(station_1_waits,90, axis=0))
-        # print(len(station_1_waits))
-        # pkl.dump(station_1_waits, open(wait_path, 'wb'))
-        # station_1_waits = []
+        wait_path = '../pkl/wait_station_1' + str(args.case_num) +'_'+'.pkl'
+        if int(name[station]/10000)>1:
+            wait_90 = np.percentile(station_1_waits,90, axis=0)
+            print('90 percentile is: ', wait_90)
+            pkl.dump(wait_90, open(wait_path, 'wb'))
+
+        print(len(station_1_waits))
+
         print('The current time is: ', env.now)
 
         station_ind = 1
@@ -255,8 +261,10 @@ def service(env, name, server, mu, arrival_time, class_, station, size, is_match
         #     avg_waiting = pkl.load(f)
 
         waiting_time = env.now - arrival_time
-        # if station == 1:
-        #     station_1_waits.append(waiting_time)
+        if (station == 1) & (name[station]>10000) & (name[station]<1000000):
+
+            # print(len(station_1_waits))
+            station_1_waits.append(waiting_time)
 
 
         name[station] += 1
@@ -333,14 +341,14 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=20000000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=2000000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
     parser.add_argument('--ser_mis_matched_rate', type=float, help='service rate of mismatched customers', default=10.)
     parser.add_argument('--num_iterations', type=float, help='service rate of mismatched customers', default=1)
     parser.add_argument('--case_num', type=int, help='case number in my settings', default=random.randint(0, 100000))
-    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_41.pkl')
+    parser.add_argument('--df_summ', type=str, help='case number in my settings', default='../pkl/df_sum_res_sim_42.pkl')
     parser.add_argument('--is_corr', type=bool, help='should we keep track on inter departure', default=True)
 
     args = parser.parse_args(argv)

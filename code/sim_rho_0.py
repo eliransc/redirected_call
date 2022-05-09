@@ -18,10 +18,10 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet4')
+        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet2')
 
     else:
-        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet2')
         # df = pd.read_excel(r'G:\My Drive\Research\sum_results.xlsx', sheet_name='Sheet2')
 
     # init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
@@ -33,7 +33,7 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
     aa = np.random.randint(0, 12)
-    for case_ind in range(41,44) :#range(aa * 4, (aa + 1) * 4):
+    for case_ind in range(40,44) :#range(aa * 4, (aa + 1) * 4):
 
         print(case_ind)
 

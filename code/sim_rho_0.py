@@ -18,7 +18,7 @@ def main(args):
 
     if sys.platform == 'linux':
 
-        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet2')
+        df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet4')
 
     else:
         df = pd.read_excel('../files/exp_settings.xlsx', sheet_name='Sheet2')

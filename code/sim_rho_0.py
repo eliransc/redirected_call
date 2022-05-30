@@ -32,8 +32,8 @@ def main(args):
     # case_ind = np.random.choice(initial_list)
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
-    aa = np.random.randint(0, 12)
-    for case_ind in range(0, 4):  #range(aa * 4, (aa + 1) * 4):
+    aa = np.random.randint(0, 4)
+    for case_ind in range(aa * 4, (aa + 1) * 4):  #range(aa * 4, (aa + 1) * 4):
 
         print(case_ind)
 

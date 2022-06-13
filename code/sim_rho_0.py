@@ -21,7 +21,7 @@ def main(args):
         df = pd.read_excel('../files/exp_settings_comb.xlsx', sheet_name='Sheet1')
 
     else:
-        df = pd.read_excel('../files/exp_settings_comb.xlsx', sheet_name='Sheet1')
+        df = pd.read_excel('../files/exp_settings_comb.xlsx', sheet_name='Sheet3')
         # df = pd.read_excel(r'G:\My Drive\Research\sum_results.xlsx', sheet_name='Sheet2')
 
     # init_path = '/home/eliransc/projects/def-dkrass/eliransc/redirected_call/code/init_list_37.pkl'
@@ -33,7 +33,8 @@ def main(args):
     # initial_list = np.delete(initial_list, np.where(initial_list == case_ind))
     # pkl.dump(initial_list, open(init_path, 'wb'))
     aa = np.random.randint(0, 4)
-    for case_ind in range(aa * 4, (aa + 1) * 4):  #range(aa * 4, (aa + 1) * 4):
+    aa = 10
+    for case_ind in range(aa, aa + 1):  #range(aa * 4, (aa + 1) * 4):
 
         print(case_ind)
 
@@ -210,7 +211,7 @@ def avg_sys(r ,mu,ind):
 
 
 def service(env, name, server, mu, arrival_time, class_, station, size, is_matched, case_num, args, sums, avg_time, station_1_waits):
-    if (np.remainder(name[station], 10000) == 0) & (station == 1):
+    if (np.remainder(name[station], 1000000) == 0) & (station == 1):
         wait_path = '../pkl/wait_station_1' + str(args.case_num) +'_'+'.pkl'
         if int(name[station]/10000)>1:
             wait_90 = np.percentile(station_1_waits,90, axis=0)
@@ -340,7 +341,7 @@ def parse_arguments(argv):
     parser.add_argument('--r', type=np.array, help='external arrivals', default=np.array([]))
     parser.add_argument('--number_of_classes', type=int, help='number of classes', default=2)
     parser.add_argument('--mu', type=np.array, help='service rates', default=np.array([]))
-    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=10000000)
+    parser.add_argument('--end_time', type=float, help='The end of the simulation', default=15000000)
     parser.add_argument('--size', type=int, help='the number of stations in the system', default=2)
     parser.add_argument('--p_correct', type=float, help='the prob of external matched customer', default=0.5)
     parser.add_argument('--ser_matched_rate', type=float, help='service rate of matched customers', default=1.2)
